@@ -1,9 +1,10 @@
 import React, {useReducer} from 'react';
 import StudentsReducer from "@/context/students/Students.reducer";
 import {
+    getEvaluationsByOaByQuery,
     getObservationByIdQuery,
     getSchoolRegistersByIdQuery,
-    getStudentsBySchoolQuery, setObservationQuery, setSchoolRegisterQuery,
+    getStudentsBySchoolQuery, setEvaluationsByOaQuery, setObservationQuery, setSchoolRegisterQuery,
     setStudentQuery
 } from "@/queries/students";
 import {
@@ -13,7 +14,7 @@ import {
     GET_ATTENDANCE_LOADING,
     GET_ATTENDANCES,
     GET_ATTENDANCES_ERROR,
-    GET_ATTENDANCES_LOADING,
+    GET_ATTENDANCES_LOADING, GET_EVALUATIONS_BY_OA, GET_EVALUATIONS_BY_OA_ERROR, GET_EVALUATIONS_BY_OA_LOADING,
     GET_OBSERVATIONS,
     GET_OBSERVATIONS_ERROR,
     GET_OBSERVATIONS_LOADING,
@@ -25,7 +26,7 @@ import {
     GET_STUDENTS_LOADING,
     SET_ATTENDANCE,
     SET_ATTENDANCE_ERROR,
-    SET_ATTENDANCE_LOADING,
+    SET_ATTENDANCE_LOADING, SET_EVALUATIONS_BY_OA, SET_EVALUATIONS_BY_OA_ERROR, SET_EVALUATIONS_BY_OA_LOADING,
     SET_OBSERVATIONS,
     SET_OBSERVATIONS_ERROR,
     SET_OBSERVATIONS_LOADING, SET_SCHOOL_REGISTERS, SET_SCHOOL_REGISTERS_ERROR,
@@ -56,7 +57,10 @@ export const initialStateStudent = {
     observationsLoading: true,
     schoolRegisters: [],
     schoolRegistersError: false,
-    schoolRegistersLoading: true
+    schoolRegistersLoading: true,
+    evaluationByOa: [],
+    evaluationByOaError: false,
+    evaluationByOaLoading: true
 };
 
 const StudentsState = (props) => {
@@ -222,6 +226,40 @@ const StudentsState = (props) => {
         }
     }
 
+    const setEvaluationsByOa = async (doc) => {
+        dispatch({
+            type: SET_EVALUATIONS_BY_OA_LOADING
+        });
+        try {
+            await setEvaluationsByOaQuery(doc)
+            dispatch({
+                type: SET_EVALUATIONS_BY_OA,
+            });
+        } catch (e) {
+            console.log(e)
+            dispatch({
+                type: SET_EVALUATIONS_BY_OA_ERROR
+            });
+        }
+    }
+
+    const getEvaluationsByGrade = async (grade) => {
+        dispatch({
+            type: GET_EVALUATIONS_BY_OA_LOADING
+        });
+        try {
+            const response = await getEvaluationsByOaByQuery(grade)
+            dispatch({
+                type: GET_EVALUATIONS_BY_OA,
+                payload: response
+            });
+        } catch (e) {
+            dispatch({
+                type: GET_EVALUATIONS_BY_OA_ERROR
+            });
+        }
+    }
+
     return <StudentContext.Provider
         value={{
             students: state.students,
@@ -239,6 +277,9 @@ const StudentsState = (props) => {
             schoolRegisters: state.schoolRegisters,
             schoolRegistersError: state.schoolRegistersError,
             schoolRegistersLoading: state.schoolRegistersLoading,
+            evaluationByOa: state.evaluationByOa,
+            evaluationByOaError: state.evaluationByOaError,
+            evaluationByOaLoading: state.evaluationByOaLoading,
             getStudentsBySchool,
             setStudent,
             clearStudent,
@@ -248,7 +289,9 @@ const StudentsState = (props) => {
             getObservationById,
             getRegistersById,
             setObservationSchool,
-            setSchoolRegister
+            setSchoolRegister,
+            setEvaluationsByOa,
+            getEvaluationsByGrade
         }}
     >
         {props.children}

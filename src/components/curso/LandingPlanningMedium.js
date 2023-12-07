@@ -15,6 +15,7 @@ import {unique} from "@/utils/formats";
 import Loading from "@/components/commons/Loading/Loading";
 import {ButtonFinish, isCurrent} from "@/components/curso/planningMedium/bodyCurrentPlanningMedium";
 import {trueFirst} from "@/utils/sort";
+import {getRandomKey} from "@/utils/evaluations";
 
 
 const LandingPlanningMedium = () => {
@@ -59,10 +60,6 @@ const LandingPlanningMedium = () => {
     const oa = unique(bases.filter(base => {
         return base.nucleo === selectCore
     }).map(base => `${base.numero}. ${base.OA}`));
-
-    const handlerDelete = (e) => {
-
-    }
 
     const formik = useFormik({
         initialValues: {
@@ -121,6 +118,7 @@ const LandingPlanningMedium = () => {
                     estrategias: data.strategy,
                     oas: data.oa.map(o => {
                         return {
+                            id: 'oa-' + grade.toLowerCase() + '-' + getRandomKey(),
                             ambitoSeleccionado: data.ambit,
                             nucleoSeleccionado: data.core,
                             oaSeleccionado: o

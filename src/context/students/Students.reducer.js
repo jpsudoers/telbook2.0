@@ -5,7 +5,7 @@ import {
     GET_ATTENDANCE_LOADING,
     GET_ATTENDANCES,
     GET_ATTENDANCES_ERROR,
-    GET_ATTENDANCES_LOADING,
+    GET_ATTENDANCES_LOADING, GET_EVALUATIONS_BY_OA, GET_EVALUATIONS_BY_OA_ERROR, GET_EVALUATIONS_BY_OA_LOADING,
     GET_OBSERVATIONS,
     GET_OBSERVATIONS_ERROR,
     GET_OBSERVATIONS_LOADING, GET_SCHOOL_REGISTERS, GET_SCHOOL_REGISTERS_ERROR,
@@ -26,6 +26,25 @@ const reducer = (state, action) => {
     const {payload, type} = action;
 
     switch (type) {
+        case GET_EVALUATIONS_BY_OA_LOADING:
+            return {
+                ...state,
+                evaluationByOaLoading: true,
+                evaluationByOaError: false,
+            }
+        case GET_EVALUATIONS_BY_OA:
+            return {
+                ...state,
+                evaluationByOa: payload,
+                evaluationByOaLoading: false,
+                evaluationByOaError: false,
+            }
+        case GET_EVALUATIONS_BY_OA_ERROR:
+            return {
+                ...state,
+                evaluationByOaLoading: false,
+                evaluationByOaError: true,
+            }
         case GET_SCHOOL_REGISTERS_LOADING:
             return {
                 ...state,

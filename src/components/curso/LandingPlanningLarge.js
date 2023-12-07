@@ -26,6 +26,7 @@ const LandingPlanningLarge = () => {
     } = useContext(PlanningContext);
 
     useEffect(() => {
+
         if (grade !== localStorage.getItem('gradeLP')) {
             getPlanningLarges(grade.toUpperCase())
             localStorage.setItem('gradeLP', grade.toString())

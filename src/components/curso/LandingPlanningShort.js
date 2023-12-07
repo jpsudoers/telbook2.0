@@ -42,6 +42,7 @@ const LandingPlanningShort = () => {
     } = useContext(PlanningContext);
 
     useEffect(() => {
+        console.log(localStorage.getItem('gradeSP'))
         if (grade !== localStorage.getItem('gradeSP')) {
             getPlanningShorts(grade.toUpperCase())
             getCurricularBases(level.toUpperCase())

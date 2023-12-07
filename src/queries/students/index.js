@@ -28,6 +28,10 @@ export const setSchoolRegisterQuery = async (data) => {
     return await setDoc(doc(db, "registrosConvivenciaEscolar", data.id), data);
 }
 
+export const setEvaluationsByOaQuery = async (data) => {
+    return await setDoc(doc(db, "evaluacionesPorOa", data.id), data);
+}
+
 export const getObservationByIdQuery = async (id) => {
     const q = query(collection(db, 'observacionesFonoaudiologicas'), where('alumnoRun', '==', id));
     const querySnapshot = await getDocs(q);
@@ -39,7 +43,6 @@ export const getObservationByIdQuery = async (id) => {
 }
 
 export const getSchoolRegistersByIdQuery = async (id) => {
-    console.log(id)
     const q = query(collection(db, 'registrosConvivenciaEscolar'), where('alumnoId', '==', id));
     const querySnapshot = await getDocs(q);
     let studentsArray = [];
@@ -47,5 +50,15 @@ export const getSchoolRegistersByIdQuery = async (id) => {
         studentsArray.push(doc.data())
     });
     console.log(studentsArray)
+    return studentsArray
+}
+
+export const getEvaluationsByOaByQuery = async (grade) => {
+    const q = query(collection(db, 'evaluacionesPorOa'), where('curso', '==', grade));
+    const querySnapshot = await getDocs(q);
+    let studentsArray = [];
+    querySnapshot.forEach((doc) => {
+        studentsArray.push(doc.data())
+    });
     return studentsArray
 }

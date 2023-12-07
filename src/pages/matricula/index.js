@@ -29,7 +29,6 @@ const RegistrationBook = () => {
         if (Object.values(user).length === 0) {
             getUser(userAuth.uid)
         }
-        debugger
         if (grades.length === 0) {
             getGrades(user.establecimiento)
         }
