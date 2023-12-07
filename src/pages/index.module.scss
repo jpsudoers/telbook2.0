@@ -1,0 +1,24 @@
+.containerLogin {
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  svg {
+    margin-bottom: 50px;
+  }
+  form {
+    display: flex;
+    flex-direction: column;
+    input {
+      margin: 10px 0;
+      width: 350px;
+    }
+    button {
+      margin-top: 40px;
+      width: 350px;
+    }
+  }
+}

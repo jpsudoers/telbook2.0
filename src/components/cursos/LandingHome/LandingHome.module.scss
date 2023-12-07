@@ -1,0 +1,20 @@
+.gradesHome {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.grade {
+  flex: 1;
+}
+
+.quickAccess {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.containerGrades {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px 0
+}

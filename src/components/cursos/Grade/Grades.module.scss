@@ -1,0 +1,31 @@
+.grade {
+  height: 110px;
+  width: 100px;
+  border-radius: 5px 5px 0 0;
+  svg {
+    margin: 38px;
+    color: white;
+  }
+}
+
+.pink-background {
+  background-color: var(--mountbatten-pink);
+}
+
+.containerGrade {
+  flex-basis: 33.3%;
+}
+
+.gradeTitle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 40px;
+  width: 100px;
+  background-color: #000;
+  color: white;
+  font-size: 12px;
+  text-align: center;
+  border-radius: 0 0 5px 5px;
+  font-weight: bold;
+}

@@ -1,0 +1,14 @@
+.header {
+    padding: 10px 0;
+    background-color: #f3f4f6;
+    box-shadow: 0 5px 5px 0 rgb(0 0 0 / 30%);
+}
+
+.containerHeader {
+    display:flex;
+    align-items: center;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 30px;
+}

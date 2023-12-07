@@ -1,0 +1,14 @@
+.footer {
+  height: 100px;
+  position: fixed;
+  bottom: 0;
+  background-color: #f3f4f6;
+  width: 100%;
+  color: black;
+  display: flex;
+  justify-content: center;
+  box-shadow: 0px -5px 5px 0px rgba(0,0,0,0.3);
+}
+.containerFooter{
+  max-width: 1200px;
+}

@@ -1,0 +1,63 @@
+.buttonLogout {
+  border: unset;
+  cursor: pointer;
+  background-color: var(--red);
+  color: var(--white);
+  padding: 15px 20px;
+  text-transform: uppercase;
+  font-weight: bold;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.primary {
+  border: 1px solid #71946e;
+  cursor: pointer;
+  background-color: #71946e;
+  color: var(--white);
+  padding: 15px 20px;
+  font-weight: bold;
+  border-radius: 5px;
+  font-size: 16px;
+  &:disabled {
+    color: #71946e;
+    border: 1px solid #71946e;
+    background-color: var(--white);
+  }
+  &:hover {
+    color: #71946e;
+    border: 1px solid #71946e;
+    background-color: var(--white);
+  }
+}
+
+.neutral {
+  border: 1px solid #294885;
+  cursor: pointer;
+  background-color: #294885;
+  color: var(--white);
+  padding: 15px 20px;
+  font-weight: bold;
+  border-radius: 5px;
+  font-size: 16px;
+  &:hover {
+    color: #294885;
+    border: 1px solid #294885;
+    background-color: var(--white);
+  }
+}
+
+.primaryOutline {
+  border: unset;
+  border: 1px solid #71946e;
+  cursor: pointer;
+  color: #71946e;
+  background-color: var(--white);
+  padding: 15px 20px;
+  font-weight: bold;
+  border-radius: 5px;
+  font-size: 16px;
+  &:hover {
+    background-color: #e3e3e3;
+  }
+}

@@ -1,0 +1,28 @@
+.contentBox {
+  max-width: 100px;
+  max-height: 100px;
+  cursor: pointer;
+  .box {
+    height: 65px;
+    width: 100px;
+    background-color: #CC3F0C;
+    border-radius: 10px 10px 0 0;
+    color: white;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 30px;
+  }
+  .boxTitle {
+    font-size: 12px;
+    height: 35px;
+    width: 100px;
+    background-color: var(--onyx);
+    text-align: center;
+    color: white;
+    border-radius: 0 0 10px 10px;
+    font-weight: bold;
+  }
+}
+

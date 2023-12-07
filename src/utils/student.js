@@ -1,0 +1,1 @@
+export const getStudentsByGrade = (students, grade) => students.filter(student => student.grade === grade.toUpperCase())
