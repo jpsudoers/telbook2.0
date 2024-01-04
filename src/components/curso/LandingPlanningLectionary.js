@@ -116,7 +116,7 @@ const LandingPlanningLectionary = () => {
                             {
                                 planning.evaluacion === 'positiva' || planning.evaluacion === 'negativa' ?
                                     <div>
-                                        <div className="m-0 mb-1"><strong>Experiencia de aprendizaje</strong></div>
+                                        <p><strong>Esta experiencia ya ha sido evaluado como</strong></p>
                                         <SelectButton
                                             id='item'
                                             name='evaluation'
@@ -124,14 +124,7 @@ const LandingPlanningLectionary = () => {
                                             disabled={true}
                                             options={['Positiva', 'Negativa']}
                                         />
-                                        <InputTextarea
-                                            className='mt-1'
-                                            style={{resize: 'none', marginBottom: '20px'}}
-                                            rows={4}
-                                            cols={40}
-                                            disabled={true}
-                                            value={planning.observacion}
-                                        />
+                                        <p><strong>Observación: </strong>{planning.observacion}</p>
                                     </div> :
                                     <>
                                         <div className="m-0 mb-1"><strong>Evaluar experiencia de aprendizaje</strong></div>
