@@ -13,6 +13,7 @@ const LandingBookRegister = () => {
     } = useContext(StudentsContext);
 
     const headers = [
+        {field: 'n', header: 'N#'},
         {field: 'run', header: 'RUN'},
         {field: 'name', header: 'Nombre'},
         {field: 'type', header: 'Tipo TEL'},

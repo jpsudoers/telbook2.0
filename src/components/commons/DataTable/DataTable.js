@@ -112,7 +112,7 @@ const DataTableFilter = ({
                         return <Column key={key} style={{minWidth: column.size}}
                                        body={column.body} header={column.header}/>;
                     }
-                    return <Column frozen={key === 0} key={key} style={{minWidth: column.size}}
+                    return <Column sortable frozen={key === 0} key={key} style={{minWidth: column.size}}
                                    field={column.field} header={column.header}/>;
                 })
             }

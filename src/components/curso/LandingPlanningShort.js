@@ -68,7 +68,6 @@ const LandingPlanningShort = () => {
             date: '',
             ambit: '',
             core: '',
-            performance: '',
             resources: '',
             instruments: '',
             init: '',
@@ -105,7 +104,6 @@ const LandingPlanningShort = () => {
                             ambitoSeleccionado: data.ambit,
                             nucleoSeleccionado: data.core,
                             oaSeleccionado: o,
-                            desempenoSeleccionado: data.performance
                         }
                     }),
                     fecha: dateToFirebaseWithSlash(data.date),
@@ -235,21 +233,6 @@ const LandingPlanningShort = () => {
                                     maxSelectedLabels={0}
                                     className={classNames({'p-invalid': isFormFieldInvalid('oa')})}
 
-                                />
-                            </div>
-                        </div>
-                        <div className="flex-auto mb-4">
-                            <label htmlFor="performance" className="font-bold block mb-2">Desempeño</label>
-                            <div className='p-inputgroup w-full'>
-                                <InputText
-                                    id="performance"
-                                    name="performance"
-                                    value={formik.values.performance}
-                                    onChange={(e) => {
-                                        formik.setFieldValue('performance', e.target.value);
-                                    }}
-                                    placeholder="Desempeño"
-                                    className={classNames({'p-invalid': isFormFieldInvalid('performance')})}
                                 />
                             </div>
                         </div>

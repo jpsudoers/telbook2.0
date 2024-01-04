@@ -99,6 +99,8 @@ const LandingPlanningLarge = () => {
         return <Loading/>
     }
 
+    planningLarges.sort((a, b) => (a.date > b.date) ? 1 : ((b.date > a.date) ? -1 : 0))
+
     return (
         <Splitter style={{height: '500px'}}>
             <SplitterPanel size={25} minSize={25}>

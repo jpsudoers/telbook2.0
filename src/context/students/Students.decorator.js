@@ -7,6 +7,7 @@ import {useRouter} from "next/router";
 export const studentsDecorator = (students) => {
     return students.map(student => {
         return {
+            n: student.numeroMatricula,
             run: formatRun(student.run),
             name: student.nombreCompleto,
             type: student.tipoTel,

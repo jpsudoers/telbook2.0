@@ -46,7 +46,7 @@ const validateForm = (data) => {
         errors.tutorName = 'El nombre del tutor es requerido';
     }
     if (!data.parent) {
-        errors.parent = 'El parentezco con el alumno es requerido';
+        errors.parent = 'El parentesco con el alumno es requerido';
     }
     if (!data.email) {
         errors.email = 'El correo electrónico del tutor es requerido';

@@ -12,6 +12,9 @@ const Nav = () => {
             <div className={styles.space}>
                 <Link className={styles.anchorNav} href="/libro-de-matricula">matriculas</Link>
             </div>
+            <div className={styles.space}>
+                <Link className={styles.anchorNav} href="/libro-de-matricula">administración</Link>
+            </div>
         </nav>
     );
 };

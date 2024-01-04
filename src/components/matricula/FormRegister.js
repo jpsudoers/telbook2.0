@@ -313,14 +313,14 @@ const FormRegister = () => {
                         {getFormErrorMessage('tutorName')}
                     </div>
                     <div className='flex-auto mb-4'>
-                        <label htmlFor='parent' className='font-bold block mb-2'>Parentezco</label>
+                        <label htmlFor='parent' className='font-bold block mb-2'>Parentesco</label>
                         <div className='p-inputgroup w-full'>
                             <Dropdown
                                 inputId='parent'
                                 name='parent'
                                 value={formik.values.parent}
                                 options={['Madre', 'Padre', 'Tutor']}
-                                placeholder='Parentezco del apoderado con el alumno'
+                                placeholder='Parentesco del apoderado con el alumno'
                                 className={classNames({'p-invalid': isFormFieldInvalid('parent')})}
                                 onChange={(e) => {
                                     formik.setFieldValue('parent', e.value);

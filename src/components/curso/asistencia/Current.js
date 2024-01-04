@@ -27,8 +27,6 @@ export default function Current({students, grade, user}) {
         attendanceError,
     } = useContext(StudentsContext);
 
-    console.log(attendance)
-
     useEffect(() => {
         if (attendance.length === 0) {
             getAttendanceByDate(grade.toUpperCase())
@@ -43,16 +41,18 @@ export default function Current({students, grade, user}) {
         });
     };
 
-    const obj = students.reduce((o, key) => ({...o, [key.run.split('.').join("")]: {day: null, comments: ''}}), {})
+    const obj = students.reduce((o, key) => ({...o, [key.run.split('.').join("")]: {day: 'Presente', comments: ''}}), {})
+    console.log(obj)
     const formik = useFormik({
         initialValues: {...obj, otp: ''},
         validate: (data) => {
+            console.log(data)
             let errors = {};
             const objVal = Object.values(data)
             setPresents(objVal.filter(p => p.day === 'Presente').length)
             setAbsentees(objVal.filter(p => p.day === 'Ausente').length)
             if (data.otp === '') {
-                errors.otp = 'OTP obligatorio'
+                errors.otp = 'Clave de GOB'
             }
             if (presents + absentees !== objVal.length - 1) {
                 setError(true)
@@ -159,7 +159,7 @@ export default function Current({students, grade, user}) {
                                 keyfilter="int"
                                 className={classNames({'p-invalid': isFormFieldInvalid('otp')})}
                                 value={formik.values.otp}
-                                placeholder='Ingresar OTP'
+                                placeholder='Ingresar Clave de GOB'
                                 onChange={(e) => {
                                     formik.setFieldValue('otp', e.target.value);
                                 }}/>
