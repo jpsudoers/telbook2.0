@@ -11,6 +11,8 @@ import {Toast} from 'primereact/toast';
 import PlanningContext from "@/context/planning/Planning.context";
 import {useRouter} from "next/router";
 import Loading from "@/components/commons/Loading/Loading";
+import autoTable from 'jspdf-autotable'
+import {exportToPDF} from "@/utils/formats";
 
 const LandingPlanningLarge = () => {
     const router = useRouter();
@@ -99,56 +101,72 @@ const LandingPlanningLarge = () => {
         return <Loading/>
     }
 
+    const downloadList = (e) => {
+        e.preventDefault();
+        const title = "Planificaciones a largo plazo " + grade.toUpperCase();
+        const head = ['Fecha', 'Planificación a largo plazo']
+        const attr = ['date', 'description']
+        exportToPDF(planningLarges, title, head, attr)
+    }
+
     planningLarges.sort((a, b) => (a.date > b.date) ? 1 : ((b.date > a.date) ? -1 : 0))
 
     return (
-        <Splitter style={{height: '500px'}}>
-            <SplitterPanel size={25} minSize={25}>
-                <form onSubmit={formik.handleSubmit} className='flex flex-column gap-2'>
-                    <div style={{padding: '15px'}}>
-                        <label htmlFor='select-date'
-                               style={{fontWeight: 'bold', display: 'block', marginBottom: '10px'}}>
-                            Seleccionar fecha
-                        </label>
-                        <Toast ref={toast}/>
-                        <Calendar dateFormat='dd/mm/yy' id='select-date' name='date'
-                                  value={formik.values.date}
-                                  onChange={(e) => {
-                                      formik.setFieldValue('date', e.target.value);
-                                  }}
-                                  style={{width: '272px'}}
-                                  locale='es' showIcon/>
-                        <label htmlFor='select-description'
-                               style={{fontWeight: 'bold', display: 'block', marginBottom: '10px', marginTop: '15px'}}>
-                            Descripción
-                        </label>
-                        <InputTextarea
-                            inputid='description'
-                            name='description'
-                            style={{resize: 'none', marginBottom: '20px'}}
-                            rows={4}
-                            cols={27}
-                            value={formik.values.description}
-                            onChange={(e) => {
-                                formik.setFieldValue('description', e.target.value);
-                            }}
-                        />
-                        <p>{getFormErrorMessage('date')}</p>
-                        <p>{getFormErrorMessage('description')}</p>
-                        <Button type='submit' label='Agregar' severity='success' style={{width: '100%'}}/>
-                    </div>
-                </form>
-            </SplitterPanel>
-            <SplitterPanel size={75} minSize={75}>
-                <ScrollPanel style={{width: '100%', height: '500px'}}>
-                    <DataTable value={planningLarges} tableStyle={{minWidth: '50rem'}}>
-                        <Column field='date' header='Fecha'/>
-                        <Column field='description' header='Descripción de la planificación'/>
-                        <Column body={actionBodyTemplate} header='Acción'/>
-                    </DataTable>
-                </ScrollPanel>
-            </SplitterPanel>
-        </Splitter>
+        <>
+            <Splitter style={{height: '500px'}}>
+                <SplitterPanel size={25} minSize={25}>
+                    <form onSubmit={formik.handleSubmit} className='flex flex-column gap-2'>
+                        <div style={{padding: '15px'}}>
+                            <label htmlFor='select-date'
+                                   style={{fontWeight: 'bold', display: 'block', marginBottom: '10px'}}>
+                                Seleccionar fecha
+                            </label>
+                            <Toast ref={toast}/>
+                            <Calendar dateFormat='dd/mm/yy' id='select-date' name='date'
+                                      value={formik.values.date}
+                                      onChange={(e) => {
+                                          formik.setFieldValue('date', e.target.value);
+                                      }}
+                                      style={{width: '272px'}}
+                                      locale='es' showIcon/>
+                            <label htmlFor='select-description'
+                                   style={{
+                                       fontWeight: 'bold',
+                                       display: 'block',
+                                       marginBottom: '10px',
+                                       marginTop: '15px'
+                                   }}>
+                                Descripción
+                            </label>
+                            <InputTextarea
+                                inputid='description'
+                                name='description'
+                                style={{resize: 'none', marginBottom: '20px'}}
+                                rows={4}
+                                cols={27}
+                                value={formik.values.description}
+                                onChange={(e) => {
+                                    formik.setFieldValue('description', e.target.value);
+                                }}
+                            />
+                            <p>{getFormErrorMessage('date')}</p>
+                            <p>{getFormErrorMessage('description')}</p>
+                            <Button type='submit' label='Agregar' severity='success' style={{width: '100%'}}/>
+                        </div>
+                    </form>
+                </SplitterPanel>
+                <SplitterPanel size={75} minSize={75}>
+                    <ScrollPanel style={{width: '100%', height: '500px'}}>
+                        <DataTable value={planningLarges} tableStyle={{minWidth: '50rem'}}>
+                            <Column field='date' header='Fecha'/>
+                            <Column field='description' header='Descripción de la planificación'/>
+                            <Column body={actionBodyTemplate} header='Acción'/>
+                        </DataTable>
+                    </ScrollPanel>
+                </SplitterPanel>
+            </Splitter>
+            <Button className='mt-2' type='button' label='Descargar lista de planificaciones' onClick={downloadList} severity='success'/>
+        </>
     )
 };
 

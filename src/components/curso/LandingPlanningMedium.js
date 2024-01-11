@@ -13,9 +13,10 @@ import PlanningContext from "@/context/planning/Planning.context";
 import {useRouter} from "next/router";
 import {unique} from "@/utils/formats";
 import Loading from "@/components/commons/Loading/Loading";
-import {ButtonFinish, isCurrent} from "@/components/curso/planningMedium/bodyCurrentPlanningMedium";
+import {IsCurrent} from "@/components/curso/planningMedium/bodyCurrentPlanningMedium";
 import {trueFirst} from "@/utils/sort";
 import {getRandomKey} from "@/utils/evaluations";
+import autoTable from "jspdf-autotable";
 
 
 const LandingPlanningMedium = () => {
@@ -142,6 +143,33 @@ const LandingPlanningMedium = () => {
         return isFormFieldInvalid(name) ? <small className="p-error">{formik.errors[name]}<br/></small> :
             <small className="p-error"/>;
     };
+
+    const exportToPDF = () => {
+        import('jspdf').then((jsPDF) => {
+            import('jspdf-autotable').then(() => {
+                const doc = new jsPDF.default(0, 0);
+                const dataToPdf = planningMediums
+                console.log(dataToPdf)
+                let row = [];
+                dataToPdf.forEach(data => {
+                    row.push([data.data.name.toUpperCase()])
+                    row.push(['  ' + data.children[2].data.name])
+                    row.push(['  ' + data.children[3].data.name])
+                    row.push(['  ' + data.children[4].data.name])
+                    row.push(['   Objetivos de aprendizaje:'])
+                    data.children[0].children.forEach(child => {
+                        child.data.name !== '' && row.push(['     ' + child.data.name])
+                    })
+                })
+                autoTable(doc, {
+                    head: [['Planificaciones a mediano plazo ' + grade.toUpperCase()]],
+                    body: row,
+                    startY: 25,
+                })
+                doc.save('Planificaciones a mediano plazo ' + grade.toUpperCase() + '.pdf');
+            });
+        });
+    }
 
     if (planningMediumsLoading || basesLoading) {
         return <Loading/>
@@ -297,9 +325,10 @@ const LandingPlanningMedium = () => {
                     <div className="card text-xs">
                         <TreeTable selectionMode="single" value={trueFirst(planningMediums)}
                                    tableStyle={{minWidth: '50rem', fontSize: '12px'}} loading={planningMediumsLoading}>
-                            <Column field="name" header="Planificaciones mediano plazo" body={isCurrent} expander/>
-                            <Column field="action" className='text-right' header="" body={ButtonFinish}/>
+                            <Column field="name" header="Planificaciones mediano plazo" body={IsCurrent} expander/>
                         </TreeTable>
+                        <Button type='button' className='mt-4' onClick={exportToPDF} label='Descargar planificaciones'
+                                severity='success' style={{width: '100%'}}/>
                     </div>
                 </div>
             </div>

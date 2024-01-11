@@ -1,3 +1,5 @@
+import autoTable from "jspdf-autotable";
+
 export const formatRun = (run) => {
     const newRut = run.replace(/\./g, '').replace(/\-/g, '').trim().toLowerCase();
     const lastDigit = newRut.substr(-1, 1);
@@ -91,3 +93,28 @@ export const dateToFirebaseWithSlash = (date) => {
 export const capitalize = (str, lower = false) =>
     (lower ? str.toLowerCase() : str).replace(/(?:^|\s|["'([{])+\S/g, match => match.toUpperCase());
 ;
+
+export const exportToPDF = (list, title, head, attr) => {
+    import('jspdf').then((jsPDF) => {
+        import('jspdf-autotable').then(() => {
+            const doc = new jsPDF.default(0, 0);
+            const dataToPdf = list
+            console.log(dataToPdf)
+            doc.text(15, 15, title);
+            let row = [];
+            for (let i = 0; i < dataToPdf.length; i++) {
+                let temp = [];
+                attr.forEach(at => {
+                    temp.push(dataToPdf[i][at])
+                })
+                row.push(temp)
+            }
+            autoTable(doc, {
+                head: [head],
+                body: row,
+                startY: 25
+            })
+            doc.save(title + '.pdf');
+        });
+    });
+}

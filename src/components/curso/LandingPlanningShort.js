@@ -14,6 +14,7 @@ import {dateToFirebaseWithSlash, unique} from "@/utils/formats";
 import Loading from "@/components/commons/Loading/Loading";
 import {getWeekNumber} from "@/utils/date";
 import {Calendar} from "primereact/calendar";
+import autoTable from "jspdf-autotable";
 
 const LandingPlanningShort = () => {
     const [selectAmbit, setSelectAmbit] = useState(null);
@@ -143,9 +144,41 @@ const LandingPlanningShort = () => {
 
     const filterPlannings = planningShorts.filter(planning => {
         const weekCurrent = getWeekNumber(new Date())
-        const weekPlanning = getWeekNumber(new Date(planning.date))
+        const weekPlanning = getWeekNumber(new Date(planning.date + " EDT"))
         return weekCurrent === weekPlanning
     })
+
+    const exportToPDF = () => {
+        import('jspdf').then((jsPDF) => {
+            import('jspdf-autotable').then(() => {
+                const doc = new jsPDF.default(0, 0);
+                const dataToPdf = filterPlannings
+                let row = [];
+                dataToPdf.forEach(data => {
+                    row.push([data.data.name.toUpperCase()])
+                    row.push(['  Estrategias curriculares'])
+                    data.children.forEach(child => {
+                        if (child.children) {
+                            child.children.forEach(ch => {
+                                row.push(['      ' + ch.data?.title + ': ' + ch.data?.name])
+                            })
+                            row.push(['    '])
+                        } else {
+                            row.push(['  ' + child.data?.title + ': ' + child.data?.name])
+                        }
+                    })
+                    row.push(['  '])
+                })
+                autoTable(doc, {
+                    head: [['Planificaciones a mediano plazo ' + grade.toUpperCase()]],
+                    body: row,
+                    startY: 25,
+                })
+                doc.save('Planificaciones a corto plazo ' + grade.toUpperCase() + '.pdf');
+            });
+        });
+    }
+
 
     const getCurrentPlanningMedium = planningMediums.filter(planning => {
         return planning.current
@@ -166,7 +199,8 @@ const LandingPlanningShort = () => {
                 }
                 {getCurrentPlanningMedium.length === 1 &&
                     <div className="field col">
-                        <h2>Proyecto Eje {getCurrentPlanningMedium[0].data && getCurrentPlanningMedium[0].data.name}</h2>
+                        <h2>Proyecto
+                            Eje {getCurrentPlanningMedium[0].data && getCurrentPlanningMedium[0].data.name}</h2>
                         <div className="flex-auto mb-4">
                             <label htmlFor="ambit" className="font-bold block mb-2">Fecha</label>
                             <div className='p-inputgroup w-full'>
@@ -297,6 +331,8 @@ const LandingPlanningShort = () => {
                                 <Column field="name" header="Planificaciones corto plazo (activas de la semana)"
                                         body={isCurrent} expander/>
                             </TreeTable>
+                            <Button type='button' onClick={exportToPDF} className='mt-4'
+                                    label='Descargar planificaciones' severity='success' style={{width: '100%'}}/>
                         </div>
                     }
                     {filterPlannings.length === 0 &&
