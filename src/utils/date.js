@@ -20,7 +20,7 @@ export const months = [
 ];
 
 export const years = [
-    2023, 2024
+    2024
 ]
 
 const today = new Date();

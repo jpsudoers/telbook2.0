@@ -1,4 +1,4 @@
-import React, {useContext, useState, useEffect} from 'react';
+import React, {useContext, useState, useEffect, useRef} from 'react';
 import {useRouter} from "next/router";
 import {Fieldset} from 'primereact/fieldset';
 import {Dropdown} from 'primereact/dropdown';
@@ -7,6 +7,9 @@ import PlanningContext from "@/context/planning/Planning.context";
 import {filterPlanningByMonth} from "@/utils/plannings";
 import Loading from "@/components/commons/Loading/Loading";
 import GetEvaluation from "@/components/curso/evaluacion/GetEvaluation";
+import {jsPDF} from "jspdf";
+import {useScreenshot} from "use-react-screenshot";
+import {Button} from "primereact/button";
 
 const months = [
     {code: 0, name: 'Enero'},
@@ -25,9 +28,20 @@ const months = [
 
 const LandingEvaluation = () => {
     const router = useRouter();
+    const ref = useRef(null)
     const {grade} = router.query;
     const [selectedMonth, setSelectedMonth] = useState({code: 0, name: 'Enero'});
     const [state, setState] = useState({})
+
+    const download = (image, {
+        name = 'Evaluaciones-' + grade + '-' + selectedMonth.name} = {}) => {
+        let doc = new jsPDF('portrait');
+        doc.addImage(image, 'PNG', 15, 15, 160, 240);
+        doc.save(name + '.pdf');
+
+    }
+    const [image, takeScreenshot] = useScreenshot()
+    const getImage = () => takeScreenshot(ref.current).then(download)
 
     const {
         students,
@@ -98,12 +112,18 @@ const LandingEvaluation = () => {
     }
 
     return (
-        <div>
+        <div ref={ref}>
             <div className='flex-auto mb-4'>
                 <label htmlFor='grade' className='font-bold block mb-2'>Selecciona un mes</label>
-                <Dropdown value={selectedMonth} onChange={(e) => setSelectedMonth(e.value)} options={months}
-                          optionLabel='name'
-                          placeholder="Selecciona un mes" className="w-full md:w-14rem"/>
+                <div className='flex gap-2'>
+                    <Dropdown value={selectedMonth} onChange={(e) => setSelectedMonth(e.value)} options={months}
+                              optionLabel='name'
+                              placeholder="Selecciona un mes" className="w-full md:w-14rem"/>
+                    <div>
+                        <Button label='Descargar evaluaciones' severity='success' onClick={getImage}/>
+                    </div>
+                </div>
+
             </div>
             <div>
                 {

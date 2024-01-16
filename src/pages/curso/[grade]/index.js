@@ -56,7 +56,7 @@ const Grade = () => {
         {
             label: 'Evaluaciones', icon: 'pi pi-fw pi-book', items: [
                 {label: 'Por formato', icon: 'pi pi-fw pi-book', command: () => setActiveIndex(3)},
-                {label: 'Personalizada', icon: 'pi pi-fw pi-book', command: () => setActiveIndex(9)},
+                // {label: 'Personalizada', icon: 'pi pi-fw pi-book', command: () => setActiveIndex(9)},
             ]
         },
         {label: 'Módulo TEL', icon: 'pi pi-fw pi-at', command: () => setActiveIndex(4)}
