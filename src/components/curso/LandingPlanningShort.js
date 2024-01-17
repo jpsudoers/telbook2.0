@@ -115,7 +115,7 @@ const LandingPlanningShort = () => {
                 }
                 console.log(newData)
                 setPlanningShort(newData)
-                // formik.resetForm();
+                formik.resetForm();
             }
         }
     });

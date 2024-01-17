@@ -131,8 +131,8 @@ const LandingPlanningMedium = () => {
                     tiempo: data.week,
                     vigencia: true,
                 }
-                setPlanningMedium(newData)
                 formik.resetForm();
+                setPlanningMedium(newData)
             }
         }
     });
