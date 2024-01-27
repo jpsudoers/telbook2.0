@@ -189,8 +189,8 @@ const LandingPlanningMedium = () => {
                                 onChange={(e) => {
                                     formik.setFieldValue('week', e.target.value);
                                 }}
-                                mask="99"
-                                placeholder="01-99"
+                                mask="10"
+                                placeholder="01-10"
                                 className={classNames({'p-invalid': isFormFieldInvalid('week')})}
                             />
                             <span className="p-inputgroup-addon">Semanas</span>
@@ -266,7 +266,7 @@ const LandingPlanningMedium = () => {
                         </div>
                     </div>
                     <div className="flex-auto mb-4">
-                        <label htmlFor="week" className="font-bold block mb-2">Objetivos</label>
+                        <label htmlFor="week" className="font-bold block mb-2">Objetivos generales</label>
                         <div className='p-inputgroup w-full'>
                             <InputText
                                 id="project"
@@ -275,7 +275,7 @@ const LandingPlanningMedium = () => {
                                 onChange={(e) => {
                                     formik.setFieldValue('objective', e.target.value);
                                 }}
-                                placeholder="Objetivos"
+                                placeholder="Objetivos generales"
                                 className={classNames({'p-invalid': isFormFieldInvalid('objective')})}
                             />
                         </div>
@@ -325,7 +325,7 @@ const LandingPlanningMedium = () => {
                     <div className="card text-xs">
                         <TreeTable selectionMode="single" value={trueFirst(planningMediums)}
                                    tableStyle={{minWidth: '50rem', fontSize: '12px'}} loading={planningMediumsLoading}>
-                            <Column field="name" header="Planificaciones mediano plazo" body={IsCurrent} expander/>
+                            <Column style={{display: 'flex', alignItems: 'center', width: '100%'}} field="name" header="Planificaciones mediano plazo" body={IsCurrent} expander/>
                         </TreeTable>
                         <Button type='button' className='mt-4' onClick={exportToPDF} label='Descargar planificaciones'
                                 severity='success' style={{width: '100%'}}/>

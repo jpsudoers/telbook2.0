@@ -1,6 +1,7 @@
 import React from "react";
 
 export const planningMediumsDecorator = (planningMediums) => planningMediums.map((plannings, index) => {
+    console.log(plannings)
     return {
         id: plannings.id,
         key: index,
@@ -18,7 +19,7 @@ export const planningMediumsDecorator = (planningMediums) => planningMediums.map
                     return {
                         key: `${index}-0-${idx}`,
                         data: {
-                            name: oa.oaSeleccionado
+                            name: 'Nucleo: ' + oa.nucleoSeleccionado.toLowerCase() + '. Ambito: ' + oa.ambitoSeleccionado.toLowerCase() + '. Objetivo seleccionado: ' + oa.oaSeleccionado.toLowerCase()
                         },
                     }
                 }),
@@ -72,13 +73,6 @@ export const planningShortsDecorator = (planningShorts) => planningShorts.map((p
                     data: {
                         name: estrategia.nucleoSeleccionado,
                         title: 'Núcleo'
-                    },
-                },
-                {
-                    key: `02`,
-                    data: {
-                        name: estrategia.desempenoSeleccionado,
-                        title: 'Desempeño'
                     },
                 },
                 {
@@ -214,13 +208,6 @@ export const planningShortDecorator = (planning, totalPlannings) => {
                     data: {
                         name: estrategia.nucleoSeleccionado,
                         title: 'Núcleo'
-                    },
-                },
-                {
-                    key: `02`,
-                    data: {
-                        name: estrategia.desempenoSeleccionado,
-                        title: 'Desempeño'
                     },
                 },
                 {

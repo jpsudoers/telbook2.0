@@ -77,13 +77,13 @@ const LandingHome = () => {
                 </div>
             </div>
             <div className={styles.grade}>
-                <h3>Nivel Pre Kinder (PNT)</h3>
+                <h3>Nivel Pre Kinder (NT1)</h3>
                 <div className={styles.containerGrades}>
                     {getCurrentGrades('PNT')}
                 </div>
             </div>
             <div className={styles.grade}>
-                <h3>Nivel Kinder (2NT)</h3>
+                <h3>Nivel Kinder (NT2)</h3>
                 <div className={styles.containerGrades}>
                     {getCurrentGrades('2NT')}
                 </div>

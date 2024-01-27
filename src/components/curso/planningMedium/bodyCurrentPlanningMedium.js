@@ -16,14 +16,14 @@ export const IsCurrent = (node) => {
         editPlanningMedium(node.id)
     }
 
-    return <span style={{fontWeight: fontWeight}}>
+    return <span style={{fontWeight: fontWeight, display: 'flex', alignItems: 'center', width: '100%', justifyContent: 'space-between'}}>
         {name}
         {
             current &&
-            <span>
+            <span style={{display: 'flex'}}>
                 <Chip style={{marginLeft: '10px', backgroundColor: 'green', color: 'white', fontSize: '10px'}}
                       label="En curso"/>
-                <Button severity="danger" style={{marginLeft: '420px', fontSize: '10px'}}
+                <Button severity="danger" style={{fontSize: '10px', marginLeft: '10px'}}
                         label="Finalizar" onClick={handleFinish}/>
             </span>
         }

@@ -1,9 +1,13 @@
 import React from 'react';
 import style from './Title.module.scss'
+import {currentDay, currentYear, dayName, monthName} from "@/utils/date";
 
 const Title = ({title}) => {
     return (
-        <h1 className={style.secondaryTitle}>{title}</h1>
+        <div className={style.secondaryTitle}>
+            <h1>{title}</h1>
+            <h2>{dayName}, {currentDay} de {monthName} de {currentYear}</h2>
+        </div>
     );
 };
 

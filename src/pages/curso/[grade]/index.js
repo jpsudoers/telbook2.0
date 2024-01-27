@@ -42,7 +42,7 @@ const Grade = () => {
         {
             label: 'Asistencia', icon: 'pi pi-fw pi-calendar', items: [
                 {label: 'Diaria', icon: 'pi pi-fw pi-clock', command: () => setActiveIndex(1)},
-                {label: 'Histórica', icon: 'pi pi-fw pi-calendar-plus', command: () => setActiveIndex(2)},
+                {label: 'Mensual', icon: 'pi pi-fw pi-calendar-plus', command: () => setActiveIndex(2)},
             ]
         },
         {
@@ -94,7 +94,7 @@ const Grade = () => {
             case 1:
                 return 'Asistencia Diaria'
             case 2:
-                return 'Asistencia Histórica'
+                return 'Asistencia Mensual'
             case 3:
                 return 'Evaluaciones'
             case 4:

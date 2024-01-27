@@ -16,7 +16,7 @@ const LandingBookRegister = () => {
         {field: 'n', header: 'N#'},
         {field: 'run', header: 'RUN'},
         {field: 'name', header: 'Nombre'},
-        {field: 'type', header: 'Tipo TEL'},
+        // {field: 'type', header: 'Tipo TEL'},
         {field: 'origin', header: 'Procedencia'},
         {field: 'natDate', header: 'Fecha Nacimiento'},
         {field: 'enterDate', header: 'Fecha Ingreso'},

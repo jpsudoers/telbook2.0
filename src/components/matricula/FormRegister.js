@@ -466,7 +466,7 @@ const FormRegister = () => {
                                     'TEL MIXTO',
                                     'TEL EXPRESIVO'
                                 ]}
-                                placeholder='Seleccionar nivel educacional del padre'
+                                placeholder='Seleccionar Tipo TEL'
                                 className={classNames({'p-invalid': isFormFieldInvalid('tel')})}
                                 onChange={(e) => {
                                     formik.setFieldValue('tel', e.value);

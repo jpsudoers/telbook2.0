@@ -103,7 +103,7 @@ export default function Current({students, grade, user}) {
 
     if (attendance.length > 0) {
         return <div>
-            Ya se registró la lista del día de hoy. Para ver el detalle ir a Asistencia Histórica
+            Ya se registró la lista del día de hoy. Para ver el detalle ir a Asistencia Mensual
         </div>
     }
 

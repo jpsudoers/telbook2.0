@@ -24,10 +24,14 @@ export const years = [
 ]
 
 const today = new Date();
-console.log(today)
-export const currentMonth = today.getMonth();
-export const currentDay = today.getDate();
-export const currentYear = today.getFullYear();
+const offset = -300; //Timezone offset for EST in minutes.
+const estDate = new Date(today.getTime() + offset*60*1000);
+export const currentMonth = estDate.getMonth();
+export const currentDay = estDate.getUTCDate();
+export const currentYear = estDate.getFullYear();
+
+export const dayName = estDate.toLocaleDateString('es-CL', {weekday: 'long', timeZone: 'UTC'})
+export const monthName = estDate.toLocaleDateString('es-CL', {month: 'long'})
 
 export function getWeekNumber(d) {
     // Copy date so don't modify original

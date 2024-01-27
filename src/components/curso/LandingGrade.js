@@ -9,10 +9,11 @@ const LandingGrade = () => {
     } = useContext(StudentsContext);
     const router = useRouter();
     const {grade} = router.query;
-
+    console.log(students)
     const headers = [
         {field: 'name', header: 'Nombre', size: '30%'},
         {field: 'run', header: 'RUT', size: '15%'},
+        {field: 'type', header: 'Tipo TEL'},
         {field: 'gender', header: 'Género', size: '10%'},
         {field: 'natDate', header: 'Fecha Nacimiento', size: '15%'},
         {field: 'enterDate', header: 'Fecha Matrícula', size: '15%'},
@@ -23,7 +24,6 @@ const LandingGrade = () => {
     const search = ['run', 'name'];
 
     const filterStudents = students.filter(student => student.grade === grade.toUpperCase())
-
     return (
         <div>
             <DataTableFilter
