@@ -4,7 +4,7 @@ import {
     getEvaluationsByOaByQuery,
     getObservationByIdQuery,
     getSchoolRegistersByIdQuery,
-    getStudentsBySchoolQuery, setEvaluationsByOaQuery, setObservationQuery, setSchoolRegisterQuery,
+    getStudentsBySchoolQuery, setEvaluationsByOaQuery, setEvaluationsQuery, setObservationQuery, setSchoolRegisterQuery,
     setStudentQuery
 } from "@/queries/students";
 import {
@@ -14,7 +14,10 @@ import {
     GET_ATTENDANCE_LOADING,
     GET_ATTENDANCES,
     GET_ATTENDANCES_ERROR,
-    GET_ATTENDANCES_LOADING, GET_EVALUATIONS_BY_OA, GET_EVALUATIONS_BY_OA_ERROR, GET_EVALUATIONS_BY_OA_LOADING,
+    GET_ATTENDANCES_LOADING,
+    GET_EVALUATIONS_BY_OA,
+    GET_EVALUATIONS_BY_OA_ERROR,
+    GET_EVALUATIONS_BY_OA_LOADING,
     GET_OBSERVATIONS,
     GET_OBSERVATIONS_ERROR,
     GET_OBSERVATIONS_LOADING,
@@ -26,10 +29,16 @@ import {
     GET_STUDENTS_LOADING,
     SET_ATTENDANCE,
     SET_ATTENDANCE_ERROR,
-    SET_ATTENDANCE_LOADING, SET_EVALUATIONS_BY_OA, SET_EVALUATIONS_BY_OA_ERROR, SET_EVALUATIONS_BY_OA_LOADING,
+    SET_ATTENDANCE_LOADING, SET_EVALUATIONS,
+    SET_EVALUATIONS_BY_OA,
+    SET_EVALUATIONS_BY_OA_ERROR,
+    SET_EVALUATIONS_BY_OA_LOADING, SET_EVALUATIONS_ERROR,
+    SET_EVALUATIONS_LOADING,
     SET_OBSERVATIONS,
     SET_OBSERVATIONS_ERROR,
-    SET_OBSERVATIONS_LOADING, SET_SCHOOL_REGISTERS, SET_SCHOOL_REGISTERS_ERROR,
+    SET_OBSERVATIONS_LOADING,
+    SET_SCHOOL_REGISTERS,
+    SET_SCHOOL_REGISTERS_ERROR,
     SET_SCHOOL_REGISTERS_LOADING,
     SET_STUDENT,
     SET_STUDENT_ERROR,
@@ -243,6 +252,23 @@ const StudentsState = (props) => {
         }
     }
 
+    const setEvaluations = async (doc) => {
+        dispatch({
+            type: SET_EVALUATIONS_LOADING
+        });
+        try {
+            await setEvaluationsQuery(doc)
+            dispatch({
+                type: SET_EVALUATIONS,
+            });
+        } catch (e) {
+            console.log(e)
+            dispatch({
+                type: SET_EVALUATIONS_ERROR
+            });
+        }
+    }
+
     const getEvaluationsByGrade = async (grade) => {
         dispatch({
             type: GET_EVALUATIONS_BY_OA_LOADING
@@ -291,7 +317,8 @@ const StudentsState = (props) => {
             setObservationSchool,
             setSchoolRegister,
             setEvaluationsByOa,
-            getEvaluationsByGrade
+            getEvaluationsByGrade,
+            setEvaluations
         }}
     >
         {props.children}

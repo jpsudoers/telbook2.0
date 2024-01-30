@@ -62,3 +62,11 @@ export const getEvaluationsByOaByQuery = async (grade) => {
     });
     return studentsArray
 }
+
+export const setEvaluationsQuery = async (data) => {
+    const docRef = await addDoc(collection(db, 'evaluaciones'), data);
+    return {
+        ...data,
+        id: docRef.id
+    }
+}

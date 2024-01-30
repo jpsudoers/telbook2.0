@@ -170,7 +170,7 @@ const LandingPlanningShort = () => {
                     row.push(['  '])
                 })
                 autoTable(doc, {
-                    head: [['Planificaciones a mediano plazo ' + grade.toUpperCase()]],
+                    head: [['Planificaciones a corto plazo ' + grade.toUpperCase()]],
                     body: row,
                     startY: 25,
                 })
