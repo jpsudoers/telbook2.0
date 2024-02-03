@@ -70,3 +70,13 @@ export const setEvaluationsQuery = async (data) => {
         id: docRef.id
     }
 }
+
+export const getEvaluationsByQuery = async (grade) => {
+    const q = query(collection(db, 'evaluaciones'), where('curso', '==', grade));
+    const querySnapshot = await getDocs(q);
+    let evaluationsArray = [];
+    querySnapshot.forEach((doc) => {
+        evaluationsArray.push(doc.data())
+    });
+    return evaluationsArray
+}

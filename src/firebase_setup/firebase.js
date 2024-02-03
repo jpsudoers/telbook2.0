@@ -3,14 +3,14 @@ import {getFirestore} from "firebase/firestore";
 import {getAuth} from "firebase/auth";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyB9qZCBlD2PugpwUoqvpGPiWkYMEoly924",
-    authDomain: "telbookproductivo.firebaseapp.com",
-    databaseURL: "https://telbookproductivo-default-rtdb.firebaseio.com",
-    projectId: "telbookproductivo",
-    storageBucket: "telbookproductivo.appspot.com",
-    messagingSenderId: "825343753624",
-    appId: "1:825343753624:web:ce38332ee4d85ca11dffed",
-    measurementId: "G-NN0LRED7TE"
+    apiKey: "AIzaSyAjkpQhof_IxmPERltZqvd6xYJHDzNRiME",
+    authDomain: "telbook2024.firebaseapp.com",
+    databaseURL: "https://telbook2024-default-rtdb.firebaseio.com",
+    projectId: "telbook2024",
+    storageBucket: "telbook2024.appspot.com",
+    messagingSenderId: "80170424653",
+    appId: "1:80170424653:web:a998ad346753b4b31dbf04",
+    measurementId: "G-NJMYY29W0T"
 };
 
 const app = initializeApp(firebaseConfig);

@@ -46,7 +46,7 @@ const FormRegister = () => {
             const filterStudents = students.filter(student => student.grade === data.grade.codigo)
             const newData = {
                 'alumnoPuebloOriginario': data.originalTown,
-                'anio': 2023,
+                'anio': 2024,
                 'codigoAlumno': 1,
                 'comuna': data.town,
                 'curso': data.grade.codigo,

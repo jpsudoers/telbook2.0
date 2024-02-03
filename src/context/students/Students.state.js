@@ -1,7 +1,7 @@
 import React, {useReducer} from 'react';
 import StudentsReducer from "@/context/students/Students.reducer";
 import {
-    getEvaluationsByOaByQuery,
+    getEvaluationsByOaByQuery, getEvaluationsByQuery,
     getObservationByIdQuery,
     getSchoolRegistersByIdQuery,
     getStudentsBySchoolQuery, setEvaluationsByOaQuery, setEvaluationsQuery, setObservationQuery, setSchoolRegisterQuery,
@@ -14,10 +14,10 @@ import {
     GET_ATTENDANCE_LOADING,
     GET_ATTENDANCES,
     GET_ATTENDANCES_ERROR,
-    GET_ATTENDANCES_LOADING,
+    GET_ATTENDANCES_LOADING, GET_EVALUATIONS,
     GET_EVALUATIONS_BY_OA,
     GET_EVALUATIONS_BY_OA_ERROR,
-    GET_EVALUATIONS_BY_OA_LOADING,
+    GET_EVALUATIONS_BY_OA_LOADING, GET_EVALUATIONS_ERROR, GET_EVALUATIONS_LOADING,
     GET_OBSERVATIONS,
     GET_OBSERVATIONS_ERROR,
     GET_OBSERVATIONS_LOADING,
@@ -69,7 +69,10 @@ export const initialStateStudent = {
     schoolRegistersLoading: true,
     evaluationByOa: [],
     evaluationByOaError: false,
-    evaluationByOaLoading: true
+    evaluationByOaLoading: true,
+    evaluation: [],
+    evaluationError: false,
+    evaluationLoading: true
 };
 
 const StudentsState = (props) => {
@@ -286,6 +289,23 @@ const StudentsState = (props) => {
         }
     }
 
+    const getEvaByGrade = async (grade) => {
+        dispatch({
+            type: GET_EVALUATIONS_LOADING
+        });
+        try {
+            const response = await getEvaluationsByQuery(grade)
+            dispatch({
+                type: GET_EVALUATIONS,
+                payload: response
+            });
+        } catch (e) {
+            dispatch({
+                type: GET_EVALUATIONS_ERROR
+            });
+        }
+    }
+
     return <StudentContext.Provider
         value={{
             students: state.students,
@@ -306,6 +326,9 @@ const StudentsState = (props) => {
             evaluationByOa: state.evaluationByOa,
             evaluationByOaError: state.evaluationByOaError,
             evaluationByOaLoading: state.evaluationByOaLoading,
+            evaluation: state.evaluation,
+            evaluationError: state.evaluationError,
+            evaluationLoading: state.evaluationLoading,
             getStudentsBySchool,
             setStudent,
             clearStudent,
@@ -318,7 +341,8 @@ const StudentsState = (props) => {
             setSchoolRegister,
             setEvaluationsByOa,
             getEvaluationsByGrade,
-            setEvaluations
+            setEvaluations,
+            getEvaByGrade
         }}
     >
         {props.children}
