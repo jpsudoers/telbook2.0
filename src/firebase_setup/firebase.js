@@ -5,7 +5,6 @@ import {getAuth} from "firebase/auth";
 const firebaseConfig = {
     apiKey: "AIzaSyAjkpQhof_IxmPERltZqvd6xYJHDzNRiME",
     authDomain: "telbook2024.firebaseapp.com",
-    databaseURL: "https://telbook2024-default-rtdb.firebaseio.com",
     projectId: "telbook2024",
     storageBucket: "telbook2024.appspot.com",
     messagingSenderId: "80170424653",

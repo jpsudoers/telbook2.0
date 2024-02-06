@@ -42,7 +42,6 @@ export default function Current({students, grade, user}) {
     };
 
     const obj = students.reduce((o, key) => ({...o, [key.run.split('.').join("")]: {day: 'Presente', comments: ''}}), {})
-    console.log(obj)
     const formik = useFormik({
         initialValues: {...obj, otp: ''},
         validate: (data) => {
@@ -79,7 +78,10 @@ export default function Current({students, grade, user}) {
                 id: 'asis-' + grade + '-' + date.getTime(),
                 run: user.run,
                 updated: [],
-                publishedAt: date
+                publishedAt: date,
+                day: date.toISOString().split('T')[0].split('-')[2],
+                month: date.toISOString().split('T')[0].split('-')[1],
+                year: date.toISOString().split('T')[0].split('-')[0]
             }
             setAttendance(dataToSend)
             setAbsentees(0)

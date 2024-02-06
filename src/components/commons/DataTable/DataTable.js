@@ -105,6 +105,8 @@ const DataTableFilter = ({
             scrollable={isScroll}
             size={isSmall ? 'small' : 'normal'}
             scrollHeight="700px"
+            sortField={'n'}
+            sortOrder={1}
         >
             {
                 headers && headers.map((column, key) => {

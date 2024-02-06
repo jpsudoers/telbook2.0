@@ -8,15 +8,11 @@ export const setAttendanceQuery = async (data) => {
 }
 
 export const getAttendanceByDateQuery = async (grade) => {
-    let prev = new Date(),
-        post = new Date();
-
-    prev.setHours(0, 0, 0, 0)
-    post.setHours(23, 59, 59, 0)
-
+    let day = new Date()
     const q = query(collection(db, 'asistencias'),
-        where("publishedAt", "<", post),
-        where("publishedAt", ">=", prev),
+        where("day", "==", day.toISOString().split('T')[0].split('-')[2]),
+        where("month", "==", day.toISOString().split('T')[0].split('-')[1]),
+        where("year", "==", day.toISOString().split('T')[0].split('-')[0]),
         where("curso", "==", grade)
     );
     const querySnapshot = await getDocs(q);
@@ -29,17 +25,10 @@ export const getAttendanceByDateQuery = async (grade) => {
 }
 
 export const getAttendanceByMonthQuery = async (grade, month, year) => {
-    const daysInMonth = getAllDaysInMonth(month + 1, year);
-
-    let prev = new Date(year, month, 1),
-        post = new Date(year, month, daysInMonth.length);
-
-    prev.setHours(0, 0, 0, 0)
-    post.setHours(23, 59, 59, 0)
 
     const q = query(collection(db, 'asistencias'),
-        where("publishedAt", "<", post),
-        where("publishedAt", ">", prev),
+        where("month", "==", month < 9 ? "0" + (month + 1) : (month + 1).toString()),
+        where("year", "==", year.toString()),
         where("curso", "==", grade)
     );
     const querySnapshot = await getDocs(q);
