@@ -260,12 +260,13 @@ const StudentsState = (props) => {
             type: SET_EVALUATIONS_LOADING
         });
         try {
+            console.info('Evaluations - Send data to query', doc)
             await setEvaluationsQuery(doc)
             dispatch({
                 type: SET_EVALUATIONS,
             });
         } catch (e) {
-            console.log(e)
+            console.error('Evaluations - Error sending data to query', e)
             dispatch({
                 type: SET_EVALUATIONS_ERROR
             });

@@ -33,6 +33,7 @@ const LandingEvaluationPersonal = () => {
         }
         const reader = new FileReader()
         reader.readAsDataURL(files[0])
+        console.info('Evaluations - Ready for upload file')
         reader.onload = () => {
             const response = {
                 curso: grade.toUpperCase(),
@@ -41,6 +42,7 @@ const LandingEvaluationPersonal = () => {
                 archivo: reader.result
 
             }
+            console.info('Evaluations - Uploading response about file', response)
             setEvaluations(response)
         }
         toast.current.show({severity: 'info', summary: 'Success', detail: 'Archivo subido'});

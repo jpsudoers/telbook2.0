@@ -65,6 +65,7 @@ export const getEvaluationsByOaByQuery = async (grade) => {
 
 export const setEvaluationsQuery = async (data) => {
     const docRef = await addDoc(collection(db, 'evaluaciones'), data);
+    console.info('Evaluations - Reference doc in setEvaluations', docRef)
     return {
         ...data,
         id: docRef.id
