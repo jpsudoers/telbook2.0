@@ -27,6 +27,8 @@ const LandingEvaluationPersonal = () => {
     const [value, setValue] = useState('');
 
     const onUpload = (e) => {
+        console.info('Evaluations - Inside upload function')
+        console.error('Evaluations - Inside upload function')
         const files = e.files || e.dataTransfer.files
         if (!files.length) {
             return
