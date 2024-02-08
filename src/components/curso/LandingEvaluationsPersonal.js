@@ -9,6 +9,10 @@ import {capitalize} from "@/utils/formats";
 import {Fieldset} from "primereact/fieldset";
 
 const LandingEvaluationPersonal = () => {
+    const ref = useRef();
+    const reset = () => {
+        ref.current.value = "";
+    };
     const router = useRouter();
     const {grade} = router.query;
     const {
@@ -35,10 +39,8 @@ const LandingEvaluationPersonal = () => {
         if (!file) {
             return
         }
-        console.log(file)
         const reader = new FileReader()
         reader.readAsDataURL(file)
-        console.info('Evaluations - Ready for upload file')
         reader.onload = () => {
             const response = {
                 curso: grade.toUpperCase(),
@@ -51,6 +53,7 @@ const LandingEvaluationPersonal = () => {
         }
         toast.current.show({severity: 'info', summary: 'Success', detail: 'Archivo subido'});
         getEvaByGrade(grade.toUpperCase())
+        reset();
     };
 
     if (evaluationsLoading) {
@@ -67,7 +70,7 @@ const LandingEvaluationPersonal = () => {
                     {/*<FileUpload accept="pdf/*" maxFileSize={1000000} cancelLabel={"Cancelar"}*/}
                     {/*            uploadLabel={"Guardar archivo"}*/}
                     {/*            onUpload={onUpload} chooseLabel="Subir archivo"/>*/}
-                    <input type='file' onChange={onFileChange}/>
+                    <input type='file' ref={ref} onChange={onFileChange}/>
                     <button onClick={onUpload}>Subir archivo</button>
                 </div>
                 {
