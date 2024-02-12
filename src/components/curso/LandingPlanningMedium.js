@@ -4,7 +4,7 @@ import {MultiSelect} from 'primereact/multiselect';
 import {Button} from 'primereact/button';
 import {Dropdown} from 'primereact/dropdown';
 import {InputText} from 'primereact/inputtext';
-import {InputMask} from 'primereact/inputmask';
+import {InputNumber} from 'primereact/inputnumber';
 import {TreeTable} from 'primereact/treetable';
 import {Column} from 'primereact/column';
 import {classNames} from 'primereact/utils';
@@ -64,7 +64,7 @@ const LandingPlanningMedium = () => {
 
     const formik = useFormik({
         initialValues: {
-            week: '',
+            week: 0,
             project: '',
             ambit: '',
             core: '',
@@ -182,14 +182,13 @@ const LandingPlanningMedium = () => {
                     <div className="flex-auto mb-4">
                         <label htmlFor="week" className="font-bold block mb-2">Cantidad de semanas</label>
                         <div className='p-inputgroup w-full'>
-                            <InputMask
+                            <InputNumber
                                 id="week"
                                 name="week"
                                 value={formik.values.week}
                                 onChange={(e) => {
-                                    formik.setFieldValue('week', e.target.value);
+                                    formik.setFieldValue('week', e.value);
                                 }}
-                                mask="10"
                                 placeholder="01-10"
                                 className={classNames({'p-invalid': isFormFieldInvalid('week')})}
                             />
