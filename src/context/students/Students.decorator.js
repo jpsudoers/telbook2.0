@@ -2,11 +2,11 @@ import React from "react";
 import {formatDate, formatRun} from "@/utils/formats";
 import {Button} from "primereact/button";
 import Link from "next/link";
-import {useRouter} from "next/router";
 
 export const studentsDecorator = (students) => {
     return students.map(student => {
         return {
+            id: student.id,
             n: student.numeroMatricula,
             run: formatRun(student.run),
             name: student.nombreCompleto,
@@ -14,10 +14,9 @@ export const studentsDecorator = (students) => {
             origin: student.procedencia,
             natDate: formatDate(student.fechaNacimiento.toString()),
             enterDate: formatDate(student.fechaIncorporacion),
-            state: student.codigoAlumno === 1 ? 'Activo' : 'Inactivo',
+            state: student.codigoAlumno == '1' ? 'Activo' : 'Inactivo',
             grade: student.curso,
             gender: student.sexo.toUpperCase() === 'M' ? 'Masculino' : 'Femenino',
-            edit: <Button label="Editar" severity="info"/>,
             read: <Link
                 href={{
                     pathname: "/alumno/[run]",
@@ -34,15 +33,18 @@ export const studentsDecorator = (students) => {
 }
 
 export const studentDecorator = (student) => {
+    console.log(student)
     return {
+        id: student.id,
         run: formatRun(student.run),
         name: student.nombreCompleto,
         type: student.tipoTel,
         origin: student.procedencia,
         natDate: formatDate(student.fechaNacimiento.toString()),
         enterDate: formatDate(student.fechaIncorporacion),
-        state: student.codigoAlumno === 1 ? 'Activo' : 'Inactivo',
+        state: student.codigoAlumno == 1 ? 'Activo' : 'Inactivo',
         grade: student.curso,
+        n: student.numeroMatricula,
         gender: student.sexo.toUpperCase() === 'M' ? 'Masculino' : 'Femenino',
         edit: <Button label="Editar" severity="info"/>,
         read: <Button label="Ver" severity="success"/>

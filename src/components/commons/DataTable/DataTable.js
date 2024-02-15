@@ -114,7 +114,7 @@ const DataTableFilter = ({
                         return <Column key={key} style={{minWidth: column.size}}
                                        body={column.body} header={column.header}/>;
                     }
-                    return <Column sortable frozen={key === 0} key={key} style={{minWidth: column.size}}
+                    return <Column sortable={column.field === 'n'} colSpan={column.field === 'edit' ? 2 : 1} frozen={key === 0} key={key} style={{minWidth: column.size}}
                                    field={column.field} header={column.header}/>;
                 })
             }

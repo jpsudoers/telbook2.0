@@ -1,14 +1,20 @@
 import React, {useReducer} from 'react';
 import StudentsReducer from "@/context/students/Students.reducer";
 import {
-    getEvaluationsByOaByQuery, getEvaluationsByQuery,
+    getEvaluationsByOaByQuery,
+    getEvaluationsByQuery,
     getObservationByIdQuery,
     getSchoolRegistersByIdQuery,
-    getStudentsBySchoolQuery, setEvaluationsByOaQuery, setEvaluationsQuery, setObservationQuery, setSchoolRegisterQuery,
-    setStudentQuery
+    getStudentsBySchoolQuery,
+    removeStudentQuery,
+    setEvaluationsByOaQuery,
+    setEvaluationsQuery,
+    setObservationQuery,
+    setSchoolRegisterQuery,
+    setStudentQuery, updateStudentQuery
 } from "@/queries/students";
 import {
-    CLEAN_STUDENT,
+    CLEAN_STUDENT, EDIT_STUDENT, EDIT_STUDENT_ERROR, EDIT_STUDENT_LOADING,
     GET_ATTENDANCE,
     GET_ATTENDANCE_ERROR,
     GET_ATTENDANCE_LOADING,
@@ -26,7 +32,7 @@ import {
     GET_SCHOOL_REGISTERS_LOADING,
     GET_STUDENTS,
     GET_STUDENTS_ERROR,
-    GET_STUDENTS_LOADING,
+    GET_STUDENTS_LOADING, REMOVE_STUDENT, REMOVE_STUDENT_ERROR, REMOVE_STUDENT_LOADING,
     SET_ATTENDANCE,
     SET_ATTENDANCE_ERROR,
     SET_ATTENDANCE_LOADING, SET_EVALUATIONS,
@@ -50,6 +56,7 @@ import {getAttendanceByDateQuery, getAttendanceByMonthQuery, setAttendanceQuery}
 
 export const initialStateStudent = {
     students: [],
+    studentsRaw: [],
     studentsError: false,
     studentsLoading: true,
     attendances: [],
@@ -143,7 +150,10 @@ const StudentsState = (props) => {
             const response = await getStudentsBySchoolQuery(school)
             dispatch({
                 type: GET_STUDENTS,
-                payload: studentsDecorator(response)
+                payload: {
+                    students: studentsDecorator(response),
+                    studentsRaw: response
+                }
             });
         } catch (e) {
             dispatch({
@@ -166,6 +176,44 @@ const StudentsState = (props) => {
             console.log(e)
             dispatch({
                 type: SET_STUDENT_ERROR
+            });
+        }
+    }
+
+    const editStudent = async (id, student) => {
+        dispatch({
+            type: EDIT_STUDENT_LOADING
+        });
+        try {
+            await updateStudentQuery(id, student)
+            dispatch({
+                type: EDIT_STUDENT,
+                payload: state.students.filter(st => st.id !== id).concat(studentDecorator(student))
+            });
+        } catch (e) {
+            console.log(e)
+            dispatch({
+                type: EDIT_STUDENT_ERROR
+            });
+        }
+    }
+
+    const removeStudent = async (id) => {
+        dispatch({
+            type: REMOVE_STUDENT_LOADING
+        });
+        try {
+            await removeStudentQuery(id)
+            dispatch({
+                type: REMOVE_STUDENT,
+                payload: state.students.filter(student => {
+                    return student.id !== id
+                })
+            });
+        } catch (e) {
+            console.log(e)
+            dispatch({
+                type: REMOVE_STUDENT_ERROR
             });
         }
     }
@@ -310,6 +358,7 @@ const StudentsState = (props) => {
     return <StudentContext.Provider
         value={{
             students: state.students,
+            studentsRaw: state.studentsRaw,
             studentsError: state.studentsError,
             studentsLoading: state.studentsLoading,
             attendances: state.attendances,
@@ -332,6 +381,7 @@ const StudentsState = (props) => {
             evaluationLoading: state.evaluationLoading,
             getStudentsBySchool,
             setStudent,
+            removeStudent,
             clearStudent,
             setAttendance,
             getAttendanceByDate,
@@ -343,7 +393,8 @@ const StudentsState = (props) => {
             setEvaluationsByOa,
             getEvaluationsByGrade,
             setEvaluations,
-            getEvaByGrade
+            getEvaByGrade,
+            editStudent
         }}
     >
         {props.children}

@@ -1,5 +1,5 @@
 import {
-    CLEAN_STUDENT,
+    CLEAN_STUDENT, EDIT_STUDENT, EDIT_STUDENT_ERROR, EDIT_STUDENT_LOADING,
     GET_ATTENDANCE,
     GET_ATTENDANCE_ERROR,
     GET_ATTENDANCE_LOADING,
@@ -18,7 +18,7 @@ import {
     GET_SCHOOL_REGISTERS_LOADING,
     GET_STUDENTS,
     GET_STUDENTS_ERROR,
-    GET_STUDENTS_LOADING,
+    GET_STUDENTS_LOADING, REMOVE_STUDENT, REMOVE_STUDENT_ERROR, REMOVE_STUDENT_LOADING,
     SET_ATTENDANCE,
     SET_ATTENDANCE_ERROR,
     SET_ATTENDANCE_LOADING,
@@ -98,11 +98,51 @@ const reducer = (state, action) => {
         case GET_STUDENTS:
             return {
                 ...state,
-                students: payload,
+                students: payload.students,
+                studentsRaw: payload.studentsRaw,
                 studentsLoading: false,
                 studentsError: false,
             }
         case GET_STUDENTS_ERROR:
+            return {
+                ...state,
+                studentsLoading: false,
+                studentsError: true,
+            }
+        case EDIT_STUDENT_LOADING:
+            return {
+                ...state,
+                studentsLoading: true,
+                studentsError: false,
+            }
+        case EDIT_STUDENT:
+            console.log(payload)
+            return {
+                ...state,
+                students: payload,
+                studentsLoading: false,
+                studentsError: false,
+            }
+        case EDIT_STUDENT_ERROR:
+            return {
+                ...state,
+                studentsLoading: false,
+                studentsError: true,
+            }
+        case REMOVE_STUDENT_LOADING:
+            return {
+                ...state,
+                studentsLoading: true,
+                studentsError: false,
+            }
+        case REMOVE_STUDENT:
+            return {
+                ...state,
+                students: payload,
+                studentsLoading: false,
+                studentsError: false,
+            }
+        case REMOVE_STUDENT_ERROR:
             return {
                 ...state,
                 studentsLoading: false,

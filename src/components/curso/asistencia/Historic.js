@@ -7,6 +7,7 @@ import StudentsContext from "@/context/students/Students.context";
 import Loading from "@/components/commons/Loading/Loading";
 import {Button} from "primereact/button";
 import {jsPDF} from 'jspdf';
+import UserContext from "@/context/user/User.context";
 
 const options = [{
     value: 'presente',
@@ -22,6 +23,10 @@ const Historic = ({students, grade}) => {
     const {
         attendances, attendancesError, attendancesLoading, getAttendanceByMonth
     } = useContext(StudentsContext);
+
+    const {
+        user,
+    } = useContext(UserContext);
 
     const ref = useRef(null)
     const download = (image, {
@@ -110,7 +115,7 @@ const Historic = ({students, grade}) => {
     if (attendancesLoading) {
         return <Loading/>
     }
-
+    console.log(user)
     return (<div className="p-datatable p-component p-datatable-responsive-scroll pb-3"
                  data-scrollselectors=".p-datatable-wrapper" data-pc-name="datatable" data-pc-section="root">
         <div ref={ref}>
@@ -203,11 +208,12 @@ const Historic = ({students, grade}) => {
         <div className='my-2'>
             <Button label='Descargar asistencia' severity='success' onClick={getImage}/>
         </div>
-        {/*{editMode ?*/}
-        {/*    <Button className='my-2' label='Guardar asistencia' severity={'success'}*/}
-        {/*            onClick={() => setEditMode(false)}/> :*/}
-        {/*    <Button className='my-2' label='Editar asistencia' severity={'info'} onClick={() => setEditMode(true)}/>*/}
-        {/*}*/}
+
+        {user.perfil === 'admin' && (editMode ?
+                <Button className='my-2' label='Guardar asistencia' severity={'success'}
+                        onClick={() => setEditMode(false)}/> :
+                <Button className='my-2' label='Editar asistencia' severity={'info'} onClick={() => setEditMode(true)}/>
+        )}
     </div>);
 };
 

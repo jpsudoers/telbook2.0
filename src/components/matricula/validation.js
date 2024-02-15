@@ -108,4 +108,46 @@ export const initialValues = {
     social: '',
 }
 
+export const initialValuesEdit = (student) => {
+    const yearB = Number(student.fechaNacimiento.substring(0, 4));
+    const monthB = Number(student.fechaNacimiento.substring(4, 6));
+    const dayB = Number(student.fechaNacimiento.substring(6, 8));
+    const dateB = new Date(yearB, monthB - 1, dayB);
+
+    const yearJ = Number(student.fechaIncorporacion.substring(0, 4));
+    const monthJ = Number(student.fechaIncorporacion.substring(4, 6));
+    const dayJ = Number(student.fechaIncorporacion.substring(6, 8));
+    const dateJ = new Date(yearJ, monthJ - 1, dayJ);
+
+    return {
+        id: student.id,
+        grade: student.curso,
+        names: student.nombresAlumno,
+        lastnames: student.apellidosAlumno,
+        run: student.run,
+        birthday: dateB,
+        join: dateJ,
+        gender: student.sexo,
+        address: student.domicilio,
+        region: student.region,
+        nationality: student.nacionalidadAlumno,
+        town: student.comuna,
+        originalTown: student.alumnoPuebloOriginario,
+        tutorName: student.nombreApoderado,
+        parent: student.parentezcoConAlumno,
+        email: student.email,
+        phone: student.telefono,
+        educationMother: student.nivelEducacionalMadre,
+        educationFather: student.nivelEducacionalPadre,
+        turn: student.jornada,
+        origin: student.procedencia,
+        tel: student.tipoTel,
+        learnIssue: student.problemasDeAprendizaje,
+        live: student.viveCon,
+        social: student.situacionSocial,
+        nL: student.numeroLista,
+        nM: student.numeroMatricula,
+    }
+}
+
 export default validateForm;

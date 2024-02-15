@@ -1,5 +1,5 @@
 import React from 'react';
-import {collection, doc, getDocs, query, addDoc, where, setDoc} from 'firebase/firestore';
+import {collection, doc, getDocs, query, addDoc, where, setDoc, updateDoc} from 'firebase/firestore';
 import {db} from '@/firebase_setup/firebase';
 
 export const getStudentsBySchoolQuery = async (school) => {
@@ -18,6 +18,20 @@ export const setStudentQuery = async (student) => {
         ...student,
         id: docRef.id
     }
+}
+
+export const updateStudentQuery = async (id, student) => {
+    const ref = doc(db, 'alumnos', id);
+    await updateDoc(ref, {
+        ...student
+    });
+}
+
+export const removeStudentQuery = async (id) => {
+    const ref = doc(db, 'alumnos', id);
+    await updateDoc(ref, {
+        codigoAlumno: '0'
+    });
 }
 
 export const setObservationQuery = async (data) => {

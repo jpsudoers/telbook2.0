@@ -94,11 +94,13 @@ const Student = () => {
         });
     };
 
+    console.log(student)
+
     return (
         <>
             <Header/>
             <Container>
-                <Toast ref={toast} />
+                <Toast ref={toast}/>
                 <Title
                     title={gradeName[student.curso.toLowerCase().split('-')[1].slice(0, -1)] + ' - ' + 'Ficha de alumno'}/>
                 <Button onClick={() => router.back()} label='<- Volver' link severity='info'/>
@@ -114,7 +116,7 @@ const Student = () => {
                             <strong>Run</strong>: {student.run}
                         </p>
                         <p className="m-2">
-                            <strong>Tipo TEL</strong>: {capitalize(student.tipoTel)}
+                            <strong>Tipo TEL</strong>: {capitalize(student?.tipoTel || '')}
                         </p>
                     </Fieldset>
                     <Fieldset legend="Datos familiares" className='flex-1'>
@@ -122,18 +124,18 @@ const Student = () => {
                             <strong>Vive Con</strong>: {student.viveCon}
                         </p>
                         <p className="m-2">
-                            <strong>Nombre</strong>: {capitalize(student.nombreApoderado)}
+                            <strong>Nombre</strong>: {capitalize(student?.nombreApoderado || '')}
                         </p>
                     </Fieldset>
                     <Fieldset legend="Datos demográficos" className='flex-1'>
                         <p className="m-2">
-                            <strong>Nacionalidad</strong>: {student.nacionalidadAlumno}
+                            <strong>Nacionalidad</strong>: {student.nacionalidadAlumno || ''}
                         </p>
                         <p className="m-2">
-                            <strong>Domicilio</strong>: {capitalize(student.domicilio)}
+                            <strong>Domicilio</strong>: {capitalize(student?.domicilio || '')}
                         </p>
                         <p className="m-2">
-                            <strong>teléfono</strong>: {capitalize(student.telefono)}
+                            <strong>Teléfono</strong>: {student.telefono || ''}
                         </p>
                     </Fieldset>
                 </div>
