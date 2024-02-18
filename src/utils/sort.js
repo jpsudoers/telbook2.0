@@ -1,1 +1,2 @@
 export const trueFirst = (arr) => arr.sort((a, b) => Number(b.current) - Number(a.current));
+export const orderByList = (arr) => arr.sort((a, b) => Number(a.numeroMatricula) - Number(b.numeroMatricula));

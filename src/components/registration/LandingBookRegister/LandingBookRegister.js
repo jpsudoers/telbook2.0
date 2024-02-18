@@ -11,30 +11,27 @@ import Loading from "@/components/commons/Loading/Loading";
 import {Toast} from "primereact/toast";
 import {confirmDialog, ConfirmDialog} from "primereact/confirmdialog";
 import {useRouter} from "next/router";
+import autoTable from "jspdf-autotable";
+import {orderByList} from "@/utils/sort";
 
 const LandingBookRegister = () => {
     const toast = useRef(null);
     const router = useRouter()
     const {
-        students,
-        removeStudent,
-        getStudentsBySchool,
-        studentsLoading
+        students, studentsRaw, removeStudent, getStudentsBySchool, studentsLoading
     } = useContext(StudentsContext);
 
     const {
         user,
     } = useContext(UserContext);
 
-    const headers = [
-        {field: 'n', header: 'N#'},
-        {field: 'run', header: 'RUN'},
-        {field: 'name', header: 'Nombre'},
-        {field: 'origin', header: 'Procedencia'},
-        {field: 'natDate', header: 'Fecha Nacimiento'},
-        {field: 'enterDate', header: 'Fecha Ingreso'},
-        {field: 'state', header: 'Estado Alumno'},
-    ]
+    const headers = [{field: 'n', header: 'N#'}, {field: 'run', header: 'RUN'}, {
+        field: 'name',
+        header: 'Nombre'
+    }, {field: 'origin', header: 'Procedencia'}, {field: 'natDate', header: 'Fecha Nacimiento'}, {
+        field: 'enterDate',
+        header: 'Fecha Ingreso'
+    }, {field: 'state', header: 'Estado Alumno'},]
 
     const removeStudents = (id) => {
         confirmDialog({
@@ -57,16 +54,13 @@ const LandingBookRegister = () => {
 
     const reject = () => {
         toast.current.show({
-            severity: 'info',
-            summary: 'Alumno no retirado',
-            life: 3000
+            severity: 'info', summary: 'Alumno no retirado', life: 3000
         });
     }
 
     const onEdit = (id) => {
         router.push({
-            pathname: '/libro-de-matricula/editar/',
-            query: {
+            pathname: '/libro-de-matricula/editar/', query: {
                 id
             }
         })
@@ -85,33 +79,63 @@ const LandingBookRegister = () => {
     const search = ['run', 'name'];
     const emptyMessage = 'No existen alumnos con estos datos';
 
+    const exportToPDF = () => {
+        import('jspdf').then((jsPDF) => {
+            import('jspdf-autotable').then(() => {
+                const doc = new jsPDF.default('l', 0, 0);
+                const dataToPdf = orderByList(studentsRaw)
+                let rowOk = []
+                doc.text(10, 10, 'Libro de matrícula');
+                rowOk.push([['N°'], ['Nombre'], ['Género'], ['Curso'], ['RUN'], ['F. Nacimiento'], ['F. Incorpotacion'], ['F. Retiro'], ['Domicilio'], ['Comuna'], ['Tipo de TEL']])
+                dataToPdf.forEach(data => {
+                    let row = [];
+                    row.push([data.numeroMatricula])
+                    row.push([data.nombreCompleto])
+                    row.push([data.sexo])
+                    row.push([data.curso])
+                    row.push([data.run])
+                    row.push([data.fechaNacimiento])
+                    row.push([data.fechaIncorporacion])
+                    row.push([data.fechaRetiroEscuela])
+                    row.push([data.domicilio])
+                    row.push([data.comuna])
+                    row.push([data.tipoTel])
+                    rowOk.push(row)
+                })
+                autoTable(doc, {
+                    // head: [['Libro de matricula']],
+                    body: rowOk, startY: 25,
+                })
+                doc.save('Libro de matricula.pdf');
+            });
+        });
+    }
+
     if (studentsLoading) {
         return <Loading/>
     }
 
-    return (
-        <div className={style.landingBookRegister}>
-            <Toast ref={toast}/>
-            <ConfirmDialog/>
-            <Title title={'Libro de matrícula'}/>
-            <div className={style.buttonGroup}>
-                <Link href='/matricula'>
-                    <Button text={'Matricular Alumno'} type={'primary'}/>
-                </Link>
+    return (<div className={style.landingBookRegister}>
+        <Toast ref={toast}/>
+        <ConfirmDialog/>
+        <Title title={'Libro de matrícula'}/>
+        <div className={style.buttonGroup}>
+            <Link href='/matricula'>
+                <Button label={'Matricular Alumno'} severity='success'/>
+            </Link>
 
-                <Button text={'Descargar Libro De Matrícula'} type={'primary'}/>
-            </div>
-            <DataTableFilter
-                size={'20%'}
-                isEdit={true}
-                headers={headers}
-                search={search}
-                isExport={true}
-                emptyMessage={emptyMessage}
-                data={enhancedStudents}
-            />
+            <Button label={'Descargar Libro De Matrícula'} onClick={exportToPDF} severity='success'/>
         </div>
-    );
+        <DataTableFilter
+            size={'20%'}
+            isEdit={true}
+            headers={headers}
+            search={search}
+            isExport={true}
+            emptyMessage={emptyMessage}
+            data={enhancedStudents}
+        />
+    </div>);
 };
 
 export default LandingBookRegister;

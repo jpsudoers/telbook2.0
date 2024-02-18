@@ -14,8 +14,7 @@ import validateForm, {initialValues, initialValuesEdit} from '@/components/matri
 import {dateToFirebase} from "@/utils/formats";
 import {regionsChile} from "@/utils/const";
 import Loading from "@/components/commons/Loading/Loading";
-import {router} from "next/client";
-import {getStudentsBySchoolQuery} from "@/queries/students";
+import {useRouter} from "next/router";
 
 const FormRegister = ({option = 'create', id = ''}) => {
     const {
@@ -37,6 +36,8 @@ const FormRegister = ({option = 'create', id = ''}) => {
 
     const toast = useRef(null);
 
+    const router = useRouter()
+
     const show = () => {
         toast.current.show({severity: 'success', summary: 'Alumno matriculado'});
     };
@@ -44,8 +45,6 @@ const FormRegister = ({option = 'create', id = ''}) => {
     const currentStudent = studentsRaw.filter(student => {
         return student.id === id
     })
-
-    console.log('XXX', grades)
 
     const formik = useFormik({
         initialValues: option === 'edit' ? initialValuesEdit(currentStudent[0]) : initialValues,
@@ -57,7 +56,7 @@ const FormRegister = ({option = 'create', id = ''}) => {
             const newData = option === 'edit' ? {
                 'numeroLista': initialValuesEdit(currentStudent[0]).nL,
                 'numeroMatricula': initialValuesEdit(currentStudent[0]).nM,
-                'run':  initialValuesEdit(currentStudent[0]).run,
+                'run': initialValuesEdit(currentStudent[0]).run,
                 'id': id,
                 'anio': 2024,
                 'codigoAlumno': 1,
@@ -576,7 +575,8 @@ const FormRegister = ({option = 'create', id = ''}) => {
                         </div>
                     </div>
                 </div>
-                <Button className='mb-4' severity='success' type='submit' label={option === 'edit' ? 'Editar alumno' : 'Matricular alumno'}/>
+                <Button className='mb-4' severity='success' type='submit'
+                        label={option === 'edit' ? 'Editar alumno' : 'Matricular alumno'}/>
             </form>
         </div>
     );
