@@ -91,12 +91,12 @@ const StudentsState = (props) => {
         });
     }
 
-    const getAttendanceByDate = async (date, grade) => {
+    const getAttendanceByDate = async (grade) => {
         dispatch({
             type: GET_ATTENDANCE_LOADING
         });
         try {
-            const newAttendance = await getAttendanceByDateQuery(date, grade)
+            const newAttendance = await getAttendanceByDateQuery(grade)
             dispatch({
                 type: GET_ATTENDANCE,
                 payload: newAttendance

@@ -28,9 +28,7 @@ export default function Current({students, grade, user}) {
     } = useContext(StudentsContext);
 
     useEffect(() => {
-        if (attendance.length === 0) {
-            getAttendanceByDate(grade.toUpperCase())
-        }
+        getAttendanceByDate(grade.toUpperCase())
     }, [grade])
 
     const show = () => {
@@ -41,7 +39,10 @@ export default function Current({students, grade, user}) {
         });
     };
 
-    const obj = students.reduce((o, key) => ({...o, [key.run.split('.').join("")]: {day: 'Presente', comments: ''}}), {})
+    const obj = students.reduce((o, key) => ({
+        ...o,
+        [key.run.split('.').join("")]: {day: 'Presente', comments: ''}
+    }), {})
     const formik = useFormik({
         initialValues: {...obj, otp: ''},
         validate: (data) => {
