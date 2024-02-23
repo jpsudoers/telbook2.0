@@ -19,7 +19,7 @@ export const planningMediumsDecorator = (planningMediums) => planningMediums.map
                     return {
                         key: `${index}-0-${idx}`,
                         data: {
-                            name: 'Nucleo: ' + oa.nucleoSeleccionado.toLowerCase() + '. Ambito: ' + oa.ambitoSeleccionado.toLowerCase() + '. Objetivo seleccionado: ' + oa.oaSeleccionado.toLowerCase()
+                            name: 'Ambito: ' + oa.ambitoSeleccionado.toLowerCase() + '. Nucleo: ' + oa.nucleoSeleccionado.toLowerCase() + '. Objetivo seleccionado: ' + oa.oaSeleccionado.toLowerCase()
                         },
                     }
                 }),
