@@ -566,7 +566,7 @@ const FormRegister = ({option = 'create', id = ''}) => {
                                  //JPS, se agrega opción de no aplica
                                  //   options={['Priotitario', 'Preferente']}
                                  //   placeholder='Seleccionar si alumno es preferente o prioritario'
-                                    options={['Priotitario', 'Preferente', 'No Aplica']}
+                                    options={['Prioritario', 'Preferente', 'No Aplica']}
                                     placeholder='Seleccionar si alumno es preferente o prioritario o No Aplica'
                                     className={classNames({'p-invalid': isFormFieldInvalid('social')})}
                                     onChange={(e) => {
