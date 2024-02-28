@@ -563,6 +563,9 @@ const FormRegister = ({option = 'create', id = ''}) => {
                                     inputId='social'
                                     name='social'
                                     value={formik.values.social}
+                                 //JPS, se agrega opción de no aplica
+                                 //   options={['Priotitario', 'Preferente']}
+                                 //   placeholder='Seleccionar si alumno es preferente o prioritario'
                                     options={['Priotitario', 'Preferente', 'No Aplica']}
                                     placeholder='Seleccionar si alumno es preferente o prioritario o No Aplica'
                                     className={classNames({'p-invalid': isFormFieldInvalid('social')})}
