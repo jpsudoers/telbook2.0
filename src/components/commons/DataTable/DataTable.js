@@ -85,8 +85,10 @@ const DataTableFilter = ({
                     <span style={{marginRight: '10px'}}>
                         <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Búsqueda"/>
                     </span>
-                    {isExport &&
-                        <FontAwesomeIcon style={{cursor: 'pointer'}} icon={faFilePdf} size={'xl'} onClick={exportPdf}/>}
+
+                    {/* JPS // Se elimina botón PDF
+                    isExport &&
+                     //   <FontAwesomeIcon style={{cursor: 'pointer'}} icon={faFilePdf} size={'xl'} onClick={exportPdf}/> */}
                 </div>
             </div> : null
         );
