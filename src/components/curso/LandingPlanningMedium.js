@@ -53,6 +53,7 @@ const LandingPlanningMedium = () => {
 
     const ambit = unique(bases.map(base => {
         return base.ambito
+        
     }));
 
     const core = unique(bases.filter(base => {
