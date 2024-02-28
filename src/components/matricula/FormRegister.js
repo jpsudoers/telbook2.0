@@ -563,8 +563,8 @@ const FormRegister = ({option = 'create', id = ''}) => {
                                     inputId='social'
                                     name='social'
                                     value={formik.values.social}
-                                    options={['Priotitario', 'Preferente']}
-                                    placeholder='Seleccionar si alumno es preferente o prioritario'
+                                    options={['Priotitario', 'Preferente', 'No Aplica']}
+                                    placeholder='Seleccionar si alumno es preferente o prioritario o No Aplica'
                                     className={classNames({'p-invalid': isFormFieldInvalid('social')})}
                                     onChange={(e) => {
                                         formik.setFieldValue('social', e.value);
