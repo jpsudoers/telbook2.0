@@ -155,7 +155,7 @@ export const planningMediumDecorator = (planning, totalPlannings) => {
                     return {
                         key: `${totalPlannings.length}-0-${idx}`,
                         data: {
-                            name: oa.oaSeleccionado
+                            name: 'Ambito: ' + oa.ambitoSeleccionado.toLowerCase() + '. Nucleo: ' + oa.nucleoSeleccionado.toLowerCase() + '. Objetivo seleccionado: ' + oa.oaSeleccionado.toLowerCase()
                         },
                     }
                 }),

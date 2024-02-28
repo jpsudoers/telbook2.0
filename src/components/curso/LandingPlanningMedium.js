@@ -22,6 +22,7 @@ import autoTable from "jspdf-autotable";
 const LandingPlanningMedium = () => {
     const [selectAmbit, setSelectAmbit] = useState(null);
     const [selectCore, setSelectCore] = useState(null);
+    const [selectedOas, setSelectedOas] = useState([]);
 
     const router = useRouter();
     const {grade} = router.query;
@@ -84,14 +85,6 @@ const LandingPlanningMedium = () => {
                 errors.project = 'El proyecto es obligatorio';
             }
 
-            if (!data.ambit || data.ambit === '') {
-                errors.ambit = 'El ámbito es obligatorio';
-            }
-
-            if (!data.core || data.core === '') {
-                errors.core = 'El núcleo es obligatorio';
-            }
-
             if (!data.objective || data.objective === '') {
                 errors.objective = 'El objetivo es obligatorio';
             }
@@ -104,7 +97,7 @@ const LandingPlanningMedium = () => {
                 errors.strategy = 'La estrategia es obligatorio';
             }
 
-            if (!data.oa || data.oa.length === 0) {
+            if (!selectedOas || selectedOas.length === 0) {
                 errors.strategy = 'Los objetivos de aprendizaje son obligatorios';
             }
             return errors;
@@ -117,14 +110,7 @@ const LandingPlanningMedium = () => {
                     cierre: data.close,
                     curso: grade.toUpperCase(),
                     estrategias: data.strategy,
-                    oas: data.oa.map(o => {
-                        return {
-                            id: 'oa-' + grade.toLowerCase() + '-' + getRandomKey(),
-                            ambitoSeleccionado: data.ambit,
-                            nucleoSeleccionado: data.core,
-                            oaSeleccionado: o
-                        }
-                    }),
+                    oas: selectedOas,
                     objetivos: data.objective,
                     proyectoEje: data.project,
                     publishedAt: id,
@@ -149,7 +135,6 @@ const LandingPlanningMedium = () => {
             import('jspdf-autotable').then(() => {
                 const doc = new jsPDF.default(0, 0);
                 const dataToPdf = planningMediums
-                console.log(dataToPdf)
                 let row = [];
                 dataToPdf.forEach(data => {
                     row.push([data.data.name.toUpperCase()])
@@ -169,6 +154,21 @@ const LandingPlanningMedium = () => {
                 doc.save('Planificaciones a mediano plazo ' + grade.toUpperCase() + '.pdf');
             });
         });
+    }
+
+    const addOa = () => {
+        const currentOas = formik.values.oa.map(o => {
+            return {
+                id: 'oa-' + grade.toLowerCase() + '-' + getRandomKey(),
+                ambitoSeleccionado: formik.values.ambit,
+                nucleoSeleccionado: formik.values.core,
+                oaSeleccionado: o,
+            }
+        })
+        setSelectedOas(selectedOas.concat(currentOas))
+        formik.values.ambit = ''
+        formik.values.core = ''
+        formik.values.oa = []
     }
 
     if (planningMediumsLoading || basesLoading) {
@@ -264,6 +264,8 @@ const LandingPlanningMedium = () => {
                             />
                         </div>
                     </div>
+                    <Button type='button' label='Añadir OA' severity='success' className='w-full mb-4'
+                            onClick={() => addOa()}/>
                     <div className="flex-auto mb-4">
                         <label htmlFor="week" className="font-bold block mb-2">Objetivos generales</label>
                         <div className='p-inputgroup w-full'>
@@ -312,9 +314,6 @@ const LandingPlanningMedium = () => {
                     </div>
                     {getFormErrorMessage('week')}
                     {getFormErrorMessage('project')}
-                    {getFormErrorMessage('ambit')}
-                    {getFormErrorMessage('core')}
-                    {getFormErrorMessage('objective')}
                     {getFormErrorMessage('close')}
                     {getFormErrorMessage('strategy')}
                     {getFormErrorMessage('oa')}
@@ -324,7 +323,8 @@ const LandingPlanningMedium = () => {
                     <div className="card text-xs">
                         <TreeTable selectionMode="single" value={trueFirst(planningMediums)}
                                    tableStyle={{minWidth: '50rem', fontSize: '12px'}} loading={planningMediumsLoading}>
-                            <Column style={{display: 'flex', alignItems: 'center', width: '100%'}} field="name" header="Planificaciones mediano plazo" body={IsCurrent} expander/>
+                            <Column style={{display: 'flex', alignItems: 'center', width: '100%'}} field="name"
+                                    header="Planificaciones mediano plazo" body={IsCurrent} expander/>
                         </TreeTable>
                         <Button type='button' className='mt-4' onClick={exportToPDF} label='Descargar planificaciones'
                                 severity='success' style={{width: '100%'}}/>
