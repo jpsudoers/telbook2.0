@@ -83,7 +83,7 @@ const LandingPlanningShort = () => {
                 errors.date = 'La fecha es obligatoria';
             }
 
-            if (!data.oa || data.oa.length === 0) {
+            if (!selectedOas || selectedOas.length === 0) {
                 errors.oa = 'Los objetivos de aprendizaje son obligatorios';
             }
             return errors;

@@ -65,7 +65,7 @@ const DataTableFilter = ({
                     return column.title !== 'Acciones'
                 });
                 // console.log(dataToPdf)
-                doc.text(15, 15, "Libro de matrícula Escuela Pollito Amarillo");
+                doc.text(15, 15, "Libro de matrícula");
                 doc.autoTable(dataToPdf, data, {
                         startY: 20,
                     }
