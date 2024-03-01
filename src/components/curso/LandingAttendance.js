@@ -17,7 +17,7 @@ const LandingAttendance = () => {
     const router = useRouter();
     const {grade} = router.query;
 
-    const filterStudents = getStudentsByGrade(students, grade)
+    const filterStudents = getStudentsByGrade(students, grade).filter(student => student.codigoAlumno == 1)
     return (
         <Current students={filterStudents} user={user} grade={grade}/>
     );
