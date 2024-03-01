@@ -16,7 +16,7 @@ const LandingAttendance = () => {
 
     const router = useRouter();
     const {grade} = router.query;
-
+// JPS se saca el filtro que no muestra asistencia
     const filterStudents = getStudentsByGrade(students, grade)
     return (
         <Current students={filterStudents} user={user} grade={grade}/>
