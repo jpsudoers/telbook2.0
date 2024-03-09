@@ -72,9 +72,9 @@ const LandingBookRegister = () => {
             edit: <Button label="Editar" onClick={() => onEdit(student.id)} severity="info"/>,
             remove: <Button label="Retirar" onClick={() => removeStudents(student.id)} severity="danger"/>
         }
-    }).filter(student => {
-        return student.state === 'Activo'
-    })
+    })//.filter(student => {
+      //  return student.state === 'Activo'
+   // })
     user.perfil === 'admin' && headers.push({field: 'edit', header: 'Acciones'}, {field: 'remove'})
     const search = ['run', 'name'];
     const emptyMessage = 'No existen alumnos con estos datos';

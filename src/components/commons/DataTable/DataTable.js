@@ -65,7 +65,7 @@ const DataTableFilter = ({
                     return column.title !== 'Acciones'
                 });
                 // console.log(dataToPdf)
-                doc.text(15, 15, "Libro de matrícula Escuela Pollito Amarillo");
+                doc.text(15, 15, "Libro de matrícula");
                 doc.autoTable(dataToPdf, data, {
                         startY: 20,
                     }
@@ -85,8 +85,10 @@ const DataTableFilter = ({
                     <span style={{marginRight: '10px'}}>
                         <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Búsqueda"/>
                     </span>
-                    {isExport &&
-                        <FontAwesomeIcon style={{cursor: 'pointer'}} icon={faFilePdf} size={'xl'} onClick={exportPdf}/>}
+
+                    {/* JPS // Se elimina botón PDF
+                    isExport &&
+                     //   <FontAwesomeIcon style={{cursor: 'pointer'}} icon={faFilePdf} size={'xl'} onClick={exportPdf}/> */}
                 </div>
             </div> : null
         );

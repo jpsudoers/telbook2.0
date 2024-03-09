@@ -15,6 +15,7 @@ import {dateToFirebase} from "@/utils/formats";
 import {regionsChile} from "@/utils/const";
 import Loading from "@/components/commons/Loading/Loading";
 import {useRouter} from "next/router";
+import {uuidv4} from "@/utils/student";
 
 const FormRegister = ({option = 'create', id = ''}) => {
     const {
@@ -85,6 +86,7 @@ const FormRegister = ({option = 'create', id = ''}) => {
                 'tipoTel': data.tel,
                 'viveCon': data.live
             } : {
+                'id': uuidv4(),
                 'alumnoPuebloOriginario': data.originalTown,
                 'anio': 2024,
                 'codigoAlumno': 1,
@@ -563,8 +565,11 @@ const FormRegister = ({option = 'create', id = ''}) => {
                                     inputId='social'
                                     name='social'
                                     value={formik.values.social}
-                                    options={['Priotitario', 'Preferente']}
-                                    placeholder='Seleccionar si alumno es preferente o prioritario'
+                                 //JPS, se agrega opción de no aplica
+                                 //   options={['Priotitario', 'Preferente']}
+                                 //   placeholder='Seleccionar si alumno es preferente o prioritario'
+                                    options={['Prioritario', 'Preferente', 'No Aplica']}
+                                    placeholder='Seleccionar si alumno es preferente o prioritario o No Aplica'
                                     className={classNames({'p-invalid': isFormFieldInvalid('social')})}
                                     onChange={(e) => {
                                         formik.setFieldValue('social', e.value);

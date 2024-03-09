@@ -211,8 +211,9 @@ const Historic = ({students, grade}) => {
 
         {user.perfil === 'admin' && (editMode ?
                 <Button className='my-2' label='Guardar asistencia' severity={'success'}
+                //JPS se deshabilita botón editar.
                         onClick={() => setEditMode(false)}/> :
-                <Button className='my-2' label='Editar asistencia' severity={'info'} onClick={() => setEditMode(true)}/>
+                <Button className='my-2' label='Editar asistencia' severity={'info'} onClick={() => setEditMode(false)}/>
         )}
     </div>);
 };

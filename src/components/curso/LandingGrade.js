@@ -22,8 +22,9 @@ const LandingGrade = () => {
 
     const emptyMessage = 'No existen alumnos con estos datos';
     const search = ['run', 'name'];
-
-    const filterStudents = students.filter(student => student.grade === grade.toUpperCase())
+    console.log(students)
+    const filterStudents = students.filter(student => student.grade === grade.toUpperCase() && student.state === "Activo")
+    
     return (
         <div>
             <DataTableFilter

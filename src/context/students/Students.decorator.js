@@ -5,6 +5,7 @@ import Link from "next/link";
 
 export const studentsDecorator = (students) => {
     return students.map(student => {
+        console.log(student)
         return {
             id: student.id,
             n: student.numeroMatricula,

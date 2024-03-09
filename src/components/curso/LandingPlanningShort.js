@@ -15,10 +15,12 @@ import Loading from "@/components/commons/Loading/Loading";
 import {getWeekNumber} from "@/utils/date";
 import {Calendar} from "primereact/calendar";
 import autoTable from "jspdf-autotable";
+import {getRandomKey} from "@/utils/evaluations";
 
 const LandingPlanningShort = () => {
     const [selectAmbit, setSelectAmbit] = useState(null);
     const [selectCore, setSelectCore] = useState(null);
+    const [selectedOas, setSelectedOas] = useState([]);
 
     const router = useRouter();
     const {grade} = router.query;
@@ -81,15 +83,7 @@ const LandingPlanningShort = () => {
                 errors.date = 'La fecha es obligatoria';
             }
 
-            if (!data.ambit || data.ambit === '') {
-                errors.ambit = 'El ámbito es obligatorio';
-            }
-
-            if (!data.core || data.core === '') {
-                errors.core = 'El núcleo es obligatorio';
-            }
-
-            if (!data.oa || data.oa.length === 0) {
+            if (!selectedOas || selectedOas.length === 0) {
                 errors.oa = 'Los objetivos de aprendizaje son obligatorios';
             }
             return errors;
@@ -100,20 +94,13 @@ const LandingPlanningShort = () => {
                 const newData = {
                     id: grade + id.getTime(),
                     curso: grade.toUpperCase(),
-                    estrategias: data.oa.map(o => {
-                        return {
-                            ambitoSeleccionado: data.ambit,
-                            nucleoSeleccionado: data.core,
-                            oaSeleccionado: o,
-                        }
-                    }),
+                    estrategias: selectedOas,
                     fecha: dateToFirebaseWithSlash(data.date),
                     inicio: data.init,
                     instrumentos: data.instruments,
                     publishedAt: id,
                     recursos: data.resources
                 }
-                console.log(newData)
                 setPlanningShort(newData)
                 formik.resetForm();
             }
@@ -179,6 +166,23 @@ const LandingPlanningShort = () => {
         });
     }
 
+    const addOa = () => {
+        console.log(formik.values)
+        const currentOas = formik.values.oa.map(o => {
+            return {
+                id: 'oa-' + grade.toLowerCase() + '-' + getRandomKey(),
+                ambitoSeleccionado: formik.values.ambit,
+                nucleoSeleccionado: formik.values.core,
+                oaSeleccionado: o,
+            }
+        })
+        setSelectedOas(selectedOas.concat(currentOas))
+        formik.values.ambit = ''
+        formik.values.core = ''
+        formik.values.oa = []
+    }
+
+    console.log(selectedOas)
 
     const getCurrentPlanningMedium = planningMediums.filter(planning => {
         return planning.current
@@ -270,6 +274,8 @@ const LandingPlanningShort = () => {
                                 />
                             </div>
                         </div>
+                        <Button type='button' label='Añadir OA' severity='success' className='w-full mb-4'
+                                onClick={() => addOa()}/>
                         <div className="flex-auto mb-4">
                             <label htmlFor="resources" className="font-bold block mb-2">Recursos</label>
                             <div className='p-inputgroup w-full'>

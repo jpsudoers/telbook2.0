@@ -13,10 +13,9 @@ export const getStudentsBySchoolQuery = async (school) => {
 }
 
 export const setStudentQuery = async (student) => {
-    const docRef = await addDoc(collection(db, 'alumnos'), student);
+    await addDoc(collection(db, 'alumnos'), student);
     return {
         ...student,
-        id: docRef.id
     }
 }
 
