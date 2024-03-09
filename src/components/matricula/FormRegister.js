@@ -73,7 +73,9 @@ const FormRegister = ({option = 'create', id = ''}) => {
                 'nivelEducacionalMadre': data.educationMother,
                 'nivelEducacionalPadre': data.educationFather,
                 'nombreApoderado': data.tutorName,
-                'nombreCompleto': data.names + " " + data.lastnames,
+                //JPS se deja primero el apellido y despues el nombre
+                //'nombreCompleto': data.names + " " + data.lastnames,
+                'nombreCompleto': data.lastnames + " " + data.names,
                 'nombresAlumno': data.names,
                 'apellidosAlumno': data.lastnames,
                 'parentezcoConAlumno': data.parent,
@@ -101,7 +103,9 @@ const FormRegister = ({option = 'create', id = ''}) => {
                 'nivelEducacionalMadre': data.educationMother,
                 'nivelEducacionalPadre': data.educationFather,
                 'nombreApoderado': data.tutorName,
-                'nombreCompleto': data.names + " " + data.lastnames,
+                //JPS se deja primero el apellido y despues el nombre
+                //'nombreCompleto': data.names + " " + data.lastnames,
+                'nombreCompleto': data.lastnames + " " + data.names,
                 'nombresAlumno': data.names,
                 'apellidosAlumno': data.lastnames,
                 'numeroLista': filterStudents.length + 1,
@@ -117,6 +121,7 @@ const FormRegister = ({option = 'create', id = ''}) => {
                 'tipoTel': data.tel,
                 'viveCon': data.live
             }
+
             option === 'edit' ? editStudent(id, newData) : setStudent(newData)
             data && show(data);
             option === 'edit' && router.push('/libro-de-matricula')
