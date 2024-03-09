@@ -15,7 +15,9 @@ export const studentsDecorator = (students) => {
             origin: student.procedencia,
             natDate: formatDate(student.fechaNacimiento.toString()),
             enterDate: formatDate(student.fechaIncorporacion),
-            state: student.codigoAlumno == '1' ? 'Activo' : 'Inactivo',
+            //JPS se cambia de inactivo a Retirado
+            //state: student.codigoAlumno == '1' ? 'Activo' : 'Inactivo',
+            state: student.codigoAlumno == '1' ? 'Activo' : 'Retirado',
             grade: student.curso,
             gender: student.sexo.toUpperCase() === 'M' ? 'Masculino' : 'Femenino',
             read: <Link
@@ -43,7 +45,9 @@ export const studentDecorator = (student) => {
         origin: student.procedencia,
         natDate: formatDate(student.fechaNacimiento.toString()),
         enterDate: formatDate(student.fechaIncorporacion),
-        state: student.codigoAlumno == 1 ? 'Activo' : 'Inactivo',
+        // JPS se cambia de Inactivo a Retirado
+        state: student.codigoAlumno == 1 ? 'Activo' : 'Retirado',
+        //state: student.codigoAlumno == 1 ? 'Activo' : 'Inactivo',
         grade: student.curso,
         n: student.numeroMatricula,
         gender: student.sexo.toUpperCase() === 'M' ? 'Masculino' : 'Femenino',
