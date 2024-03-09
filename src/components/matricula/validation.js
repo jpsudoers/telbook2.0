@@ -109,14 +109,20 @@ export const initialValues = {
 }
 
 export const initialValuesEdit = (student) => {
-    const yearB = Number(student.fechaNacimiento.substring(0, 4));
-    const monthB = Number(student.fechaNacimiento.substring(4, 6));
-    const dayB = Number(student.fechaNacimiento.substring(6, 8));
+   // JPS se controla si el dato es string o number
+    console.info({student})
+    const yearB = Number(String(student.fechaNacimiento).substring(0, 4))
+    const monthB = Number(String(student.fechaNacimiento).substring(4, 6));
+    const dayB = Number(String(student.fechaNacimiento).substring(6, 8));
+   
+    //const yearB = Number(student.fechaNacimiento.substring(0, 4));
+    //const monthB = Number(student.fechaNacimiento.substring(4, 6));
+    //const dayB = Number(student.fechaNacimiento.substring(6, 8));
     const dateB = new Date(yearB, monthB - 1, dayB);
 
-    const yearJ = Number(student.fechaIncorporacion.substring(0, 4));
-    const monthJ = Number(student.fechaIncorporacion.substring(4, 6));
-    const dayJ = Number(student.fechaIncorporacion.substring(6, 8));
+    const yearJ = Number(String(student.fechaIncorporacion).substring(0, 4));
+    const monthJ = Number(String(student.fechaIncorporacion).substring(4, 6));
+    const dayJ = Number(String(student.fechaIncorporacion).substring(6, 8));
     const dateJ = new Date(yearJ, monthJ - 1, dayJ);
 
     return {
