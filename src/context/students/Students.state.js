@@ -204,12 +204,13 @@ const StudentsState = (props) => {
         });
         try {
             await removeStudentQuery(id)
-            dispatch({
-                type: REMOVE_STUDENT,
-                payload: state.students.filter(student => {
-                    return student.id !== id
-                })
-            });
+            // SR - ya no se remueve el estudiante del estado porque es necesario para el historial
+            // dispatch({
+            //     type: REMOVE_STUDENT,
+            //     payload: state.students.filter(student => {
+            //         return student.id !== id
+            //     })
+            // });
         } catch (e) {
             console.log(e)
             dispatch({

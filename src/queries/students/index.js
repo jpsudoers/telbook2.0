@@ -13,7 +13,15 @@ export const getStudentsBySchoolQuery = async (school) => {
 }
 
 export const setStudentQuery = async (student) => {
-    await addDoc(collection(db, 'alumnos'), student);
+    // SR -  validamos primero que no exista el alumno y si existe avisamos al usuario
+    const q = query(collection(db, 'alumnos'), where('codigoAlumno', '==', 1), where('run', '==', student.run));
+    const querySnapshot = await getDocs(q);
+    if (!querySnapshot.empty) {
+        // avisar al usuario con un toast
+        return null
+    } else {
+        await addDoc(collection(db, 'alumnos'), student);    
+    }
     return {
         ...student,
     }
