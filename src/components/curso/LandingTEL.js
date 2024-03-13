@@ -27,6 +27,8 @@ const LandingTEL = () => {
         speechBasesLoading,
         speechBasesError,
         user,
+        //Add OTP
+        otp,
     } = useContext(UserContext);
 
     const {
@@ -62,6 +64,8 @@ const LandingTEL = () => {
             ambit: '',
             content: '',
             studentsSpeech: [],
+            register: '',
+            otp: ''
         },
         validate: (data) => {
             let errors = {};
@@ -80,6 +84,14 @@ const LandingTEL = () => {
 
             if (!data.studentsSpeech || data.studentsSpeech.length === 0) {
                 errors.studentsSpeech = 'Los estudiantes son obligatorios';
+            }
+            //JPS agrego validación al registro y Clave OTP
+            if (!data.register || data.register.length === 0) {
+                errors.register = 'El registro es obligatorio';
+            }
+            
+            if (!data.otp || data.otp.length === 0) {
+                errors.otp = 'La clave GOB es obligatoria';
             }
             return errors;
         },
@@ -103,7 +115,10 @@ const LandingTEL = () => {
                     modalidad: data.mode,
                     publishedAt: id,
                     observaciones: data.register,
-                    usuario: user
+                    usuario: user,
+               //JPS agrego OTP para guardar en base de datos
+                    opt: data.otp
+
                 }
                 setRegister(newData)
                 getRegisters(grade.toUpperCase())
@@ -215,6 +230,22 @@ const LandingTEL = () => {
                             />
                         </div>
                     </div>
+                    <div className="flex-auto mb-4">
+                        <label htmlFor="otp" className="font-bold block mb-2">Clave GOB</label>
+                        <div className='p-inputgroup w-full'>
+                            <InputTextarea
+                                id="otp"
+                                name="otp"
+                                value={formik.values.otp}
+                                onChange={(e) => {
+                                    formik.setFieldValue('otp', e.target.value);
+                                }}
+                                placeholder="Ingrese clave de GOB para firmar el registro fonoaudiológico"
+                                className={classNames({'p-invalid': isFormFieldInvalid('otp')})}
+                            />
+                        </div>
+                    </div>
+
                     {getFormErrorMessage('mode')}
                     {getFormErrorMessage('studentsSpeech')}
                     {getFormErrorMessage('ambit')}
@@ -225,6 +256,7 @@ const LandingTEL = () => {
                 </div>
                 <div className="flex-auto">
                     <GetTel grade={grade}/>
+                    
                 </div>
             </div>
         </form>
