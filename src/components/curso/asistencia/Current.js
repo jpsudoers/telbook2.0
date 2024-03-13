@@ -68,7 +68,9 @@ export default function Current({students, grade, user}) {
                 return {
                     run: item,
                     comentario: data[item].comments,
-                    presente: data[item].day === 'Presente' ? 1 : 0
+                    presente: data[item].day === 'Presente' ? 1 : 0,
+                    otp: data.otp
+
                 }
             })
             const date = new Date();
@@ -82,8 +84,8 @@ export default function Current({students, grade, user}) {
                 publishedAt: date,
                 day: date.toISOString().split('T')[0].split('-')[2],
                 month: date.toISOString().split('T')[0].split('-')[1],
-                year: date.toISOString().split('T')[0].split('-')[0]
-            }
+                year: date.toISOString().split('T')[0].split('-')[0],
+                otp: data.otp           }
             setAttendance(dataToSend)
             setAbsentees(0)
             setPresents(0)
