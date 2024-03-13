@@ -1,5 +1,5 @@
 import {
-    CLEAN_STUDENT, EDIT_STUDENT, EDIT_STUDENT_ERROR, EDIT_STUDENT_LOADING,
+    CLEAN_STUDENT, EDIT_STUDENT, EDIT_STUDENT_RAW, EDIT_STUDENT_ERROR, EDIT_STUDENT_LOADING,
     GET_ATTENDANCE,
     GET_ATTENDANCE_ERROR,
     GET_ATTENDANCE_LOADING,
@@ -120,6 +120,14 @@ const reducer = (state, action) => {
             return {
                 ...state,
                 students: payload,
+                studentsLoading: false,
+                studentsError: false,
+            }
+        case EDIT_STUDENT_RAW:
+            console.log(payload)
+            return {
+                ...state,
+                studentsRaw: payload,
                 studentsLoading: false,
                 studentsError: false,
             }

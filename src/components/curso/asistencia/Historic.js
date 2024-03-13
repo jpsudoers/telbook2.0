@@ -89,7 +89,6 @@ const Historic = ({students, grade}) => {
         }
     })
 
-    console.log(totals)
     const [editMode, setEditMode] = useState(false);
     const [selectedMonth, setSelectedMonth] = useState(months[currentMonth]);
     const [selectedYear, setSelectedYear] = useState(currentYear);
@@ -98,7 +97,7 @@ const Historic = ({students, grade}) => {
     useEffect(() => {
         getAttendanceByMonth(grade.toUpperCase(), selectedMonth.code - 1, selectedYear)
         setAssistanceValue(newObj)
-    }, [])
+    }, [selectedMonth])
 
     const headers = [{header: 'Nombre'}, ...getAllDaysInMonth(selectedMonth.code, selectedYear).map((day, index) => {
         return {
@@ -115,7 +114,6 @@ const Historic = ({students, grade}) => {
     if (attendancesLoading) {
         return <Loading/>
     }
-    console.log(user)
     return (<div className="p-datatable p-component p-datatable-responsive-scroll pb-3"
                  data-scrollselectors=".p-datatable-wrapper" data-pc-name="datatable" data-pc-section="root">
         <div ref={ref}>
@@ -155,16 +153,21 @@ const Historic = ({students, grade}) => {
                 </thead>
                 <tbody className='p-datatable-tbody'>
                 {students.map((student, key) => {
-                    const initVal = Object.keys(assistanceValue).length === 0 ? newObj : assistanceValue
-                    const formatRun = student.run.replaceAll('.', '')
+                    const formattedRun = student.run.replaceAll('.', '')
                     return <tr key={key}>
                         <td style={{padding: '10px', fontSize: '12px'}}>
                             {student.name}
                         </td>
                         {getAllDaysInMonth(selectedMonth.code, selectedYear).map((day, idx) => {
+                            const dayNumber = day.getUTCDate()
+                            const attendanceDay = attendances.find(attendance => Number(attendance.day) == dayNumber)
+                            const studentAttendanceDay = attendanceDay?.alumnos.find(alumno => alumno.run === formattedRun)
+                            let attendanceValue = null
+                            if (studentAttendanceDay?.presente == 1) attendanceValue = 'presente'
+                            else if (studentAttendanceDay?.presente == 0) attendanceValue = 'ausente'
                             return <td key={idx} style={{padding: 'unset', textAlign: 'center'}}>
-                                <MultiStateCheckbox id={`${formatRun}-${day.getTime()}`}
-                                                    value={initVal[`${formatRun}-${day.getTime()}`]}
+                                <MultiStateCheckbox id={`${formattedRun}-${day.getTime()}`}
+                                                    value={attendanceValue}
                                                     disabled={!editMode}
                                                     onChange={handleChange}
                                                     options={options} optionValue="value"/>

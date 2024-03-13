@@ -14,7 +14,7 @@ import {
     setStudentQuery, updateStudentQuery
 } from "@/queries/students";
 import {
-    CLEAN_STUDENT, EDIT_STUDENT, EDIT_STUDENT_ERROR, EDIT_STUDENT_LOADING,
+    CLEAN_STUDENT, EDIT_STUDENT, EDIT_STUDENT_RAW, EDIT_STUDENT_ERROR, EDIT_STUDENT_LOADING,
     GET_ATTENDANCE,
     GET_ATTENDANCE_ERROR,
     GET_ATTENDANCE_LOADING,
@@ -189,6 +189,10 @@ const StudentsState = (props) => {
             dispatch({
                 type: EDIT_STUDENT,
                 payload: state.students.filter(st => st.id !== id).concat(studentDecorator(student))
+            });
+            dispatch({
+                type: EDIT_STUDENT_RAW,
+                payload: state.studentsRaw.filter(st => st.id !== id).concat(student)
             });
         } catch (e) {
             console.log(e)

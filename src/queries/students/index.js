@@ -20,7 +20,11 @@ export const setStudentQuery = async (student) => {
         // avisar al usuario con un toast
         return null
     } else {
-        await addDoc(collection(db, 'alumnos'), student);    
+        // await addDoc(collection(db, 'alumnos'), student);
+        const collectionRef = collection(db,'alumnos');
+        const docRef = doc(collectionRef); 
+        const documentUuid = docRef.id;
+        await setDoc(docRef, { ...student, id: documentUuid })
     }
     return {
         ...student,

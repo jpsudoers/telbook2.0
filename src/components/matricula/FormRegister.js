@@ -88,7 +88,6 @@ const FormRegister = ({option = 'create', id = ''}) => {
                 'tipoTel': data.tel,
                 'viveCon': data.live
             } : {
-                'id': uuidv4(),
                 'alumnoPuebloOriginario': data.originalTown,
                 'anio': 2024,
                 'codigoAlumno': 1,
@@ -423,7 +422,6 @@ const FormRegister = ({option = 'create', id = ''}) => {
                                     name='educationMother'
                                     value={formik.values.educationMother}
                                     options={[
-                                        'SIN ANTECEDENTES',
                                         'BÁSICA COMPLETA',
                                         'BÁSICA INCOMPLETA',
                                         'MEDIA COMPLETA',
@@ -451,7 +449,6 @@ const FormRegister = ({option = 'create', id = ''}) => {
                                     name='educationFather'
                                     value={formik.values.educationFather}
                                     options={[
-                                        'SIN ANTECEDENTES',
                                         'BÁSICA COMPLETA',
                                         'BÁSICA INCOMPLETA',
                                         'MEDIA COMPLETA',
