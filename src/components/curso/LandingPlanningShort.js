@@ -20,7 +20,7 @@ import {getRandomKey} from "@/utils/evaluations";
 const LandingPlanningShort = () => {
     const [selectAmbit, setSelectAmbit] = useState(null);
     const [selectCore, setSelectCore] = useState(null);
-    const [selectedOas, setSelectedOas] = useState([]);
+    const [addedOas, setAddedOas] = useState([]);
 
     const router = useRouter();
     const {grade} = router.query;
@@ -45,7 +45,6 @@ const LandingPlanningShort = () => {
     } = useContext(PlanningContext);
 
     useEffect(() => {
-        console.log(localStorage.getItem('gradeSP'))
         if (grade !== localStorage.getItem('gradeSP')) {
             getPlanningShorts(grade.toUpperCase())
             getCurricularBases(level.toUpperCase())
@@ -83,7 +82,7 @@ const LandingPlanningShort = () => {
                 errors.date = 'La fecha es obligatoria';
             }
 
-            if (!selectedOas || selectedOas.length === 0) {
+            if (!addedOas || addedOas.length === 0) {
                 errors.oa = 'Los objetivos de aprendizaje son obligatorios';
             }
             return errors;
@@ -94,7 +93,7 @@ const LandingPlanningShort = () => {
                 const newData = {
                     id: grade + id.getTime(),
                     curso: grade.toUpperCase(),
-                    estrategias: selectedOas,
+                    estrategias: addedOas,
                     fecha: dateToFirebaseWithSlash(data.date),
                     inicio: data.init,
                     instrumentos: data.instruments,
@@ -102,6 +101,7 @@ const LandingPlanningShort = () => {
                     recursos: data.resources
                 }
                 setPlanningShort(newData)
+                setAddedOas([])
                 formik.resetForm();
             }
         }
@@ -112,7 +112,7 @@ const LandingPlanningShort = () => {
     const getFormErrorMessage = (name) => {
         return isFormFieldInvalid(name) ? <small className="p-error">{formik.errors[name]}<br/></small> :
             <small className="p-error"/>;
-    };
+    };    
 
     const isCurrent = (node) => {
         const {name, title} = node.data
@@ -167,7 +167,6 @@ const LandingPlanningShort = () => {
     }
 
     const addOa = () => {
-        console.log(formik.values)
         const currentOas = formik.values.oa.map(o => {
             return {
                 id: 'oa-' + grade.toLowerCase() + '-' + getRandomKey(),
@@ -176,13 +175,12 @@ const LandingPlanningShort = () => {
                 oaSeleccionado: o,
             }
         })
-        setSelectedOas(selectedOas.concat(currentOas))
+        setAddedOas(addedOas.concat(currentOas))
         formik.values.ambit = ''
         formik.values.core = ''
         formik.values.oa = []
     }
-
-    console.log(selectedOas)
+    
 
     const getCurrentPlanningMedium = planningMediums.filter(planning => {
         return planning.current
