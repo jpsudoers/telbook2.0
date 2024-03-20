@@ -21,10 +21,34 @@ const LandingPlanningLectionary = () => {
     const router = useRouter();
     const {grade} = router.query;
     const [date, setDate] = useState(new Date())
-    const [evaluation, setEvaluation] = useState(null)
-    const [comment, setComment] = useState('')
-    const [visible, setVisible] = useState(false);
-    const [otp, setOtp] = useState('');
+    
+    useEffect(() => {
+        getPlanning(date)
+    }, [])
+
+    const [activePlanningEvaluation, setActivePlanningEvaluation] = useState(null) // esto va a guardar el id de la planificacion que se va a evaluar
+    const [dialogVisible, setDialogVisible] = useState(false); // este es el flag para mostrar el dialogo o no
+    const [currentEvaluationValue, setCurrentEvaluationValue] = useState(''); // este es el valor de la evaluacion positiva, negativa
+    const [currentCommentValue, setCurrentCommentValue] = useState(''); // este es el valor del comentario
+    const [currentOtpValue, setCurrentOtpValue] = useState(''); // este es el valor del otp
+
+    const startEvaluation = (id) => {
+        setActivePlanningEvaluation(id)
+        setDialogVisible(true)
+    }
+
+    const dismissEvaluation = () => {
+        setActivePlanningEvaluation(null)
+        setCurrentEvaluationValue('')
+        setCurrentCommentValue('')
+        setCurrentOtpValue('')
+        setDialogVisible(false)
+    }
+
+    const finishEvaluation = () => {
+        submit(activePlanningEvaluation)
+        dismissEvaluation()
+    }
 
     const {
         user,
@@ -48,35 +72,23 @@ const LandingPlanningLectionary = () => {
         const currentDate = new Date()
         const newData = {
             id: 'lec-' + grade.toUpperCase() + '-' + currentDate.getTime(),
-            comentario: comment,
+            comentario: currentCommentValue,
             curso: grade.toUpperCase(),
-            evaluacion: evaluation === 'Positiva' ? 'positiva' : 'negativa',
+            evaluacion: currentEvaluationValue,
             hora: date,
             publishedAt: currentDate,
             planificacionId: id,
+            otp: currentOtpValue,
             usuario: user.run
         }
-        setEvaluation(null)
-        setComment('')
-        setOtp('');
         setPlanningLectionary(newData)
-        const dateFormat = dateToFirebaseWithSlash(date)
-        getPlanningShortByDate(grade.toUpperCase(), dateFormat)
+        getPlanning(date)
     }
 
     if (planningShortsLectionaryLoading) {
         return <Loading/>
     }
 
-    const onHide = () => {
-        setVisible(false)
-        setOtp('')
-    }
-
-    const onSuccess = (id) => {
-        setVisible(false)
-        submit(id)
-    }
     return (
         <div style={{padding: '15px'}}>
             <label htmlFor='select-date'
@@ -127,38 +139,20 @@ const LandingPlanningLectionary = () => {
                                         <p><strong>Observación: </strong>{planning.observacion}</p>
                                     </div> :
                                     <>
-                                        <div className="m-0 mb-1"><strong>Evaluar experiencia de aprendizaje</strong></div>
-                                        <SelectButton
-                                            id='item'
-                                            name='evaluation'
-                                            value={evaluation}
-                                            options={['Positiva', 'Negativa']}
-                                            onChange={(e) => {
-                                                setEvaluation(e.value)
-                                            }}
-                                        />
-                                        <InputTextarea
-                                            className='mt-1'
-                                            style={{resize: 'none', marginBottom: '20px'}}
-                                            rows={4}
-                                            cols={40}
-                                            value={comment}
-                                            onChange={(e) => setComment(e.target.value)}
-                                        />
-                                        <Button type='button' label='Agregar evaluación' severity='success'
-                                                disabled={evaluation === null} style={{width: '100%'}}
-                                                onClick={() => setVisible(true)}/>
-                                        <Dialog header="Firmar evaluación" visible={visible} style={{width: '50vw'}}
-                                                onHide={onHide}>
-                                            <p className="m-0">
-                                                <InputText className='mb-3' type='password' keyfilter="int" value={otp}
-                                                           onChange={(e) => setOtp(e.target.value)}/>
-                                                <br/>
-                                                <Button type='button' label='Agregar evaluación' severity='success'
-                                                        disabled={otp === ''}
-                                                        onClick={() => onSuccess(planning.id)}/>
-                                            </p>
-                                        </Dialog>
+                                        <Button type='button' label='Evaluar experiencia de aprendizaje' severity='success' onClick={() => startEvaluation(planning.id)} />
+                                        {
+                                            activePlanningEvaluation && (
+                                                <Dialog header="Evaluar planificacion" visible={dialogVisible} style={{width: '50vw'}} onHide={dismissEvaluation}>
+                                                    <SelectButton id='item' name='evaluation' value={currentEvaluationValue} options={['positiva', 'negativa']} onChange={(e) => {setCurrentEvaluationValue(e.value)}}/>
+                                                    <br/>
+                                                    <InputTextarea placeholder='Comentario' className='mt-1' style={{resize: 'none', marginBottom: '20px'}} rows={6} cols={75} value={currentCommentValue} onChange={(e) => setCurrentCommentValue(e.target.value)} />
+                                                    <br/>
+                                                    <InputText placeholder='Codigo OTP' className='mb-3' type='password' keyfilter="int" value={currentOtpValue} onChange={(e) => setCurrentOtpValue(e.target.value)}/>
+                                                    <br/>
+                                                    <Button type='button' label='Agregar evaluación' severity='success' disabled={currentOtpValue === '' || currentCommentValue === '' || currentEvaluationValue === ''} onClick={() => finishEvaluation()}/>
+                                                </Dialog>
+                                            )
+                                        }
                                     </>
                             }
                         </Fieldset>
