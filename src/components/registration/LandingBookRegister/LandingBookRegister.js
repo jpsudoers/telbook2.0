@@ -67,14 +67,15 @@ const LandingBookRegister = () => {
     }
 
     const enhancedStudents = students.map(student => {
-        return {
+        const enhancedStudent = {
             ...student,
-            edit: <Button label="Editar" onClick={() => onEdit(student.id)} severity="info"/>,
-            remove: <Button label="Retirar" onClick={() => removeStudents(student.id)} severity="danger"/>
         }
-    })//.filter(student => {
-      //  return student.state === 'Activo'
-   // })
+        if (student?.state === 'Activo') {
+            enhancedStudent.edit = <Button label="Editar" onClick={() => onEdit(student.id)} severity="info"/>
+            enhancedStudent.remove = <Button label="Retirar" onClick={() => removeStudents(student.id)} severity="danger"/>
+        }
+        return enhancedStudent
+    })
     user.perfil === 'admin' && headers.push({field: 'edit', header: 'Acciones'}, {field: 'remove'})
     const search = ['run', 'name'];
     const emptyMessage = 'No existen alumnos con estos datos';
