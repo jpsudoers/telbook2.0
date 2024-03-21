@@ -19,6 +19,7 @@ export const studentsDecorator = (students) => {
             //state: student.codigoAlumno == '1' ? 'Activo' : 'Inactivo',
             state: student.codigoAlumno == '1' ? 'Activo' : 'Retirado',
             grade: student.curso,
+            //JPS se cambia al traer el dato de la base de datos
             gender: student.sexo,//.toUpperCase() === 'M' ? 'Masculino' : 'Femenino',
             read: <Link
                 href={{
