@@ -9,20 +9,30 @@ import {Button} from "primereact/button";
 import {jsPDF} from 'jspdf';
 import UserContext from "@/context/user/User.context";
 
-const options = [{
-    value: 'presente',
-    icon: 'pi pi-check',
-    style: {backgroundColor: 'green', borderColor: 'green'}
-}, {value: 'ausente', icon: 'pi pi-times', style: {backgroundColor: 'red', borderColor: 'red'}}, {
-    value: 'sin-clase',
-    icon: 'pi pi-lock',
-    style: {backgroundColor: 'blue', borderColor: 'blue'}
-}];
+const options = [
+    {
+        value: 'presente',
+        icon: 'pi pi-check',
+        style: {backgroundColor: 'green', borderColor: 'green'}
+    },
+    {
+        value: 'ausente',
+        icon: 'pi pi-times',
+        style: {backgroundColor: 'red', borderColor: 'red'}
+    },
+    {
+        value: 'sin-clase',
+        icon: 'pi pi-lock',
+        style: {backgroundColor: 'blue', borderColor: 'blue'}
+    }
+];
 
 const Historic = ({students, grade}) => {
     const {
         attendances, attendancesError, attendancesLoading, getAttendanceByMonth
     } = useContext(StudentsContext);
+
+    const daysWithAttendance = attendances.map(attendance => attendance.day) // ["14","19","20","21",]
 
     const {
         user,
@@ -138,73 +148,119 @@ const Historic = ({students, grade}) => {
                               placeholder="Selecciona año" className="w-full md:w-14rem"/>
                 </div>
             </div>
+            
+
             <table className='p-datatable-table' role="table" data-pc-section="table">
+
                 <thead className="p-datatable-thead" data-pc-section="thead">
-                <tr role="row" data-pc-section="headerrow">
-                    {headers.map((header, index) => {
-                        return <th key={index} style={{
-                            padding: '1rem 0',
-                            textAlign: index === 0 ? 'left' : 'center',
-                            color: index === currentDay && currentMonth === selectedMonth.code - 1 ? '#6466f1' : 'gray'
-                        }}>{header.header}
-                        </th>
-                    })}
-                </tr>
+                    {/* headers */}
+                    <tr role="row" data-pc-section="headerrow">
+                        {headers.map((header, index) => {
+                            return <th key={index} style={{
+                                padding: '1rem 0',
+                                textAlign: index === 0 ? 'left' : 'center',
+                                color: index === currentDay && currentMonth === selectedMonth.code - 1 ? '#6466f1' : 'gray'
+                            }}>{header.header}
+                            </th>
+                        })}
+                    </tr>
                 </thead>
+
                 <tbody className='p-datatable-tbody'>
-                {students.map((student, key) => {
-                    const formattedRun = student.run.replaceAll('.', '')
-                    return <tr key={key}>
+
+
+
+
+
+
+
+
+
+
+                    {/* estudiantes */}
+                    {students.map((student, key) => {
+                        const formattedRun = student.run.replaceAll('.', '')
+                        return (
+                            <tr key={key}>
+                                {/* nombre estudiante */}
+                                <td style={{padding: '10px', fontSize: '12px'}}>
+                                    {student.name}
+                                </td>
+                                        
+                                {/* dias */}
+                                {getAllDaysInMonth(selectedMonth.code, selectedYear).map((day, index) => { // for each day in the month
+                                    const dayNumber = day.getUTCDate() // the number of this day. e.g. 31
+                                    // daysWithAttendance -> ["14","19","20","21",]
+                                    
+                                    if (daysWithAttendance.includes(String(dayNumber))) { // si es un dia que tiene asistencia en la DB
+                                        const attendanceDay = attendances.find(attendance => Number(attendance.day) == dayNumber) // find the attendance of this day
+                                        const studentAttendanceDay = attendanceDay?.alumnos.find(alumno => alumno.run === formattedRun) // find the attendance of this student on this day
+                                        
+                                        let attendanceValue = null
+                                        if (studentAttendanceDay?.presente == 1) attendanceValue = 'presente'
+                                        else if (studentAttendanceDay?.presente == 0) attendanceValue = 'ausente'
+
+                                        return (
+                                            <td key={index} style={{padding: 'unset', textAlign: 'center'}}>
+                                                <MultiStateCheckbox id={`${formattedRun}-${day.getTime()}`}
+                                                                    value={attendanceValue}
+                                                                    disabled={!editMode}
+                                                                    onChange={handleChange}
+                                                                    options={options}
+                                                                    optionValue="value" />
+                                            </td>)
+                                    } else { // si es un dia que no tiene asistencia en la DB
+                                        return (
+                                            <td key={index} style={{padding: 'unset', textAlign: 'center'}}>
+                                                <MultiStateCheckbox id={`${formattedRun}-${day.getTime()}`} disabled={true} />
+                                            </td>)
+                                    } 
+                                })}
+                            </tr>)
+                    })}
+
+
+
+
+
+
+
+
+
+
+
+
+                    {/* resumen */}
+                    <tr>
                         <td style={{padding: '10px', fontSize: '12px'}}>
-                            {student.name}
+                            <strong>Presente</strong>
                         </td>
                         {getAllDaysInMonth(selectedMonth.code, selectedYear).map((day, idx) => {
-                            const dayNumber = day.getUTCDate()
-                            const attendanceDay = attendances.find(attendance => Number(attendance.day) == dayNumber)
-                            const studentAttendanceDay = attendanceDay?.alumnos.find(alumno => alumno.run === formattedRun)
-                            let attendanceValue = null
-                            if (studentAttendanceDay?.presente == 1) attendanceValue = 'presente'
-                            else if (studentAttendanceDay?.presente == 0) attendanceValue = 'ausente'
-                            return <td key={idx} style={{padding: 'unset', textAlign: 'center'}}>
-                                <MultiStateCheckbox id={`${formattedRun}-${day.getTime()}`}
-                                                    value={attendanceValue}
-                                                    disabled={!editMode}
-                                                    onChange={handleChange}
-                                                    options={options} optionValue="value"/>
+                            return <td key={idx} style={{padding: 'unset', textAlign: 'center', color: 'gray'}}>
+                                <strong>{totals[parseInt(idx) + 1]?.presente}</strong>
                             </td>
                         })}
                     </tr>
-                })}
-                <tr>
-                    <td style={{padding: '10px', fontSize: '12px'}}>
-                        <strong>Presente</strong>
-                    </td>
-                    {getAllDaysInMonth(selectedMonth.code, selectedYear).map((day, idx) => {
-                        return <td key={idx} style={{padding: 'unset', textAlign: 'center', color: 'gray'}}>
-                            <strong>{totals[parseInt(idx) + 1]?.presente}</strong>
+                    <tr>
+                        <td style={{padding: '10px', fontSize: '12px'}}>
+                            <strong>Ausente</strong>
                         </td>
-                    })}
-                </tr>
-                <tr>
-                    <td style={{padding: '10px', fontSize: '12px'}}>
-                        <strong>Ausente</strong>
-                    </td>
-                    {getAllDaysInMonth(selectedMonth.code, selectedYear).map((day, idx) => {
-                        return <td key={idx} style={{padding: 'unset', textAlign: 'center', color: 'gray'}}>
-                            <strong>{totals[parseInt(idx) + 1]?.ausente}</strong>
+                        {getAllDaysInMonth(selectedMonth.code, selectedYear).map((day, idx) => {
+                            return <td key={idx} style={{padding: 'unset', textAlign: 'center', color: 'gray'}}>
+                                <strong>{totals[parseInt(idx) + 1]?.ausente}</strong>
+                            </td>
+                        })}
+                    </tr>
+                    <tr>
+                        <td style={{padding: '10px', fontSize: '12px'}}>
+                            <strong>Total</strong>
                         </td>
-                    })}
-                </tr>
-                <tr>
-                    <td style={{padding: '10px', fontSize: '12px'}}>
-                        <strong>Total</strong>
-                    </td>
-                    {getAllDaysInMonth(selectedMonth.code, selectedYear).map((day, idx) => {
-                        return <td key={idx} style={{padding: 'unset', textAlign: 'center', color: 'gray'}}>
-                            <strong>{totals[parseInt(idx) + 1]?.total}</strong>
-                        </td>
-                    })}
-                </tr>
+                        {getAllDaysInMonth(selectedMonth.code, selectedYear).map((day, idx) => {
+                            return <td key={idx} style={{padding: 'unset', textAlign: 'center', color: 'gray'}}>
+                                <strong>{totals[parseInt(idx) + 1]?.total}</strong>
+                            </td>
+                        })}
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -213,10 +269,16 @@ const Historic = ({students, grade}) => {
         </div>
 
         {user.perfil === 'admin' && (editMode ?
-                <Button className='my-2' label='Guardar asistencia' severity={'success'}
-                //JPS se deshabilita botón editar.
-                        onClick={() => setEditMode(false)}/> :
-                <Button className='my-2' label='Editar asistencia' severity={'info'} onClick={() => setEditMode(false)}/>
+                <Button
+                    className='my-2'
+                    label='Guardar asistencia'
+                    severity={'success'} 
+                    onClick={() => setEditMode(false)}/> : 
+                <Button
+                    className='my-2'
+                    label='Editar asistencia'
+                    severity={'info'}
+                    onClick={() => setEditMode(true)}/>
         )}
     </div>);
 };
