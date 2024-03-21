@@ -19,7 +19,7 @@ export const studentsDecorator = (students) => {
             //state: student.codigoAlumno == '1' ? 'Activo' : 'Inactivo',
             state: student.codigoAlumno == '1' ? 'Activo' : 'Retirado',
             grade: student.curso,
-            gender: student.sexo.toUpperCase() === 'M' ? 'Masculino' : 'Femenino',
+            gender: student.sexo,//.toUpperCase() === 'M' ? 'Masculino' : 'Femenino',
             read: <Link
                 href={{
                     pathname: "/alumno/[run]",
