@@ -52,7 +52,7 @@ import {
 } from "@/context/students/Students.types";
 import StudentContext from "./Students.context";
 import {studentDecorator, studentsDecorator} from "@/context/students/Students.decorator";
-import {getAttendanceByDateQuery, getAttendanceByMonthQuery, setAttendanceQuery} from "@/queries/assistance";
+import {getAttendanceByDateQuery, getAttendanceByMonthQuery, setAttendanceQuery, updateAttendancesQuery} from "@/queries/assistance";
 
 export const initialStateStudent = {
     students: [],
@@ -134,6 +134,23 @@ const StudentsState = (props) => {
             dispatch({
                 type: SET_ATTENDANCE,
                 payload: newAttendance
+            });
+        } catch (e) {
+            dispatch({
+                type: SET_ATTENDANCE_ERROR
+            });
+        }
+    }
+
+    const updateAttendance = async (payload) => {
+        dispatch({
+            type: SET_ATTENDANCE_LOADING
+        });
+        try {
+            await updateAttendancesQuery(payload)
+            dispatch({
+                type: SET_ATTENDANCE,
+                payload: state.attendances
             });
         } catch (e) {
             dispatch({
@@ -383,6 +400,7 @@ const StudentsState = (props) => {
             removeStudent,
             clearStudent,
             setAttendance,
+            updateAttendance,
             getAttendanceByDate,
             getAttendanceByMonth,
             getObservationById,

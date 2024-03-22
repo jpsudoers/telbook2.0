@@ -8,6 +8,7 @@ import Loading from "@/components/commons/Loading/Loading";
 import {Button} from "primereact/button";
 import {jsPDF} from 'jspdf';
 import UserContext from "@/context/user/User.context";
+import {useRouter} from "next/router";
 
 const options = [
     {
@@ -19,19 +20,17 @@ const options = [
         value: 0,
         icon: 'pi pi-times',
         style: {backgroundColor: 'red', borderColor: 'red'}
-    },
-    {
-        value: null,
-        style: {backgroundColor: 'lightgray', borderColor: 'lightgray'}
     }
 ];
 
 const Historic = ({students, grade}) => {
     const {
-        attendances, attendancesError, attendancesLoading, getAttendanceByMonth
+        attendances, attendancesError, attendancesLoading, getAttendanceByMonth, updateAttendance
     } = useContext(StudentsContext);
 
     const [tempAttendance, setTempAttendance] = useState({});
+
+    const router = useRouter();
 
     useEffect(() => {
         let newAttendance = {}; // objeto que contendrá las asistencias de los alumnos para poblar la tabla e ir modificandola
@@ -131,10 +130,45 @@ const Historic = ({students, grade}) => {
     })]
 
     const handleChange = ({target}) => {
-        // setAssistanceValue({
-        //     ...assistanceValue, [target.id]: target.value
-        // })
-        console.log(target)
+        const run = target.id.run
+        const day = target.id.day
+        const newValue = target.value
+        setTempAttendance(prevState => {
+            return {
+                ...prevState,
+                [run]: {
+                    ...prevState[run],
+                    asistencias: {
+                        ...prevState[run].asistencias,
+                        [day]: newValue
+                    }
+                }
+            }
+        })
+    }
+
+    const saveAttendances = async () => {
+        setEditMode(false)
+        const attendancesAsFirebase = [];
+        for (const [run, data] of Object.entries(tempAttendance)) {
+            for (const [day, presente] of Object.entries(data.asistencias)) {
+                if (presente !== null) {
+                    let dayData = attendancesAsFirebase.find(d => d.day === day);
+                    if (!dayData) {
+                        dayData = {
+                            alumnos: [],
+                            curso: grade.toUpperCase(),
+                            day,
+                            month: selectedMonth.code.toString().padStart(2, '0'),
+                            year: currentYear.toString()
+                        };
+                        attendancesAsFirebase.push(dayData);
+                    }
+                    dayData.alumnos.push({ presente, run });
+                }
+            }
+        }
+        await updateAttendance(attendancesAsFirebase)
     }
 
     if (attendancesLoading) {
@@ -164,10 +198,11 @@ const Historic = ({students, grade}) => {
                               placeholder="Selecciona año" className="w-full md:w-14rem"/>
                 </div>
             </div>
-            
 
+            {/* tabla */}
             <table className='p-datatable-table' role="table" data-pc-section="table">
 
+                {/* cabecera */}
                 <thead className="p-datatable-thead" data-pc-section="thead">
                     {/* headers */}
                     <tr role="row" data-pc-section="headerrow">
@@ -182,16 +217,8 @@ const Historic = ({students, grade}) => {
                     </tr>
                 </thead>
 
+                {/* cuerpo */}
                 <tbody className='p-datatable-tbody'>
-
-
-
-
-
-
-
-
-
 
                     {/* estudiantes */}
                     {Object.keys(tempAttendance).map(student => {
@@ -202,12 +229,10 @@ const Historic = ({students, grade}) => {
                                 <td style={{padding: '10px', fontSize: '12px'}}>
                                     {tempAttendance[student].name}
                                 </td>
-                                        
+
                                 {/* dias */}
                                 {getAllDaysInMonth(selectedMonth.code, selectedYear).map(day => { // for each day in the month
                                     const dayNumber = day.getUTCDate() // the number of this day. e.g. 31
-                                    // daysWithAttendance -> ["14","19","20","21",]
-                                    
                                     if (daysWithAttendance.includes(String(dayNumber))) { // si es un dia que tiene asistencia en la DB
                                         const studentAttendanceDay = tempAttendance[student].asistencias[dayNumber] // attendance value for this student in this day (1 or 0)
                                         return (
@@ -224,27 +249,14 @@ const Historic = ({students, grade}) => {
                                         return (
                                             <td key={day} style={{padding: 'unset', textAlign: 'center'}}>
                                                 <MultiStateCheckbox id={`${formattedRun}-${day.getTime()}`}
-                                                                    value={null}
                                                                     disabled={true}
-                                                                    options={options}
-                                                                    optionValue="value"
+                                                                    style={{backgroundColor: 'lightgray'}}
                                                 />
                                             </td>)
-                                    } 
+                                    }
                                 })}
                             </tr>)
                     })}
-
-
-
-
-
-
-
-
-
-
-
 
                     {/* resumen */}
                     <tr>
@@ -288,8 +300,8 @@ const Historic = ({students, grade}) => {
                 <Button
                     className='my-2'
                     label='Guardar asistencia'
-                    severity={'success'} 
-                    onClick={() => setEditMode(false)}/> : 
+                    severity={'success'}
+                    onClick={() => saveAttendances()}/> :
                 <Button
                     className='my-2'
                     label='Editar asistencia'
