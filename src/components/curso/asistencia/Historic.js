@@ -34,21 +34,17 @@ const Historic = ({students, grade}) => {
     const [tempAttendance, setTempAttendance] = useState({});
 
     useEffect(() => {
-        let newAttendance = {};
-    
-        attendances.forEach(attendance => {
-            attendance.alumnos.forEach(alumno => {
-                let student = students.find(student => student.run.replaceAll('.','') === alumno.run);
-    
-                if (!newAttendance[alumno.run]) {
-                    newAttendance[alumno.run] = { asistencias: {}, name: student.name };
+        let newAttendance = {}; // objeto que contendrá las asistencias de los alumnos para poblar la tabla e ir modificandola
+        attendances.forEach(attendance => { // por cada asistencia...
+            attendance.alumnos.forEach(alumno => { // por cada alumno en la asistencia...
+                let student = students.find(student => student.run.replaceAll('.','') === alumno.run); // busco el alumno en la lista de alumnos
+                if (!newAttendance[alumno.run]) { // si no existe el alumno en newAttendance
+                    newAttendance[alumno.run] = { asistencias: {}, name: student ? student.name : '' }; // creo el alumno en newAttendance y seteo el nombre o un string vacío
                 }
-    
-                newAttendance[alumno.run].asistencias[attendance.day] = alumno.presente;
+                newAttendance[alumno.run].asistencias[attendance.day] = alumno.presente; // agrego la asistencia al alumno en newAttendance
             });
         });
-    
-        setTempAttendance(newAttendance);
+        setTempAttendance(newAttendance); // actualizo el estado
     }, [attendances]);
 
     const daysWithAttendance = attendances.map(attendance => attendance.day) // ["14","19","20","21",]
