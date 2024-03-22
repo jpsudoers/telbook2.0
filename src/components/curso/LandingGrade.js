@@ -9,7 +9,6 @@ const LandingGrade = () => {
     } = useContext(StudentsContext);
     const router = useRouter();
     const {grade} = router.query;
-    console.log(students)
     const headers = [
         {field: 'name', header: 'Nombre', size: '30%'},
         {field: 'run', header: 'RUT', size: '15%'},
@@ -22,7 +21,6 @@ const LandingGrade = () => {
 
     const emptyMessage = 'No existen alumnos con estos datos';
     const search = ['run', 'name'];
-    console.log(students)
     const filterStudents = students.filter(student => student.grade === grade.toUpperCase() && student.state === "Activo")
     
     return (

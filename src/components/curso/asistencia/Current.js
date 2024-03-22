@@ -46,7 +46,6 @@ export default function Current({students, grade, user}) {
     const formik = useFormik({
         initialValues: {...obj, otp: ''},
         validate: (data) => {
-            console.log(data)
             let errors = {};
             const objVal = Object.values(data)
             setPresents(objVal.filter(p => p.day === 'Presente').length)

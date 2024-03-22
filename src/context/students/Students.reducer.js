@@ -116,7 +116,6 @@ const reducer = (state, action) => {
                 studentsError: false,
             }
         case EDIT_STUDENT:
-            console.log(payload)
             return {
                 ...state,
                 students: payload,
@@ -124,7 +123,6 @@ const reducer = (state, action) => {
                 studentsError: false,
             }
         case EDIT_STUDENT_RAW:
-            console.log(payload)
             return {
                 ...state,
                 studentsRaw: payload,

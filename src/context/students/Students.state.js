@@ -173,7 +173,6 @@ const StudentsState = (props) => {
                 payload: studentDecorator(newStudent)
             });
         } catch (e) {
-            console.log(e)
             dispatch({
                 type: SET_STUDENT_ERROR
             });
@@ -195,7 +194,6 @@ const StudentsState = (props) => {
                 payload: state.studentsRaw.filter(st => st.id !== id).concat(student)
             });
         } catch (e) {
-            console.log(e)
             dispatch({
                 type: EDIT_STUDENT_ERROR
             });
@@ -216,7 +214,6 @@ const StudentsState = (props) => {
             //     })
             // });
         } catch (e) {
-            console.log(e)
             dispatch({
                 type: REMOVE_STUDENT_ERROR
             });
@@ -250,7 +247,6 @@ const StudentsState = (props) => {
                 type: SET_OBSERVATIONS,
             });
         } catch (e) {
-            console.log(e)
             dispatch({
                 type: SET_OBSERVATIONS_ERROR
             });
@@ -284,7 +280,6 @@ const StudentsState = (props) => {
                 type: SET_SCHOOL_REGISTERS,
             });
         } catch (e) {
-            console.log(e)
             dispatch({
                 type: SET_SCHOOL_REGISTERS_ERROR
             });
@@ -301,7 +296,6 @@ const StudentsState = (props) => {
                 type: SET_EVALUATIONS_BY_OA,
             });
         } catch (e) {
-            console.log(e)
             dispatch({
                 type: SET_EVALUATIONS_BY_OA_ERROR
             });
