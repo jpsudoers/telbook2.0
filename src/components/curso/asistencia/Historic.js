@@ -32,6 +32,40 @@ const Historic = ({students, grade}) => {
         attendances, attendancesError, attendancesLoading, getAttendanceByMonth
     } = useContext(StudentsContext);
 
+    const [tempAttendance, setTempAttendance] = useState({});
+
+    useEffect(() => {
+        let newAttendance = {};
+    
+        attendances.forEach(attendance => {
+            attendance.alumnos.forEach(alumno => {
+                let current;
+                switch (alumno.presente) {
+                    case 1:
+                        current = 'presente';
+                        break;
+                    case 0:
+                        current = 'ausente';
+                        break;
+                    case 2:
+                        current = 'sin-clase';
+                        break;
+                    default:
+                        current = 'ausente';
+                        break;
+                }
+    
+                if (!newAttendance[alumno.run]) {
+                    newAttendance[alumno.run] = { asistencias: {} };
+                }
+    
+                newAttendance[alumno.run].asistencias[attendance.day] = current;
+            });
+        });
+    
+        setTempAttendance(newAttendance);
+    }, [attendances]);
+
     const daysWithAttendance = attendances.map(attendance => attendance.day) // ["14","19","20","21",]
 
     const {
