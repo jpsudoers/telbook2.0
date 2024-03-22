@@ -11,19 +11,18 @@ import UserContext from "@/context/user/User.context";
 
 const options = [
     {
-        value: 'presente',
+        value: 1,
         icon: 'pi pi-check',
         style: {backgroundColor: 'green', borderColor: 'green'}
     },
     {
-        value: 'ausente',
+        value: 0,
         icon: 'pi pi-times',
         style: {backgroundColor: 'red', borderColor: 'red'}
     },
     {
-        value: 'sin-clase',
-        icon: 'pi pi-lock',
-        style: {backgroundColor: 'blue', borderColor: 'blue'}
+        value: null,
+        style: {backgroundColor: 'lightgray', borderColor: 'lightgray'}
     }
 ];
 
@@ -39,27 +38,13 @@ const Historic = ({students, grade}) => {
     
         attendances.forEach(attendance => {
             attendance.alumnos.forEach(alumno => {
-                let current;
-                switch (alumno.presente) {
-                    case 1:
-                        current = 'presente';
-                        break;
-                    case 0:
-                        current = 'ausente';
-                        break;
-                    case 2:
-                        current = 'sin-clase';
-                        break;
-                    default:
-                        current = 'ausente';
-                        break;
-                }
+                let student = students.find(student => student.run.replaceAll('.','') === alumno.run);
     
                 if (!newAttendance[alumno.run]) {
-                    newAttendance[alumno.run] = { asistencias: {} };
+                    newAttendance[alumno.run] = { asistencias: {}, name: student.name };
                 }
     
-                newAttendance[alumno.run].asistencias[attendance.day] = current;
+                newAttendance[alumno.run].asistencias[attendance.day] = alumno.presente;
             });
         });
     
@@ -150,9 +135,10 @@ const Historic = ({students, grade}) => {
     })]
 
     const handleChange = ({target}) => {
-        setAssistanceValue({
-            ...assistanceValue, [target.id]: target.value
-        })
+        // setAssistanceValue({
+        //     ...assistanceValue, [target.id]: target.value
+        // })
+        console.log(target)
     }
 
     if (attendancesLoading) {
@@ -212,41 +198,41 @@ const Historic = ({students, grade}) => {
 
 
                     {/* estudiantes */}
-                    {students.map((student, key) => {
-                        const formattedRun = student.run.replaceAll('.', '')
+                    {Object.keys(tempAttendance).map(student => {
+                        const formattedRun = student.replaceAll('.', '')
                         return (
-                            <tr key={key}>
+                            <tr key={student}>
                                 {/* nombre estudiante */}
                                 <td style={{padding: '10px', fontSize: '12px'}}>
-                                    {student.name}
+                                    {tempAttendance[student].name}
                                 </td>
                                         
                                 {/* dias */}
-                                {getAllDaysInMonth(selectedMonth.code, selectedYear).map((day, index) => { // for each day in the month
+                                {getAllDaysInMonth(selectedMonth.code, selectedYear).map(day => { // for each day in the month
                                     const dayNumber = day.getUTCDate() // the number of this day. e.g. 31
                                     // daysWithAttendance -> ["14","19","20","21",]
                                     
                                     if (daysWithAttendance.includes(String(dayNumber))) { // si es un dia que tiene asistencia en la DB
-                                        const attendanceDay = attendances.find(attendance => Number(attendance.day) == dayNumber) // find the attendance of this day
-                                        const studentAttendanceDay = attendanceDay?.alumnos.find(alumno => alumno.run === formattedRun) // find the attendance of this student on this day
-                                        
-                                        let attendanceValue = null
-                                        if (studentAttendanceDay?.presente == 1) attendanceValue = 'presente'
-                                        else if (studentAttendanceDay?.presente == 0) attendanceValue = 'ausente'
-
+                                        const studentAttendanceDay = tempAttendance[student].asistencias[dayNumber] // attendance value for this student in this day (1 or 0)
                                         return (
-                                            <td key={index} style={{padding: 'unset', textAlign: 'center'}}>
-                                                <MultiStateCheckbox id={`${formattedRun}-${day.getTime()}`}
-                                                                    value={attendanceValue}
+                                            <td key={day} style={{padding: 'unset', textAlign: 'center'}}>
+                                                <MultiStateCheckbox id={{ run: formattedRun, day: dayNumber }}
+                                                                    value={studentAttendanceDay}
                                                                     disabled={!editMode}
                                                                     onChange={handleChange}
                                                                     options={options}
-                                                                    optionValue="value" />
+                                                                    optionValue="value"
+                                                />
                                             </td>)
                                     } else { // si es un dia que no tiene asistencia en la DB
                                         return (
-                                            <td key={index} style={{padding: 'unset', textAlign: 'center'}}>
-                                                <MultiStateCheckbox id={`${formattedRun}-${day.getTime()}`} disabled={true} />
+                                            <td key={day} style={{padding: 'unset', textAlign: 'center'}}>
+                                                <MultiStateCheckbox id={`${formattedRun}-${day.getTime()}`}
+                                                                    value={null}
+                                                                    disabled={true}
+                                                                    options={options}
+                                                                    optionValue="value"
+                                                />
                                             </td>)
                                     } 
                                 })}
