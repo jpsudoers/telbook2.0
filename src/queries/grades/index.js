@@ -9,6 +9,5 @@ export const getGradesQuery = async (establecimiento) => {
     querySnapshot.forEach((doc) => {
         gradesArray.push(doc.data())
     });
-    console.log('cursos =', gradesArray)
     return gradesArray
 }

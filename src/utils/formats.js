@@ -99,7 +99,6 @@ export const exportToPDF = (list, title, head, attr) => {
         import('jspdf-autotable').then(() => {
             const doc = new jsPDF.default(0, 0);
             const dataToPdf = list
-            console.log(dataToPdf)
             doc.text(15, 15, title);
             let row = [];
             for (let i = 0; i < dataToPdf.length; i++) {

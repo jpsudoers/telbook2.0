@@ -64,7 +64,6 @@ const DataTableFilter = ({
                 const dataToPdf = exportColumns.filter(column => {
                     return column.title !== 'Acciones'
                 });
-                // console.log(dataToPdf)
                 doc.text(15, 15, "Libro de matrícula");
                 doc.autoTable(dataToPdf, data, {
                         startY: 20,

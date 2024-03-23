@@ -111,7 +111,6 @@ const PlanningState = (props) => {
         });
         try {
             const response = await getPlanningShortByGradeByDateQuery(grade, date)
-            console.log(response)
             dispatch({
                 type: GET_PLANNING_SHORT_BY_DATE,
                 payload: response

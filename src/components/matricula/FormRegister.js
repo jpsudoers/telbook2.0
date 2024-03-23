@@ -143,7 +143,6 @@ const FormRegister = ({option = 'create', id = ''}) => {
     const newGrades = grades.map(grade => {
         return grade.codigo
     })
-    console.log(formik.values.grade)
     return (
         <div className='py-4'>
             <form onSubmit={formik.handleSubmit}>
