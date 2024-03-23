@@ -422,6 +422,8 @@ const FormRegister = ({option = 'create', id = ''}) => {
                                     name='educationMother'
                                     value={formik.values.educationMother}
                                     options={[
+                                        //JPS, se agrega opción de SIN ANTECEDENTES
+                                        'SIN ANTECEDENTES',
                                         'BÁSICA COMPLETA',
                                         'BÁSICA INCOMPLETA',
                                         'MEDIA COMPLETA',
@@ -449,6 +451,8 @@ const FormRegister = ({option = 'create', id = ''}) => {
                                     name='educationFather'
                                     value={formik.values.educationFather}
                                     options={[
+                                        //JPS, se agrega opción de SIN ANTECEDENTES
+                                        'SIN ANTECEDENTES',
                                         'BÁSICA COMPLETA',
                                         'BÁSICA INCOMPLETA',
                                         'MEDIA COMPLETA',
