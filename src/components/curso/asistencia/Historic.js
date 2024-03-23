@@ -221,30 +221,46 @@ const Historic = ({students, grade}) => {
                 <tbody className='p-datatable-tbody'>
 
                     {/* estudiantes */}
-                    {Object.keys(tempAttendance).map(student => {
-                        const formattedRun = student.replaceAll('.', '')
+                    {students.map(student => {
+                        const formattedRun = student.run.replaceAll('.', '')
                         return (
-                            <tr key={student}>
+                            <tr key={student.run}>
                                 {/* nombre estudiante */}
                                 <td style={{padding: '10px', fontSize: '12px'}}>
-                                    {tempAttendance[student].name}
+                                    {student.name}
                                 </td>
 
                                 {/* dias */}
                                 {getAllDaysInMonth(selectedMonth.code, selectedYear).map(day => { // for each day in the month
-                                    const dayNumber = day.getUTCDate() // the number of this day. e.g. 31
+                                    const dayNumber = day.getUTCDate().toString().padStart(2, '0') // the number of this day. e.g. 31
+
                                     if (daysWithAttendance.includes(String(dayNumber))) { // si es un dia que tiene asistencia en la DB
-                                        const studentAttendanceDay = tempAttendance[student].asistencias[dayNumber] // attendance value for this student in this day (1 or 0)
-                                        return (
-                                            <td key={day} style={{padding: 'unset', textAlign: 'center'}}>
-                                                <MultiStateCheckbox id={{ run: formattedRun, day: dayNumber }}
-                                                                    value={studentAttendanceDay}
-                                                                    disabled={!editMode}
-                                                                    onChange={handleChange}
-                                                                    options={options}
-                                                                    optionValue="value"
-                                                />
-                                            </td>)
+
+                                        if (tempAttendance[formattedRun]) {
+                                            const studentAttendanceDay = tempAttendance[formattedRun].asistencias[dayNumber] // attendance value for this student in this day (1 or 0)
+                                            return (
+                                                <td key={day} style={{padding: 'unset', textAlign: 'center'}}>
+                                                    <MultiStateCheckbox id={{ run: formattedRun, day: dayNumber }}
+                                                                        value={studentAttendanceDay}
+                                                                        disabled={!editMode}
+                                                                        onChange={handleChange}
+                                                                        options={options}
+                                                                        optionValue="value"
+                                                    />
+                                                </td>)
+                                        } else {
+                                            return (
+                                                <td key={day} style={{padding: 'unset', textAlign: 'center'}}>
+                                                    <MultiStateCheckbox id={{ run: formattedRun, day: dayNumber }}
+                                                                        value={null}
+                                                                        disabled={!editMode}
+                                                                        onChange={handleChange}
+                                                                        options={options}
+                                                                        optionValue="value"
+                                                    />
+                                                </td>)
+                                        }
+
                                     } else { // si es un dia que no tiene asistencia en la DB
                                         return (
                                             <td key={day} style={{padding: 'unset', textAlign: 'center'}}>
@@ -254,6 +270,7 @@ const Historic = ({students, grade}) => {
                                                 />
                                             </td>)
                                     }
+                                    
                                 })}
                             </tr>)
                     })}
