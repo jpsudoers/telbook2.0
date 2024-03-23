@@ -134,12 +134,15 @@ const Historic = ({students, grade}) => {
         const day = target.id.day
         const newValue = target.value
         setTempAttendance(prevState => {
+            const student = students.find(s => s.run === run);
+            const asistencias = prevState[run]?.asistencias || {};
             return {
                 ...prevState,
                 [run]: {
                     ...prevState[run],
+                    name: student?.name,
                     asistencias: {
-                        ...prevState[run].asistencias,
+                        ...asistencias,
                         [day]: newValue
                     }
                 }
