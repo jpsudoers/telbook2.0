@@ -56,6 +56,7 @@ const Historic = ({filteredStudents, grade}) => {
                 newAttendance[alumno.run].asistencias[attendance.day] = alumno.presente; // finalmente agrego la asistencia al alumno en newAttendance
             });
         });
+        studentsInCoursePlusAttendance.sort((a, b) => a.name.localeCompare(b.name)); // ordeno los estudiantes por nombre
         setTempAttendance(newAttendance); // actualizo el estado
         setStudentsInAttendances(studentsInCoursePlusAttendance); // actualizo el estado
     }, [attendances]);
@@ -254,7 +255,7 @@ const Historic = ({filteredStudents, grade}) => {
                             <tr key={student.run}>
                                 {/* nombre estudiante */}
                                 <td style={{padding: '10px', fontSize: '12px'}}>
-                                    {student.name}
+                                    {student.name.toUpperCase()}
                                 </td>
 
                                 {/* dias */}
