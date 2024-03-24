@@ -23,27 +23,41 @@ const options = [
     }
 ];
 
-const Historic = ({students, grade}) => {
+const Historic = ({filteredStudents, grade}) => {
     const {
-        attendances, attendancesError, attendancesLoading, getAttendanceByMonth, updateAttendance
+        students, attendances, attendancesError, attendancesLoading, getAttendanceByMonth, updateAttendance
     } = useContext(StudentsContext);
 
-    const [tempAttendance, setTempAttendance] = useState({});
+    const [tempAttendance, setTempAttendance] = useState({}); // va a contener las asistencias iniciales, las que se van modificando, y las que se van a guardar finalmente
+    const [studentsInAttendances, setStudentsInAttendances] = useState([]); // va a contener los estudiantes del curso, y tambien estudiantes que no estan en el curso pero que tienen asistencia
 
     const router = useRouter();
 
     useEffect(() => {
-        let newAttendance = {}; // objeto que contendrá las asistencias de los alumnos para poblar la tabla e ir modificandola
+        // newAttendance es un objeto temporal que se va a usar para setear el estado de tempAttendance
+        // studentsInCoursePlusAttendance es el array temporal que se va a usar para setear el estado de studentsInAttendances
+
+        let newAttendance = {};
+        let studentsInCoursePlusAttendance = [...filteredStudents.map(item => ({ run: item.run.replaceAll('.',''), name: item.name }))]
+
         attendances.forEach(attendance => { // por cada asistencia...
             attendance.alumnos.forEach(alumno => { // por cada alumno en la asistencia...
-                let student = students.find(student => student.run.replaceAll('.','') === alumno.run); // busco el alumno en la lista de alumnos
-                if (!newAttendance[alumno.run]) { // si no existe el alumno en newAttendance
-                    newAttendance[alumno.run] = { asistencias: {}, name: student ? student.name : '' }; // creo el alumno en newAttendance y seteo el nombre o un string vacío
-                }
-                newAttendance[alumno.run].asistencias[attendance.day] = alumno.presente; // agrego la asistencia al alumno en newAttendance
+                let student = students.find(item => item.run.replaceAll('.','') === alumno.run); // busco el alumno en la lista de alumnos...
+                const studentName = student?.name // ...para poder extraer su nombre
+
+                // lo agrego a studentsInCoursePlusAttendance si es que no está
+                if (!studentsInCoursePlusAttendance.find(item => item.run === alumno.run))
+                    studentsInCoursePlusAttendance.push({run: alumno.run, name: studentName});
+
+                // si el alumno no está en newAttendance, lo agrego
+                if (!newAttendance[alumno.run]) // si no existe el alumno en newAttendance...
+                    newAttendance[alumno.run] = { asistencias: {}, name: studentName ? studentName : '' }; // ...creo el alumno y seteo el nombre o un string vacío
+                
+                newAttendance[alumno.run].asistencias[attendance.day] = alumno.presente; // finalmente agrego la asistencia al alumno en newAttendance
             });
         });
         setTempAttendance(newAttendance); // actualizo el estado
+        setStudentsInAttendances(studentsInCoursePlusAttendance); // actualizo el estado
     }, [attendances]);
 
     const daysWithAttendance = attendances.map(attendance => attendance.day) // ["14","19","20","21",]
@@ -224,7 +238,7 @@ const Historic = ({students, grade}) => {
                 <tbody className='p-datatable-tbody'>
 
                     {/* estudiantes */}
-                    {students.map(student => {
+                    {studentsInAttendances.map(student => {
                         const formattedRun = student.run.replaceAll('.', '')
                         return (
                             <tr key={student.run}>

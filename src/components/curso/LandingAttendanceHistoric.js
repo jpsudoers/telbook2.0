@@ -14,7 +14,7 @@ const LandingAttendanceHistoric = () => {
 
     const filterStudents = getStudentsByGrade(students, grade)
     return (
-        <Historic students={filterStudents} grade={grade}/>
+        <Historic filteredStudents={filterStudents} grade={grade}/>
     );
 };
 
