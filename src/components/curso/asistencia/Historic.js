@@ -188,6 +188,16 @@ const Historic = ({filteredStudents, grade}) => {
         await updateAttendance(attendancesAsFirebase)
     }
 
+    const summary = {}
+    attendances.map(item => {
+        summary[item.day] = {presente: 0, ausente: 0, total: 0}
+        item.alumnos.map(alumno => {
+            if (alumno.presente === 1) summary[item.day].presente++
+            if (alumno.presente === 0) summary[item.day].ausente++
+            summary[item.day].total++
+        })
+    })
+
     if (attendancesLoading) {
         return <Loading/>
     }
@@ -298,8 +308,9 @@ const Historic = ({filteredStudents, grade}) => {
                             <strong>Presente</strong>
                         </td>
                         {getAllDaysInMonth(selectedMonth.code, selectedYear).map((day, idx) => {
+                            const dayNumber = (idx + 1).toString().padStart(2, '0')
                             return <td key={idx} style={{padding: 'unset', textAlign: 'center', color: 'gray'}}>
-                                <strong>{totals[parseInt(idx) + 1]?.presente}</strong>
+                                <strong>{summary[dayNumber]?.presente}</strong>
                             </td>
                         })}
                     </tr>
@@ -308,8 +319,9 @@ const Historic = ({filteredStudents, grade}) => {
                             <strong>Ausente</strong>
                         </td>
                         {getAllDaysInMonth(selectedMonth.code, selectedYear).map((day, idx) => {
+                            const dayNumber = (idx + 1).toString().padStart(2, '0')
                             return <td key={idx} style={{padding: 'unset', textAlign: 'center', color: 'gray'}}>
-                                <strong>{totals[parseInt(idx) + 1]?.ausente}</strong>
+                                <strong>{summary[dayNumber]?.ausente}</strong>
                             </td>
                         })}
                     </tr>
@@ -318,8 +330,9 @@ const Historic = ({filteredStudents, grade}) => {
                             <strong>Total</strong>
                         </td>
                         {getAllDaysInMonth(selectedMonth.code, selectedYear).map((day, idx) => {
+                            const dayNumber = (idx + 1).toString().padStart(2, '0')
                             return <td key={idx} style={{padding: 'unset', textAlign: 'center', color: 'gray'}}>
-                                <strong>{totals[parseInt(idx) + 1]?.total}</strong>
+                                <strong>{summary[dayNumber]?.total}</strong>
                             </td>
                         })}
                     </tr>
