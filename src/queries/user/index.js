@@ -9,6 +9,5 @@ export const getUserQuery = async (uid) => {
     querySnapshot.forEach((doc) => {
         userArray.push(doc.data())
     });
-    console.log('usuario =', userArray[0])
     return userArray[0]
 }

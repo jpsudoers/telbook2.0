@@ -94,7 +94,6 @@ const Student = () => {
         });
     };
 
-    console.log(student)
 
     return (
         <>

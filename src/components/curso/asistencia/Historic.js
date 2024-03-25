@@ -8,21 +8,60 @@ import Loading from "@/components/commons/Loading/Loading";
 import {Button} from "primereact/button";
 import {jsPDF} from 'jspdf';
 import UserContext from "@/context/user/User.context";
+import {useRouter} from "next/router";
 
-const options = [{
-    value: 'presente',
-    icon: 'pi pi-check',
-    style: {backgroundColor: 'green', borderColor: 'green'}
-}, {value: 'ausente', icon: 'pi pi-times', style: {backgroundColor: 'red', borderColor: 'red'}}, {
-    value: 'sin-clase',
-    icon: 'pi pi-lock',
-    style: {backgroundColor: 'blue', borderColor: 'blue'}
-}];
+const options = [
+    {
+        value: 1,
+        icon: 'pi pi-check',
+        style: {backgroundColor: 'green', borderColor: 'green'}
+    },
+    {
+        value: 0,
+        icon: 'pi pi-times',
+        style: {backgroundColor: 'red', borderColor: 'red'}
+    }
+];
 
-const Historic = ({students, grade}) => {
+const Historic = ({filteredStudents, grade}) => {
     const {
-        attendances, attendancesError, attendancesLoading, getAttendanceByMonth
+        students, attendances, attendancesError, attendancesLoading, getAttendanceByMonth, updateAttendance
     } = useContext(StudentsContext);
+
+    const [tempAttendance, setTempAttendance] = useState({}); // va a contener las asistencias iniciales, las que se van modificando, y las que se van a guardar finalmente
+    const [studentsInAttendances, setStudentsInAttendances] = useState([]); // va a contener los estudiantes del curso, y tambien estudiantes que no estan en el curso pero que tienen asistencia
+
+    const router = useRouter();
+
+    useEffect(() => {
+        // newAttendance es un objeto temporal que se va a usar para setear el estado de tempAttendance
+        // studentsInCoursePlusAttendance es el array temporal que se va a usar para setear el estado de studentsInAttendances
+
+        let newAttendance = {};
+        let studentsInCoursePlusAttendance = [...filteredStudents.map(item => ({ run: item.run.replaceAll('.',''), name: item.name || '' }))]
+
+        attendances.forEach(attendance => { // por cada asistencia...
+            attendance.alumnos.forEach(alumno => { // por cada alumno en la asistencia...
+                let student = students.find(item => item.run.replaceAll('.','') === alumno.run); // busco el alumno en la lista de alumnos...
+                const studentName = student?.name // ...para poder extraer su nombre
+
+                // lo agrego a studentsInCoursePlusAttendance si es que no está
+                if (!studentsInCoursePlusAttendance.find(item => item.run === alumno.run))
+                    studentsInCoursePlusAttendance.push({run: alumno.run, name: studentName});
+
+                // si el alumno no está en newAttendance, lo agrego
+                if (!newAttendance[alumno.run]) // si no existe el alumno en newAttendance...
+                    newAttendance[alumno.run] = { asistencias: {}, name: studentName ? studentName : '' }; // ...creo el alumno y seteo el nombre o un string vacío
+                
+                newAttendance[alumno.run].asistencias[attendance.day] = alumno.presente; // finalmente agrego la asistencia al alumno en newAttendance
+            });
+        });
+        studentsInCoursePlusAttendance.sort((a, b) => a.name?.localeCompare(b.name)); // ordeno los estudiantes por nombre
+        setTempAttendance(newAttendance); // actualizo el estado
+        setStudentsInAttendances(studentsInCoursePlusAttendance); // actualizo el estado
+    }, [attendances]);
+
+    const daysWithAttendance = attendances.map(attendance => attendance.day) // ["14","19","20","21",]
 
     const {
         user,
@@ -106,10 +145,59 @@ const Historic = ({students, grade}) => {
     })]
 
     const handleChange = ({target}) => {
-        setAssistanceValue({
-            ...assistanceValue, [target.id]: target.value
+        const run = target.id.run
+        const day = target.id.day
+        const newValue = target.value
+        setTempAttendance(prevState => {
+            const student = students.find(s => s.run === run);
+            const asistencias = prevState[run]?.asistencias || {};
+            return {
+                ...prevState,
+                [run]: {
+                    ...prevState[run],
+                    name: student?.name,
+                    asistencias: {
+                        ...asistencias,
+                        [day]: newValue
+                    }
+                }
+            }
         })
     }
+
+    const saveAttendances = async () => {
+        setEditMode(false)
+        const attendancesAsFirebase = [];
+        for (const [run, data] of Object.entries(tempAttendance)) {
+            for (const [day, presente] of Object.entries(data.asistencias)) {
+                if (presente !== null) {
+                    let dayData = attendancesAsFirebase.find(d => d.day === day);
+                    if (!dayData) {
+                        dayData = {
+                            alumnos: [],
+                            curso: grade.toUpperCase(),
+                            day,
+                            month: selectedMonth.code.toString().padStart(2, '0'),
+                            year: currentYear.toString()
+                        };
+                        attendancesAsFirebase.push(dayData);
+                    }
+                    dayData.alumnos.push({ presente, run });
+                }
+            }
+        }
+        await updateAttendance(attendancesAsFirebase)
+    }
+
+    const summary = {}
+    attendances.map(item => {
+        summary[item.day] = {presente: 0, ausente: 0, total: 0}
+        item.alumnos.map(alumno => {
+            if (alumno.presente === 1) summary[item.day].presente++
+            if (alumno.presente === 0) summary[item.day].ausente++
+            summary[item.day].total++
+        })
+    })
 
     if (attendancesLoading) {
         return <Loading/>
@@ -138,73 +226,117 @@ const Historic = ({students, grade}) => {
                               placeholder="Selecciona año" className="w-full md:w-14rem"/>
                 </div>
             </div>
+
+            {/* tabla */}
             <table className='p-datatable-table' role="table" data-pc-section="table">
+
+                {/* cabecera */}
                 <thead className="p-datatable-thead" data-pc-section="thead">
-                <tr role="row" data-pc-section="headerrow">
-                    {headers.map((header, index) => {
-                        return <th key={index} style={{
-                            padding: '1rem 0',
-                            textAlign: index === 0 ? 'left' : 'center',
-                            color: index === currentDay && currentMonth === selectedMonth.code - 1 ? '#6466f1' : 'gray'
-                        }}>{header.header}
-                        </th>
-                    })}
-                </tr>
+                    {/* headers */}
+                    <tr role="row" data-pc-section="headerrow">
+                        {headers.map((header, index) => {
+                            return <th key={index} style={{
+                                padding: '1rem 0',
+                                textAlign: index === 0 ? 'left' : 'center',
+                                color: index === currentDay && currentMonth === selectedMonth.code - 1 ? '#6466f1' : 'gray'
+                            }}>{header.header}
+                            </th>
+                        })}
+                    </tr>
                 </thead>
+
+                {/* cuerpo */}
                 <tbody className='p-datatable-tbody'>
-                {students.map((student, key) => {
-                    const formattedRun = student.run.replaceAll('.', '')
-                    return <tr key={key}>
+
+                    {/* estudiantes */}
+                    {studentsInAttendances.map(student => {
+                        const formattedRun = student.run.replaceAll('.', '')
+                        return (
+                            <tr key={student.run}>
+                                {/* nombre estudiante */}
+                                <td style={{padding: '10px', fontSize: '12px'}}>
+                                    {student.name?.toUpperCase() || `Nombre no encontrado (${student.run})`}
+                                </td>
+
+                                {/* dias */}
+                                {getAllDaysInMonth(selectedMonth.code, selectedYear).map(day => { // for each day in the month
+                                    const dayNumber = day.getUTCDate().toString().padStart(2, '0') // the number of this day. e.g. 31
+
+                                    if (daysWithAttendance.includes(String(dayNumber))) { // si es un dia que tiene asistencia en la DB
+
+                                        if (tempAttendance[formattedRun]) {
+                                            const studentAttendanceDay = tempAttendance[formattedRun].asistencias[dayNumber] // attendance value for this student in this day (1 or 0)
+                                            return (
+                                                <td key={day} style={{padding: 'unset', textAlign: 'center'}}>
+                                                    <MultiStateCheckbox id={{ run: formattedRun, day: dayNumber }}
+                                                                        value={studentAttendanceDay}
+                                                                        disabled={!editMode}
+                                                                        onChange={handleChange}
+                                                                        options={options}
+                                                                        optionValue="value"
+                                                    />
+                                                </td>)
+                                        } else {
+                                            return (
+                                                <td key={day} style={{padding: 'unset', textAlign: 'center'}}>
+                                                    <MultiStateCheckbox id={{ run: formattedRun, day: dayNumber }}
+                                                                        value={null}
+                                                                        disabled={!editMode}
+                                                                        onChange={handleChange}
+                                                                        options={options}
+                                                                        optionValue="value"
+                                                    />
+                                                </td>)
+                                        }
+
+                                    } else { // si es un dia que no tiene asistencia en la DB
+                                        return (
+                                            <td key={day} style={{padding: 'unset', textAlign: 'center'}}>
+                                                <MultiStateCheckbox id={`${formattedRun}-${day.getTime()}`}
+                                                                    disabled={true}
+                                                                    style={{backgroundColor: 'lightgray'}}
+                                                />
+                                            </td>)
+                                    }
+                                    
+                                })}
+                            </tr>)
+                    })}
+
+                    {/* resumen */}
+                    <tr>
                         <td style={{padding: '10px', fontSize: '12px'}}>
-                            {student.name}
+                            <strong>Presente</strong>
                         </td>
                         {getAllDaysInMonth(selectedMonth.code, selectedYear).map((day, idx) => {
-                            const dayNumber = day.getUTCDate()
-                            const attendanceDay = attendances.find(attendance => Number(attendance.day) == dayNumber)
-                            const studentAttendanceDay = attendanceDay?.alumnos.find(alumno => alumno.run === formattedRun)
-                            let attendanceValue = null
-                            if (studentAttendanceDay?.presente == 1) attendanceValue = 'presente'
-                            else if (studentAttendanceDay?.presente == 0) attendanceValue = 'ausente'
-                            return <td key={idx} style={{padding: 'unset', textAlign: 'center'}}>
-                                <MultiStateCheckbox id={`${formattedRun}-${day.getTime()}`}
-                                                    value={attendanceValue}
-                                                    disabled={!editMode}
-                                                    onChange={handleChange}
-                                                    options={options} optionValue="value"/>
+                            const dayNumber = (idx + 1).toString().padStart(2, '0')
+                            return <td key={idx} style={{padding: 'unset', textAlign: 'center', color: 'gray'}}>
+                                <strong>{summary[dayNumber]?.presente}</strong>
                             </td>
                         })}
                     </tr>
-                })}
-                <tr>
-                    <td style={{padding: '10px', fontSize: '12px'}}>
-                        <strong>Presente</strong>
-                    </td>
-                    {getAllDaysInMonth(selectedMonth.code, selectedYear).map((day, idx) => {
-                        return <td key={idx} style={{padding: 'unset', textAlign: 'center', color: 'gray'}}>
-                            <strong>{totals[parseInt(idx) + 1]?.presente}</strong>
+                    <tr>
+                        <td style={{padding: '10px', fontSize: '12px'}}>
+                            <strong>Ausente</strong>
                         </td>
-                    })}
-                </tr>
-                <tr>
-                    <td style={{padding: '10px', fontSize: '12px'}}>
-                        <strong>Ausente</strong>
-                    </td>
-                    {getAllDaysInMonth(selectedMonth.code, selectedYear).map((day, idx) => {
-                        return <td key={idx} style={{padding: 'unset', textAlign: 'center', color: 'gray'}}>
-                            <strong>{totals[parseInt(idx) + 1]?.ausente}</strong>
+                        {getAllDaysInMonth(selectedMonth.code, selectedYear).map((day, idx) => {
+                            const dayNumber = (idx + 1).toString().padStart(2, '0')
+                            return <td key={idx} style={{padding: 'unset', textAlign: 'center', color: 'gray'}}>
+                                <strong>{summary[dayNumber]?.ausente}</strong>
+                            </td>
+                        })}
+                    </tr>
+                    <tr>
+                        <td style={{padding: '10px', fontSize: '12px'}}>
+                            <strong>Total</strong>
                         </td>
-                    })}
-                </tr>
-                <tr>
-                    <td style={{padding: '10px', fontSize: '12px'}}>
-                        <strong>Total</strong>
-                    </td>
-                    {getAllDaysInMonth(selectedMonth.code, selectedYear).map((day, idx) => {
-                        return <td key={idx} style={{padding: 'unset', textAlign: 'center', color: 'gray'}}>
-                            <strong>{totals[parseInt(idx) + 1]?.total}</strong>
-                        </td>
-                    })}
-                </tr>
+                        {getAllDaysInMonth(selectedMonth.code, selectedYear).map((day, idx) => {
+                            const dayNumber = (idx + 1).toString().padStart(2, '0')
+                            return <td key={idx} style={{padding: 'unset', textAlign: 'center', color: 'gray'}}>
+                                <strong>{summary[dayNumber]?.total}</strong>
+                            </td>
+                        })}
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -213,10 +345,16 @@ const Historic = ({students, grade}) => {
         </div>
 
         {user.perfil === 'admin' && (editMode ?
-                <Button className='my-2' label='Guardar asistencia' severity={'success'}
-                //JPS se deshabilita botón editar.
-                        onClick={() => setEditMode(false)}/> :
-                <Button className='my-2' label='Editar asistencia' severity={'info'} onClick={() => setEditMode(false)}/>
+                <Button
+                    className='my-2'
+                    label='Guardar asistencia'
+                    severity={'success'}
+                    onClick={() => saveAttendances()}/> :
+                <Button
+                    className='my-2'
+                    label='Editar asistencia'
+                    severity={'info'}
+                    onClick={() => setEditMode(true)}/>
         )}
     </div>);
 };

@@ -15,7 +15,6 @@ const GetTel = ({grade}) => {
         lectionariesError,
     } = useContext(PlanningContext);
 
-    console.log(registers)
 
     useEffect(() => {
         getRegisters(grade.toUpperCase())

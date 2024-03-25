@@ -52,7 +52,7 @@ import {
 } from "@/context/students/Students.types";
 import StudentContext from "./Students.context";
 import {studentDecorator, studentsDecorator} from "@/context/students/Students.decorator";
-import {getAttendanceByDateQuery, getAttendanceByMonthQuery, setAttendanceQuery} from "@/queries/assistance";
+import {getAttendanceByDateQuery, getAttendanceByMonthQuery, setAttendanceQuery, updateAttendancesQuery} from "@/queries/assistance";
 
 export const initialStateStudent = {
     students: [],
@@ -142,6 +142,23 @@ const StudentsState = (props) => {
         }
     }
 
+    const updateAttendance = async (payload) => {
+        dispatch({
+            type: SET_ATTENDANCE_LOADING
+        });
+        try {
+            await updateAttendancesQuery(payload)
+            dispatch({
+                type: SET_ATTENDANCE,
+                payload: state.attendances
+            });
+        } catch (e) {
+            dispatch({
+                type: SET_ATTENDANCE_ERROR
+            });
+        }
+    }
+
     const getStudentsBySchool = async (school) => {
         dispatch({
             type: GET_STUDENTS_LOADING
@@ -173,7 +190,6 @@ const StudentsState = (props) => {
                 payload: studentDecorator(newStudent)
             });
         } catch (e) {
-            console.log(e)
             dispatch({
                 type: SET_STUDENT_ERROR
             });
@@ -195,7 +211,6 @@ const StudentsState = (props) => {
                 payload: state.studentsRaw.filter(st => st.id !== id).concat(student)
             });
         } catch (e) {
-            console.log(e)
             dispatch({
                 type: EDIT_STUDENT_ERROR
             });
@@ -216,7 +231,6 @@ const StudentsState = (props) => {
             //     })
             // });
         } catch (e) {
-            console.log(e)
             dispatch({
                 type: REMOVE_STUDENT_ERROR
             });
@@ -250,7 +264,6 @@ const StudentsState = (props) => {
                 type: SET_OBSERVATIONS,
             });
         } catch (e) {
-            console.log(e)
             dispatch({
                 type: SET_OBSERVATIONS_ERROR
             });
@@ -284,7 +297,6 @@ const StudentsState = (props) => {
                 type: SET_SCHOOL_REGISTERS,
             });
         } catch (e) {
-            console.log(e)
             dispatch({
                 type: SET_SCHOOL_REGISTERS_ERROR
             });
@@ -301,7 +313,6 @@ const StudentsState = (props) => {
                 type: SET_EVALUATIONS_BY_OA,
             });
         } catch (e) {
-            console.log(e)
             dispatch({
                 type: SET_EVALUATIONS_BY_OA_ERROR
             });
@@ -389,6 +400,7 @@ const StudentsState = (props) => {
             removeStudent,
             clearStudent,
             setAttendance,
+            updateAttendance,
             getAttendanceByDate,
             getAttendanceByMonth,
             getObservationById,

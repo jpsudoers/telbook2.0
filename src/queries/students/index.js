@@ -74,7 +74,6 @@ export const getSchoolRegistersByIdQuery = async (id) => {
     querySnapshot.forEach((doc) => {
         studentsArray.push(doc.data())
     });
-    console.log(studentsArray)
     return studentsArray
 }
 

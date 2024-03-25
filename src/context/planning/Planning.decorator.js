@@ -1,7 +1,6 @@
 import React from "react";
 
 export const planningMediumsDecorator = (planningMediums) => planningMediums.map((plannings, index) => {
-    console.log(plannings)
     return {
         id: plannings.id,
         key: index,
@@ -53,7 +52,6 @@ export const planningMediumsDecorator = (planningMediums) => planningMediums.map
 })
 
 export const planningShortsDecorator = (planningShorts) => planningShorts.map((planning, index) => {
-    console.log(planningShorts)
     const estrategias = planning.estrategias.map((estrategia, idx) => {
         return {
             key: `${index}-${idx}`,

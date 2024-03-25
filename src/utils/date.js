@@ -1,3 +1,12 @@
+/**
+ * Get all days in a month.
+ * @param {number} month - Month number.
+ * @param {number} year - Year number.
+ * @returns {Date[]} - Array of dates.
+ * @example
+ * // returns [Date, Date, ...]
+ * getAllDaysInMonth(1, 2024)
+ */
 export const getAllDaysInMonth = (month, year) =>
     Array.from(
         {length: new Date(year, month, 0).getDate()},
