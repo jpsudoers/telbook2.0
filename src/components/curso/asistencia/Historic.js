@@ -38,7 +38,7 @@ const Historic = ({filteredStudents, grade}) => {
         // studentsInCoursePlusAttendance es el array temporal que se va a usar para setear el estado de studentsInAttendances
 
         let newAttendance = {};
-        let studentsInCoursePlusAttendance = [...filteredStudents.map(item => ({ run: item.run.replaceAll('.',''), name: item.name }))]
+        let studentsInCoursePlusAttendance = [...filteredStudents.map(item => ({ run: item.run.replaceAll('.',''), name: item.name || '' }))]
 
         attendances.forEach(attendance => { // por cada asistencia...
             attendance.alumnos.forEach(alumno => { // por cada alumno en la asistencia...
@@ -56,7 +56,7 @@ const Historic = ({filteredStudents, grade}) => {
                 newAttendance[alumno.run].asistencias[attendance.day] = alumno.presente; // finalmente agrego la asistencia al alumno en newAttendance
             });
         });
-        studentsInCoursePlusAttendance.sort((a, b) => a.name.localeCompare(b.name)); // ordeno los estudiantes por nombre
+        studentsInCoursePlusAttendance.sort((a, b) => a.name?.localeCompare(b.name)); // ordeno los estudiantes por nombre
         setTempAttendance(newAttendance); // actualizo el estado
         setStudentsInAttendances(studentsInCoursePlusAttendance); // actualizo el estado
     }, [attendances]);
@@ -255,7 +255,7 @@ const Historic = ({filteredStudents, grade}) => {
                             <tr key={student.run}>
                                 {/* nombre estudiante */}
                                 <td style={{padding: '10px', fontSize: '12px'}}>
-                                    {student.name.toUpperCase()}
+                                    {student.name?.toUpperCase() || `Nombre no encontrado (${student.run})`}
                                 </td>
 
                                 {/* dias */}
