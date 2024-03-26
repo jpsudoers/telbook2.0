@@ -79,6 +79,7 @@ const Historic = ({filteredStudents, grade}) => {
     const [image, takeScreenshot] = useScreenshot()
     const getImage = () => takeScreenshot(ref.current).then(download)
 
+    
     const formatAttendances = attendances.map((attendance) => {
         return attendance.alumnos.map(alumno => {
             const time = attendance.id.split('-')[3]
@@ -109,22 +110,24 @@ const Historic = ({filteredStudents, grade}) => {
         },
     }
 
-    const totals = {};
+    const totals = {}
     formatAttendances.forEach(day => {
-        const dayAsis = new Date(parseInt(Object.keys(day[0])[0].split('-')[2]))
-        let ausente = 0;
-        let presente = 0;
-        day.forEach(asis => {
-            Object.values(asis).forEach(val => {
-                if (val === 'presente') {
-                    presente++;
-                } else if (val === 'ausente') {
-                    ausente++;
-                }
+        if (day.length > 0) {
+            const dayAsis = new Date(parseInt(Object.keys(day[0])[0].split('-')[2]))
+            let ausente = 0;
+            let presente = 0;
+            day.forEach(asis => {
+                Object.values(asis).forEach(val => {
+                    if (val === 'presente') {
+                        presente++;
+                    } else if (val === 'ausente') {
+                        ausente++;
+                    }
+                })
             })
-        })
-        totals[dayAsis.getUTCDate().toString()] = {
-            ausente, presente, total: ausente + presente
+            totals[dayAsis.getUTCDate().toString()] = {
+                ausente, presente, total: ausente + presente
+            }
         }
     })
 
@@ -149,7 +152,7 @@ const Historic = ({filteredStudents, grade}) => {
         const day = target.id.day
         const newValue = target.value
         setTempAttendance(prevState => {
-            const student = students.find(s => s.run === run);
+            const student = students.find(s => s.run.replaceAll('.', '') === run);
             const asistencias = prevState[run]?.asistencias || {};
             return {
                 ...prevState,
@@ -168,22 +171,22 @@ const Historic = ({filteredStudents, grade}) => {
     const saveAttendances = async () => {
         setEditMode(false)
         const attendancesAsFirebase = [];
-        for (const [run, data] of Object.entries(tempAttendance)) {
-            for (const [day, presente] of Object.entries(data.asistencias)) {
-                if (presente !== null) {
-                    let dayData = attendancesAsFirebase.find(d => d.day === day);
-                    if (!dayData) {
-                        dayData = {
-                            alumnos: [],
-                            curso: grade.toUpperCase(),
-                            day,
-                            month: selectedMonth.code.toString().padStart(2, '0'),
-                            year: currentYear.toString()
-                        };
-                        attendancesAsFirebase.push(dayData);
-                    }
-                    dayData.alumnos.push({ presente, run });
+        for (const [run, data] of Object.entries(tempAttendance)) { // por cada alumno
+            for (const [day, presente] of Object.entries(data.asistencias)) { // por cada dia de asistencia del alumno
+                let dayData = attendancesAsFirebase.find(d => d.day === day);
+                if (!dayData) {
+                    dayData = {
+                        alumnos: [],
+                        curso: grade.toUpperCase(),
+                        day,
+                        month: selectedMonth.code.toString().padStart(2, '0'),
+                        year: currentYear.toString()
+                    };
+                    attendancesAsFirebase.push(dayData);
                 }
+                if (presente !== null) {
+                    dayData.alumnos.push({ presente, run });
+                } 
             }
         }
         await updateAttendance(attendancesAsFirebase)
