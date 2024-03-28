@@ -134,7 +134,11 @@ const LandingPlanningShort = () => {
         const weekCurrent = getWeekNumber(new Date())
         const weekPlanning = getWeekNumber(new Date(planning.date + " EDT"))
         return weekCurrent === weekPlanning
-    })
+    }).sort((a, b) => {
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        return dateA - dateB;
+    });
 
     const exportToPDF = () => {
         import('jspdf').then((jsPDF) => {
