@@ -11,8 +11,10 @@ import Loading from "@/components/commons/Loading/Loading";
 import {modeSpeech} from "@/utils/const";
 import StudentsContext from "@/context/students/Students.context";
 import {InputTextarea} from "primereact/inputtextarea";
+import PreviewTel from "@/components/curso/tel/PreviewTel";
 import GetTel from "@/components/curso/tel/GetTel";
 import PlanningContext from "@/context/planning/Planning.context";
+import { set } from '@firebase/database';
 
 
 const LandingTEL = () => {
@@ -134,6 +136,56 @@ const LandingTEL = () => {
             <small className="p-error"/>;
     };
 
+
+
+
+
+
+
+
+
+
+// REFACTOR
+const [addedOas, setAddedOas] = useState([]);
+const addOa = () => {
+    const currentOas = {}
+    currentOas['modalidad'] = formik.values.mode
+    currentOas['alumnos'] = formik.values.studentsSpeech.map(student => {
+        return {alumnoSeleccionado: student.name}
+    })
+    currentOas['contenidos'] = formik.values.content.map(content => {
+        return {
+            "contenido": {
+                "ambito": formik.values.ambit,
+                "contenido": content,
+            },
+        }
+    })
+    formik.values.mode = ''
+    formik.values.studentsSpeech = []
+    formik.values.content = []
+    formik.values.ambit = ''
+    setAddedOas(addedOas.concat(currentOas))
+}
+const removeOa = (oa) => {
+    const newOas = addedOas.filter((item, index) => {
+        return index !== oa
+    })
+    setAddedOas(newOas)
+}
+// REFACTOR
+
+
+
+
+
+
+
+
+
+
+
+
     if (speechBasesLoading) {
         return <Loading/>
     }
@@ -215,6 +267,29 @@ const LandingTEL = () => {
                             />
                         </div>
                     </div>
+
+
+
+
+                    {/* REFACTOR */}
+                    <Button
+                        type='button'
+                        label='Añadir'
+                        severity='success'
+                        className='w-full mb-4'
+                        onClick={() => addOa()}
+                        disabled={
+                            formik.values.mode === '' ||
+                            formik.values.ambit === '' ||
+                            formik.values.studentsSpeech.length === 0 ||
+                            formik.values.content.length === 0
+                        }
+                    />
+                    {/* REFACTOR */}
+
+
+
+
                     <div className="flex-auto mb-4">
                         <label htmlFor="register" className="font-bold block mb-2">Registro / Observaciones</label>
                         <div className='p-inputgroup w-full'>
@@ -255,8 +330,8 @@ const LandingTEL = () => {
                             style={{width: '100%'}}/>
                 </div>
                 <div className="flex-auto">
+                    <PreviewTel addedOas={addedOas} removeOa={removeOa}/>
                     <GetTel grade={grade}/>
-                    
                 </div>
             </div>
         </form>
