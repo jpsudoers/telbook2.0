@@ -34,9 +34,9 @@ const GetTel = ({grade}) => {
         }
     })
 
-    const removeOa = (lectionary) => {
-        deleteRegister(lectionary.id)
-        getRegisters(grade.toUpperCase())
+    const removeOa = async (lectionary) => {
+        await deleteRegister(lectionary.id)
+        await getRegisters(grade.toUpperCase())
     }
 
     if (registersLoading) {
