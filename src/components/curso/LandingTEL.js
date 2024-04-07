@@ -72,21 +72,10 @@ const LandingTEL = () => {
         validate: (data) => {
             let errors = {};
 
-            if (!data.mode || data.mode === '') {
-                errors.mode = 'La modalidad es obligatoria';
+            if (!addedOas || addedOas.length === 0) {
+                errors.mode = 'D';
             }
 
-            if (!data.ambit || data.ambit === '') {
-                errors.ambit = 'El nivel fonoaudiológico es obligatorio';
-            }
-
-            if (!data.content || data.content === '') {
-                errors.content = 'El contenido es obligatorio';
-            }
-
-            if (!data.studentsSpeech || data.studentsSpeech.length === 0) {
-                errors.studentsSpeech = 'Los estudiantes son obligatorios';
-            }
             //JPS agrego validación al registro y Clave OTP
             if (!data.register || data.register.length === 0) {
                 errors.register = 'El registro es obligatorio';
@@ -102,19 +91,8 @@ const LandingTEL = () => {
                 const id = new Date()
                 const newData = {
                     id: 'reg-fono-' + grade + "-" + id.getTime(),
-                    alumnos: data.studentsSpeech.map(student => {
-                        return {alumnoSeleccionado: student.name}
-                    }),
+                    contenidosTel: addedOas,
                     curso: grade.toUpperCase(),
-                    contenidos: data.content.map(c => {
-                        return {
-                            "contenido": {
-                                "ambito": data.ambit,
-                                "contenido": c,
-                            },
-                        }
-                    }),
-                    modalidad: data.mode,
                     publishedAt: id,
                     observaciones: data.register,
                     usuario: user,
@@ -124,6 +102,7 @@ const LandingTEL = () => {
                 }
                 setRegister(newData)
                 getRegisters(grade.toUpperCase())
+                setAddedOas([])
                 formik.resetForm();
             }
         }

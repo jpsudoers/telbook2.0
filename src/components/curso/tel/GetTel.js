@@ -4,6 +4,7 @@ import {Fieldset} from 'primereact/fieldset';
 import PlanningContext from "@/context/planning/Planning.context";
 import Loading from "@/components/commons/Loading/Loading";
 import {capitalize} from "@/utils/formats";
+import { Accordion, AccordionTab } from 'primereact/accordion';
 
 const GetTel = ({grade}) => {
     const [date, setDate] = useState(new Date());
@@ -51,28 +52,72 @@ const GetTel = ({grade}) => {
                     const monthName = lectionary.publishedAt.toDate().toLocaleDateString('es-CL', {month: 'long'})
                     const date = dayName + " " + day + " de " + monthName + " de " + year;
 
-                    return <Fieldset key={index} className='mb-3' legend={date}>
-                        <p className="m-0">
-                            <strong>Modalidad:</strong> {lectionary.modalidad}
-                        </p>
-                        <p className="m-0">
-                            <strong>Alumnos: </strong> {
-                            lectionary.alumnos && lectionary.alumnos.map((students) => {
-                                return capitalize(students.alumnoSeleccionado) + ', '
-                            })
-                        }
-                        </p>
-                        <p className="m-0">
-                            <strong>Contenidos: </strong>{
-                            lectionary.contenidos && lectionary.contenidos.map((content) => {
-                                return `(${content.contenido.ambito}) ${content.contenido.contenido}, `
-                            })
-                        }
-                        </p>
-                        <p className="m-0">
-                            <strong>Observaciones:</strong> {lectionary.observaciones}
-                        </p>
-                    </Fieldset>
+                    // Si es un leccionario antiguo
+                    // ó si es un leccionario nuevo (con multiples oas)
+                    return !Object.hasOwn(lectionary, 'contenidosTel') ? (
+                        <Fieldset key={index} className='mb-3' legend={date}>
+                            <p className="m-0">
+                                <strong>Modalidad:</strong> {lectionary.modalidad}
+                            </p><br/>
+                            <p className="m-0">
+                                <strong>Observaciones:</strong> {lectionary.observaciones}
+                            </p><br/>
+                            <p className="m-0">
+                                <strong>Alumnos:</strong> {
+                                lectionary.alumnos && lectionary.alumnos.map((alumno) => {
+                                    return <p key={alumno}>{alumno.alumnoSeleccionado}</p>
+                                })
+                                }
+                            </p>
+                            <p className="m-0">
+                                <strong>Contenidos:</strong> {
+                                lectionary.contenidos && lectionary.contenidos.map((contenido) => {
+                                    return <p key={contenido}>
+                                        ({contenido.contenido.ambito}) {contenido.contenido.contenido}
+                                    </p>
+                                })
+                                }
+                            </p>
+                        </Fieldset>
+                    ) : (
+                        <Fieldset key={index} className='mb-3' legend={date}>
+                            <p className="m-0">
+                                <strong>Observaciones:</strong> {lectionary.observaciones}
+                            </p><br/>
+                            <Accordion multiple activeIndex={null} className='mb-4'>
+                            {
+                                // POR CADA OA
+                                lectionary.contenidosTel && lectionary.contenidosTel.map((oa, index) => {
+                                    return (
+                                        <AccordionTab key={index + 1} header={`Contenido #${index + 1}`}>
+                                            <p className="m-0">
+                                                <strong>Modalidad:</strong> {oa.modalidad}
+                                            </p><br/>
+
+                                            <p className="m-0" >
+                                                <strong>Alumnos: </strong><br/> {
+                                                // POR CADA ALUMNO EN EL OA
+                                                oa.alumnos && oa.alumnos.map((alumno) => {
+                                                    return <p key={alumno}>{alumno.alumnoSeleccionado}</p>
+                                                })
+                                            }
+                                            </p><br/>
+
+                                            <p className="m-0">
+                                            <strong>Contenidos: </strong><br/> {
+                                                // POR CADA CONTENIDO EN EL OA
+                                                oa.contenidos && oa.contenidos.map((contenido) => {
+                                                    return <p key={contenido}>({contenido.contenido.ambito}) {contenido.contenido.contenido}</p>
+                                                })
+                                            }
+                                            </p>
+                                        </AccordionTab>
+                                    )
+                                })
+                            }
+                            </Accordion>
+                        </Fieldset>
+                    );
                 })
             }
 
