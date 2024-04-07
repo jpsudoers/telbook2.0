@@ -5,6 +5,7 @@ import PlanningContext from "@/context/planning/Planning.context";
 import Loading from "@/components/commons/Loading/Loading";
 import {capitalize} from "@/utils/formats";
 import { Accordion, AccordionTab } from 'primereact/accordion';
+import {Button} from 'primereact/button';
 
 const GetTel = ({grade}) => {
     const [date, setDate] = useState(new Date());
@@ -13,6 +14,7 @@ const GetTel = ({grade}) => {
         getRegisters,
         registers,
         registersLoading,
+        deleteRegister,
         lectionariesError,
     } = useContext(PlanningContext);
 
@@ -31,6 +33,11 @@ const GetTel = ({grade}) => {
             return lectionary
         }
     })
+
+    const removeOa = (lectionary) => {
+        deleteRegister(lectionary.id)
+        getRegisters(grade.toUpperCase())
+    }
 
     if (registersLoading) {
         return <Loading/>
@@ -77,7 +84,8 @@ const GetTel = ({grade}) => {
                                     </p>
                                 })
                                 }
-                            </p>
+                            </p><br/>
+                            <Button type='button' label='Eliminar' severity='danger' onClick={() => removeOa(lectionary)}/>
                         </Fieldset>
                     ) : (
                         <Fieldset key={index} className='mb-3' legend={date}>
@@ -116,6 +124,7 @@ const GetTel = ({grade}) => {
                                 })
                             }
                             </Accordion>
+                            <Button type='button' label='Eliminar' severity='danger' onClick={() => removeOa(lectionary)}/>
                         </Fieldset>
                     );
                 })
