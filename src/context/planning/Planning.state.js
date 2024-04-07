@@ -40,6 +40,7 @@ import {
     SET_REGISTER,
     SET_REGISTER_ERROR,
     SET_REGISTER_LOADING,
+    DELETE_REGISTER, DELETE_REGISTER_ERROR, DELETE_REGISTER_LOADING
 } from "./Planning.types";
 import {
     deletePlanningLargeByGradeQuery,
@@ -53,7 +54,8 @@ import {
     setPlanningLargeByGradeQuery,
     setPlanningMediumQuery,
     setPlanningShortQuery,
-    setRegisterQuery
+    setRegisterQuery,
+    deleteRegisterQuery
 } from "@/queries/plannings";
 import {
     planningLargeDecorator,
@@ -308,6 +310,23 @@ const PlanningState = (props) => {
         }
     }
 
+    const deleteRegister = async (id) => {
+        dispatch({
+            type: DELETE_REGISTER_LOADING
+        });
+        try {
+            await deleteRegisterQuery(id)
+            dispatch({
+                type: DELETE_REGISTER,
+                payload: id
+            });
+        } catch (e) {
+            dispatch({
+                type: DELETE_REGISTER_ERROR
+            });
+        }
+    }
+    
     const getLectionaryById = async (id) => {
         dispatch({
             type: GET_LECTIONARY_LOADING
@@ -360,6 +379,7 @@ const PlanningState = (props) => {
             getPlanningsMediumByDate,
             getRegisters,
             setRegister,
+            deleteRegister,
             setPlanningLectionary,
             getLectionaryById
         }}
