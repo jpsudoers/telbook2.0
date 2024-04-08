@@ -91,6 +91,10 @@ export const setRegisterQuery = async (data) => {
     return await setDoc(doc(db, "registrosFonoaudiologicos", data.id), data);
 }
 
+export const deleteRegisterQuery = async (id) => {
+    await deleteDoc(doc(db, "registrosFonoaudiologicos", id));
+}
+
 export const setLectionaryQuery = async (data) => {
     return await setDoc(doc(db, "evaluacionesLeccionario", data.id), data);
 }
