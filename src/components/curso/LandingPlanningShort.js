@@ -16,6 +16,7 @@ import {getWeekNumber} from "@/utils/date";
 import {Calendar} from "primereact/calendar";
 import autoTable from "jspdf-autotable";
 import {getRandomKey} from "@/utils/evaluations";
+import {InputTextarea} from "primereact/inputtextarea";
 
 const LandingPlanningShort = () => {
     const [selectAmbit, setSelectAmbit] = useState(null);
@@ -281,7 +282,7 @@ const LandingPlanningShort = () => {
                         <div className="flex-auto mb-4">
                             <label htmlFor="resources" className="font-bold block mb-2">Recursos</label>
                             <div className='p-inputgroup w-full'>
-                                <InputText
+                                <InputTextarea
                                     id="resources"
                                     name="resources"
                                     value={formik.values.resources}
@@ -296,7 +297,7 @@ const LandingPlanningShort = () => {
                         <div className="flex-auto mb-4">
                             <label htmlFor="week" className="font-bold block mb-2">Instrumentos de evaluación</label>
                             <div className='p-inputgroup w-full'>
-                                <InputText
+                                <InputTextarea
                                     id="instruments"
                                     name="instruments"
                                     value={formik.values.instruments}
@@ -311,7 +312,7 @@ const LandingPlanningShort = () => {
                         <div className="flex-auto mb-4">
                             <label htmlFor="week" className="font-bold block mb-2">Inicio, desarrollo y cierre</label>
                             <div className='p-inputgroup w-full'>
-                                <InputText
+                                <InputTextarea
                                     id="init"
                                     name="init"
                                     value={formik.values.init}
