@@ -1,8 +1,7 @@
-import {Fieldset} from 'primereact/fieldset';
 import {Button} from 'primereact/button';
 import { Accordion, AccordionTab } from 'primereact/accordion';
 
-const LandingTEL = ({addedOas, removeOa}) => {
+const PreviewTel = ({addedOas, removeOa}) => {
     return (
         <>
             {addedOas.length > 0 && (
@@ -54,4 +53,4 @@ const LandingTEL = ({addedOas, removeOa}) => {
     )
 };
 
-export default LandingTEL;
+export default PreviewTel;
