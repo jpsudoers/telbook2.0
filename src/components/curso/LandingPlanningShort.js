@@ -17,6 +17,7 @@ import {Calendar} from "primereact/calendar";
 import autoTable from "jspdf-autotable";
 import {getRandomKey} from "@/utils/evaluations";
 import {InputTextarea} from "primereact/inputtextarea";
+import PreviewOas from "@/components/curso/planningShort/PreviewOas";
 
 const LandingPlanningShort = () => {
     const [selectAmbit, setSelectAmbit] = useState(null);
@@ -191,6 +192,13 @@ const LandingPlanningShort = () => {
         return planning.current
     })
 
+    const removeOa = (oa) => {
+        const newOas = addedOas.filter((_, index) => {
+            return index !== oa
+        })
+        setAddedOas(newOas)
+    }
+
     return (
         <form onSubmit={formik.handleSubmit}>
             <div className="formgrid grid">
@@ -332,6 +340,11 @@ const LandingPlanningShort = () => {
                     </div>
                 }
                 <div className="field col">
+                    {/* vista previa de los oas */}
+                    <PreviewOas addedOas={addedOas} removeOa={removeOa}/>
+                    <br/>
+
+                    {/* lista de planificaciones corto plazo existentes */}
                     {filterPlannings.length > 0 &&
                         <div className="card text-xs">
                             <TreeTable selectionMode="single" value={filterPlannings}
