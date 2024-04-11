@@ -6,6 +6,9 @@ import {
     DELETE_PLANNING_LARGE,
     DELETE_PLANNING_LARGE_ERROR,
     DELETE_PLANNING_LARGE_LOADING,
+    DELETE_PLANNING_SHORT,
+    DELETE_PLANNING_SHORT_LOADING,
+    DELETE_PLANNING_SHORT_ERROR,
     EDIT_PLANNING_MEDIUM,
     EDIT_PLANNING_MEDIUM_ERROR,
     EDIT_PLANNING_MEDIUM_LOADING, GET_LECTIONARY, GET_LECTIONARY_ERROR, GET_LECTIONARY_LOADING,
@@ -44,6 +47,7 @@ import {
 } from "./Planning.types";
 import {
     deletePlanningLargeByGradeQuery,
+    deletePlanningShortQuery,
     editPlanningMediumById, getLectionaryByIdQuery,
     getPlanningLargeByGradeQuery,
     getPlanningMediumByGradeQuery,
@@ -259,6 +263,23 @@ const PlanningState = (props) => {
         }
     }
 
+    const deletePlanningShort = async (id) => {
+        dispatch({
+            type: DELETE_PLANNING_SHORT_LOADING
+        });
+        try {
+            await deletePlanningShortQuery(id)
+            dispatch({
+                type: DELETE_PLANNING_SHORT,
+                payload: id
+            });
+        } catch (e) {
+            dispatch({
+                type: DELETE_PLANNING_SHORT_ERROR
+            });
+        }
+    }
+
     const editPlanningMedium = async (id) => {
         dispatch({
             type: EDIT_PLANNING_MEDIUM_LOADING
@@ -370,6 +391,7 @@ const PlanningState = (props) => {
             getPlanningLarges,
             setPlanningLarge,
             deletePlanningLarge,
+            deletePlanningShort,
             getPlanningMediums,
             setPlanningMedium,
             editPlanningMedium,
