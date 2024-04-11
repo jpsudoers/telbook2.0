@@ -127,6 +127,20 @@ const LandingPlanningShort = () => {
         </span>;
     }
 
+    const actionTemplate = (node) => {
+        console.log(node);
+        console.log(Object.hasOwn(node, 'id'));
+
+        if (Object.hasOwn(node, 'id')) {
+            return <Button type='button' label='Eliminar' severity='danger' size='small' onClick={() => removePlanificacion(node.id)}/>
+        }
+        return;
+    };
+
+    const removePlanificacion = (id) => {
+        console.log(id);
+    }
+
     if (planningShortsLoading || basesLoading || planningMediumsLoading) {
         return <Loading/>
     }
@@ -348,10 +362,11 @@ const LandingPlanningShort = () => {
                     {filterPlannings.length > 0 &&
                         <div className="card text-xs">
                             <TreeTable selectionMode="single" value={filterPlannings}
-                                       tableStyle={{minWidth: '50rem', fontSize: '12px'}}
-                                       loading={planningShortsLoading}>
+                                        tableStyle={{minWidth: '50rem', fontSize: '12px'}}
+                                        loading={planningShortsLoading} header="Planificaciones corto plazo" >
                                 <Column field="name" header="Planificaciones corto plazo (activas de la semana)"
                                         body={isCurrent} expander/>
+                                <Column body={actionTemplate} headerClassName="w-10rem" />
                             </TreeTable>
                             <Button type='button' onClick={exportToPDF} className='mt-4'
                                     label='Descargar planificaciones' severity='success' style={{width: '100%'}}/>
