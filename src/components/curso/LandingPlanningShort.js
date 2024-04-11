@@ -38,6 +38,7 @@ const LandingPlanningShort = () => {
         getPlanningShorts,
         planningShorts,
         planningShortsLoading,
+        deletePlanningShort,
         planningShortsError,
         getPlanningMediums,
         planningMediums,
@@ -128,17 +129,22 @@ const LandingPlanningShort = () => {
     }
 
     const actionTemplate = (node) => {
-        console.log(node);
-        console.log(Object.hasOwn(node, 'id'));
-
-        if (Object.hasOwn(node, 'id')) {
-            return <Button type='button' label='Eliminar' severity='danger' size='small' onClick={() => removePlanificacion(node.id)}/>
+        const planningDate = new Date(node.date + " EDT");
+        const currentDate = new Date();
+        if (planningDate.getFullYear() === currentDate.getFullYear() &&
+            planningDate.getMonth() === currentDate.getMonth() &&
+            planningDate.getDate() === currentDate.getDate()) {
+            if (Object.hasOwn(node, 'id')) {
+                return <Button type='button' label='Eliminar' severity='danger' size='small' onClick={() => removePlanificacion(node.id)}/>
+            }
+            else return;
         }
         return;
     };
 
-    const removePlanificacion = (id) => {
-        console.log(id);
+    const removePlanificacion = async (id) => {
+        await deletePlanningShort(id)
+        await getPlanningShorts(grade.toUpperCase())
     }
 
     if (planningShortsLoading || basesLoading || planningMediumsLoading) {
