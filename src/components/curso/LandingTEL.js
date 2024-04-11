@@ -44,7 +44,9 @@ const LandingTEL = () => {
         students,
     } = useContext(StudentsContext);
 
-    const filterStudents = students.filter(student => student.grade === grade.toUpperCase())
+   // const filterStudents = students.filter(student =>{ student.grade === grade.toUpperCase() && student.state === "Activo"})
+
+    const filterStudents = students.filter(student => student.grade === grade.toUpperCase() && student.state === "Activo")
 
     const ambit = unique(speechBases.map(base => {
         return base.ambito
@@ -305,7 +307,7 @@ const removeOa = (oa) => {
                     {getFormErrorMessage('ambit')}
                     {getFormErrorMessage('content')}
                     {getFormErrorMessage('register')}
-                    <Button type='submit' label='Guardar registro fonoaudilógico' severity='success'
+                    <Button type='submit' label='Guardar registro fonoaudiológico' severity='success'
                             style={{width: '100%'}}/>
                 </div>
                 <div className="flex-auto">
