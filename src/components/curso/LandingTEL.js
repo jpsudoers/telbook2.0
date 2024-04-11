@@ -44,7 +44,7 @@ const LandingTEL = () => {
         students,
     } = useContext(StudentsContext);
 
-   // const filterStudents = students.filter(student =>{ student.grade === grade.toUpperCase() && student.state === "Activo"})
+   // JPS const filterStudents = students.filter(student =>{ student.grade === grade.toUpperCase() && student.state === "Activo"})
 
     const filterStudents = students.filter(student => student.grade === grade.toUpperCase() && student.state === "Activo")
 
