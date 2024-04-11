@@ -17,6 +17,7 @@ import {Calendar} from "primereact/calendar";
 import autoTable from "jspdf-autotable";
 import {getRandomKey} from "@/utils/evaluations";
 import {InputTextarea} from "primereact/inputtextarea";
+import PreviewOas from "@/components/curso/planningShort/PreviewOas";
 
 const LandingPlanningShort = () => {
     const [selectAmbit, setSelectAmbit] = useState(null);
@@ -37,6 +38,7 @@ const LandingPlanningShort = () => {
         getPlanningShorts,
         planningShorts,
         planningShortsLoading,
+        deletePlanningShort,
         planningShortsError,
         getPlanningMediums,
         planningMediums,
@@ -126,6 +128,25 @@ const LandingPlanningShort = () => {
         </span>;
     }
 
+    const actionTemplate = (node) => {
+        const planningDate = new Date(node.date + " EDT");
+        const currentDate = new Date();
+        if (planningDate.getFullYear() === currentDate.getFullYear() &&
+            planningDate.getMonth() === currentDate.getMonth() &&
+            planningDate.getDate() === currentDate.getDate()) {
+            if (Object.hasOwn(node, 'id')) {
+                return <Button type='button' label='Eliminar' severity='danger' size='small' onClick={() => removePlanificacion(node.id)}/>
+            }
+            else return;
+        }
+        return;
+    };
+
+    const removePlanificacion = async (id) => {
+        await deletePlanningShort(id)
+        await getPlanningShorts(grade.toUpperCase())
+    }
+
     if (planningShortsLoading || basesLoading || planningMediumsLoading) {
         return <Loading/>
     }
@@ -190,6 +211,13 @@ const LandingPlanningShort = () => {
     const getCurrentPlanningMedium = planningMediums.filter(planning => {
         return planning.current
     })
+
+    const removeOa = (oa) => {
+        const newOas = addedOas.filter((_, index) => {
+            return index !== oa
+        })
+        setAddedOas(newOas)
+    }
 
     return (
         <form onSubmit={formik.handleSubmit}>
@@ -332,13 +360,19 @@ const LandingPlanningShort = () => {
                     </div>
                 }
                 <div className="field col">
+                    {/* vista previa de los oas */}
+                    <PreviewOas addedOas={addedOas} removeOa={removeOa}/>
+                    <br/>
+
+                    {/* lista de planificaciones corto plazo existentes */}
                     {filterPlannings.length > 0 &&
                         <div className="card text-xs">
                             <TreeTable selectionMode="single" value={filterPlannings}
-                                       tableStyle={{minWidth: '50rem', fontSize: '12px'}}
-                                       loading={planningShortsLoading}>
+                                        tableStyle={{minWidth: '50rem', fontSize: '12px'}}
+                                        loading={planningShortsLoading} header="Planificaciones corto plazo" >
                                 <Column field="name" header="Planificaciones corto plazo (activas de la semana)"
                                         body={isCurrent} expander/>
+                                <Column body={actionTemplate} headerClassName="w-10rem" />
                             </TreeTable>
                             <Button type='button' onClick={exportToPDF} className='mt-4'
                                     label='Descargar planificaciones' severity='success' style={{width: '100%'}}/>
