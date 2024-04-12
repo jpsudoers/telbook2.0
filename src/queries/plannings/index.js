@@ -103,7 +103,10 @@ export const deletePlanningLargeByGradeQuery = async (id) => {
     await deleteDoc(doc(db, "planificacionesLargoPlazo", id));
 }
 
+<<<<<<< HEAD
 //Agrega query DeletingPlanningShort
+=======
+>>>>>>> dev
 export const deletePlanningShortQuery = async (id) => {
     await deleteDoc(doc(db, 'planificacionesCortoPlazo', id));
 }
