@@ -21,7 +21,7 @@ export const setStudentQuery = async (student) => {
     if (!querySnapshot.empty) {
         // avisar al usuario con un toast
         //JPS agrego alerta
-        swal("Importante", "Alumn@ ya se encuentra activo, para poder matricular retire el alumno y luego matricule", "error");
+        swal("Importante", "Alumn@ ya se encuentra activo", "error");
         return null
     } else {
         // await addDoc(collection(db, 'alumnos'), student);
