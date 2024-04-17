@@ -17,7 +17,7 @@ import {IsCurrent} from "@/components/curso/planningMedium/bodyCurrentPlanningMe
 import {trueFirst} from "@/utils/sort";
 import {getRandomKey} from "@/utils/evaluations";
 import autoTable from "jspdf-autotable";
-
+import PreviewOas from "@/components/curso/planningMedium/PreviewOas";
 
 const LandingPlanningMedium = () => {
     const [selectAmbit, setSelectAmbit] = useState(null);
@@ -176,6 +176,10 @@ const LandingPlanningMedium = () => {
         return <Loading/>
     }
 
+    const removeOa = (oa) => {
+        setSelectedOas(selectedOas.filter((o, index) => index !== oa))
+    }
+
     return (
         <form onSubmit={formik.handleSubmit}>
             <div className="formgrid grid">
@@ -321,6 +325,10 @@ const LandingPlanningMedium = () => {
                     <Button type='submit' label='Guardar planificación' severity='success' style={{width: '100%'}}/>
                 </div>
                 <div className="field col">
+                    {/* vista previa de los oas */}
+                    <PreviewOas addedOas={selectedOas} removeOa={removeOa}/>
+                    <br/>
+
                     <div className="card text-xs">
                         <TreeTable selectionMode="single" value={trueFirst(planningMediums)}
                                    tableStyle={{minWidth: '50rem', fontSize: '12px'}} loading={planningMediumsLoading}>
