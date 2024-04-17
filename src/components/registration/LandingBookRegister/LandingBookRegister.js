@@ -13,6 +13,7 @@ import {confirmDialog, ConfirmDialog} from "primereact/confirmdialog";
 import {useRouter} from "next/router";
 import autoTable from "jspdf-autotable";
 import {orderByList} from "@/utils/sort";
+import swal from 'sweetalert';
 
 const LandingBookRegister = () => {
     const toast = useRef(null);
@@ -49,7 +50,9 @@ const LandingBookRegister = () => {
     const accept = (id) => {
         removeStudent(id)
         getStudentsBySchool(user.establecimiento)
-        toast.current.show({severity: 'success', summary: 'Confirmed', detail: 'Alumno retirado', life: 3000});
+        // JPS agrego información
+        swal("Realizado", "Alumno retirado", "success");
+        //toast.current.show({severity: 'success', summary: 'Confirmed', detail: 'Alumno retirado', life: 3000});
     }
 
     const reject = () => {

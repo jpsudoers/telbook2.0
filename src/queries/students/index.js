@@ -1,6 +1,8 @@
 import React from 'react';
 import {collection, doc, getDocs, query, addDoc, where, setDoc, updateDoc} from 'firebase/firestore';
 import {db} from '@/firebase_setup/firebase';
+import swal from 'sweetalert';
+
 
 export const getStudentsBySchoolQuery = async (school) => {
     const q = query(collection(db, 'alumnos'), where('curso', '>=', school), where('curso', '<', school + ''));
@@ -18,6 +20,8 @@ export const setStudentQuery = async (student) => {
     const querySnapshot = await getDocs(q);
     if (!querySnapshot.empty) {
         // avisar al usuario con un toast
+        //JPS agrego alerta
+        swal("Importante", "Alumn@ ya se encuentra activo", "error");
         return null
     } else {
         // await addDoc(collection(db, 'alumnos'), student);
