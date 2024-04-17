@@ -8,6 +8,8 @@ import PlanningContext from "@/context/planning/Planning.context";
 export const IsCurrent = (node) => {
     const toast = useRef(null);
     const {
+        getPlanningMediums,
+        deletePlanningMedium,
         editPlanningMedium,
     } = useContext(PlanningContext);
     let {name} = node.data;
@@ -41,6 +43,37 @@ export const IsCurrent = (node) => {
         });
     }
 
+    const planningIsFromCurrentDay = () => {
+        const planningDate = new Date(node?.date?.seconds * 1000); // Convert seconds to milliseconds
+        const currentDate = new Date();
+        if (planningDate.getFullYear() === currentDate.getFullYear() &&
+            planningDate.getMonth() === currentDate.getMonth() &&
+            planningDate.getDate() === currentDate.getDate()) {
+            return true;
+        }
+        return false;
+    }
+
+    const handleRemove = () => {
+        confirmDialog({
+            message: '¿Estás seguro/a que deseas eliminar esta planificación?',
+            header: 'Confirmación',
+            icon: 'pi pi-exclamation-triangle',
+            defaultFocus: 'accept',
+            accept: acceptRemove,
+            reject: rejectRemove,
+            acceptLabel: 'Si',
+            rejectLabel: 'No'
+        });
+    }
+
+    const acceptRemove = async () => {
+        await deletePlanningMedium(node.id)
+        await getPlanningMediums(node.grade);
+    }
+
+    const rejectRemove  = () => {}
+
     return <span style={{
         fontWeight: fontWeight,
         display: 'flex',
@@ -58,6 +91,10 @@ export const IsCurrent = (node) => {
                       label="En curso"/>
                 <Button severity="danger" style={{fontSize: '10px', marginLeft: '10px'}}
                         label="Finalizar" onClick={handleFinish}/>
+                {planningIsFromCurrentDay() &&
+                    <Button severity="warning" style={{fontSize: '10px', marginLeft: '10px'}}
+                    label="Eliminar" onClick={handleRemove} type="button"/>
+                }
             </span>
         }
         </span>;

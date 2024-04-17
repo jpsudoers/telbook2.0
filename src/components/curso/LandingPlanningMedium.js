@@ -103,7 +103,7 @@ const LandingPlanningMedium = () => {
             }
             return errors;
         },
-        onSubmit: (data) => {
+        onSubmit: async (data) => {
             if (Object.values(formik.errors).length === 0) {
                 const id = new Date()
                 const newData = {
@@ -119,7 +119,9 @@ const LandingPlanningMedium = () => {
                     vigencia: true,
                 }
                 formik.resetForm();
-                setPlanningMedium(newData)
+                setSelectedOas([])
+                await setPlanningMedium(newData)
+                await getPlanningMediums(grade.toUpperCase())
             }
         }
     });
