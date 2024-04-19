@@ -17,6 +17,7 @@ import {IsCurrent} from "@/components/curso/planningMedium/bodyCurrentPlanningMe
 import {trueFirst} from "@/utils/sort";
 import {getRandomKey} from "@/utils/evaluations";
 import autoTable from "jspdf-autotable";
+import {InputTextarea} from "primereact/inputtextarea";
 
 
 const LandingPlanningMedium = () => {
@@ -270,7 +271,7 @@ const LandingPlanningMedium = () => {
                     <div className="flex-auto mb-4">
                         <label htmlFor="week" className="font-bold block mb-2">Objetivos generales</label>
                         <div className='p-inputgroup w-full'>
-                            <InputText
+                            <InputTextarea
                                 id="project"
                                 name="project"
                                 value={formik.values.objective}
@@ -286,7 +287,7 @@ const LandingPlanningMedium = () => {
                         <label htmlFor="week" className="font-bold block mb-2">Estrategias para alcanzar el
                             proyecto</label>
                         <div className='p-inputgroup w-full'>
-                            <InputText
+                            <InputTextarea
                                 id="project"
                                 name="project"
                                 value={formik.values.strategy}
@@ -301,7 +302,7 @@ const LandingPlanningMedium = () => {
                     <div className="flex-auto mb-4">
                         <label htmlFor="week" className="font-bold block mb-2">Cierre del proyecto</label>
                         <div className='p-inputgroup w-full'>
-                            <InputText
+                            <InputTextarea
                                 id="close"
                                 name="close"
                                 value={formik.values.close}
