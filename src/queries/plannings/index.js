@@ -107,6 +107,10 @@ export const deletePlanningShortQuery = async (id) => {
     await deleteDoc(doc(db, 'planificacionesCortoPlazo', id));
 }
 
+export const deletePlanningMediumQuery = async (id) => {
+    await deleteDoc(doc(db, 'planificacionesMedianoPlazo', id));
+}
+
 export const editPlanningMediumById = async (id) => {
     const ref = doc(db, 'planificacionesMedianoPlazo', id);
     await updateDoc(ref, {

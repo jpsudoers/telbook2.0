@@ -3,6 +3,8 @@ import React from "react";
 export const planningMediumsDecorator = (planningMediums) => planningMediums.map((plannings, index) => {
     return {
         id: plannings.id,
+        date: plannings.publishedAt,
+        grade: plannings.curso,
         key: index,
         data: {
             name: plannings.proyectoEje
