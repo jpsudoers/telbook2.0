@@ -16,6 +16,7 @@ import {regionsChile} from "@/utils/const";
 import Loading from "@/components/commons/Loading/Loading";
 import {useRouter} from "next/router";
 import {uuidv4} from "@/utils/student";
+import swal from 'sweetalert';
 
 const FormRegister = ({option = 'create', id = ''}) => {
     const {
@@ -124,6 +125,7 @@ const FormRegister = ({option = 'create', id = ''}) => {
             option === 'edit' ? editStudent(id, newData) : setStudent(newData)
             data && show(data);
             option === 'edit' && router.push('/libro-de-matricula')
+            swal("Importante", "Alumno matriculado", "success");
             formik.resetForm();
         }
     });
@@ -251,7 +253,7 @@ const FormRegister = ({option = 'create', id = ''}) => {
                                     inputId='gender'
                                     name='gender'
                                     value={formik.values.gender}
-                                    options={['Masculino', 'Femenino', 'No quiero contestar']}
+                                    options={['MASCULINO', 'FEMENINO', 'NO QUIERO CONTESTAR']}
                                     placeholder='Seleccionar género'
                                     className={classNames({'p-invalid': isFormFieldInvalid('gender')})}
                                     onChange={(e) => {
@@ -334,7 +336,7 @@ const FormRegister = ({option = 'create', id = ''}) => {
                                     inputId='originalTown'
                                     name='originalTown'
                                     value={formik.values.originalTown}
-                                    options={['Si', 'No']}
+                                    options={['SI', 'NO']}
                                     placeholder='Seleccionar si pertenece a pueblo originario'
                                     className={classNames({'p-invalid': isFormFieldInvalid('originalTown')})}
                                     onChange={(e) => {
@@ -370,7 +372,7 @@ const FormRegister = ({option = 'create', id = ''}) => {
                                     inputId='parent'
                                     name='parent'
                                     value={formik.values.parent}
-                                    options={['Madre', 'Padre', 'Tutor']}
+                                    options={['MADRE', 'PADRE', 'TUTOR']}
                                     placeholder='Parentesco del apoderado con el alumno'
                                     className={classNames({'p-invalid': isFormFieldInvalid('parent')})}
                                     onChange={(e) => {
@@ -498,8 +500,8 @@ const FormRegister = ({option = 'create', id = ''}) => {
                                     name='origin'
                                     value={formik.values.origin}
                                     options={[
-                                        'Continuidad',
-                                        'Ingreso nuevo'
+                                        'CONTINUIDAD',
+                                        'NUEVO INGRESO'
                                     ]}
                                     placeholder='Seleccionar procedencia'
                                     className={classNames({'p-invalid': isFormFieldInvalid('origin')})}
@@ -538,7 +540,7 @@ const FormRegister = ({option = 'create', id = ''}) => {
                                     inputId='learnIssue'
                                     name='learnIssue'
                                     value={formik.values.learnIssue}
-                                    options={['Si', 'No']}
+                                    options={['CON', 'SIN']}
                                     placeholder='Seleccionar si alumno tiene problemas de aprendizaje'
                                     className={classNames({'p-invalid': isFormFieldInvalid('learnIssue')})}
                                     onChange={(e) => {
@@ -555,7 +557,7 @@ const FormRegister = ({option = 'create', id = ''}) => {
                                     inputId='live'
                                     name='live'
                                     value={formik.values.live}
-                                    options={['Ambos padres', 'Madre', 'Padre', 'Tutor']}
+                                    options={['AMBOS PADRES', 'MADRE', 'PADRE', 'TUTOR']}
                                     placeholder='Seleccionar con quien vive el alumno'
                                     className={classNames({'p-invalid': isFormFieldInvalid('live')})}
                                     onChange={(e) => {
@@ -575,7 +577,7 @@ const FormRegister = ({option = 'create', id = ''}) => {
                                  //JPS, se agrega opción de no aplica
                                  //   options={['Priotitario', 'Preferente']}
                                  //   placeholder='Seleccionar si alumno es preferente o prioritario'
-                                    options={['Prioritario', 'Preferente', 'No Aplica']}
+                                    options={['PRIORITARIO', 'PREFERENTE', 'NO APLICA']}
                                     placeholder='Seleccionar si alumno es preferente o prioritario o No Aplica'
                                     className={classNames({'p-invalid': isFormFieldInvalid('social')})}
                                     onChange={(e) => {
