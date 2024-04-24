@@ -57,6 +57,9 @@ const Historic = ({filteredStudents, grade}) => {
             });
         });
         studentsInCoursePlusAttendance.sort((a, b) => a.name?.localeCompare(b.name)); // ordeno los estudiantes por nombre
+        studentsInCoursePlusAttendance = studentsInCoursePlusAttendance.filter((student, index, self) =>
+            index === self.findIndex((s) => s.run === student.run)
+        );
         setTempAttendance(newAttendance); // actualizo el estado
         setStudentsInAttendances(studentsInCoursePlusAttendance); // actualizo el estado
     }, [attendances]);
