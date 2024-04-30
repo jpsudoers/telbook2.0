@@ -15,7 +15,7 @@ import PreviewTel from "@/components/curso/tel/PreviewTel";
 import GetTel from "@/components/curso/tel/GetTel";
 import PlanningContext from "@/context/planning/Planning.context";
 import { set } from '@firebase/database';
-
+import {Column} from 'primereact/column';
 
 const LandingTEL = () => {
     const [selectAmbit, setSelectAmbit] = useState(null);
@@ -47,6 +47,12 @@ const LandingTEL = () => {
    // const filterStudents = students.filter(student =>{ student.grade === grade.toUpperCase() && student.state === "Activo"})
 
     const filterStudents = students.filter(student => student.grade === grade.toUpperCase() && student.state === "Activo")
+    
+     // JPS ordeno los estudiantes por nombre
+    filterStudents.sort((a, b) => a.name?.localeCompare(b.name));
+
+    
+    
 
     const ambit = unique(speechBases.map(base => {
         return base.ambito
@@ -120,12 +126,6 @@ const LandingTEL = () => {
 
 
 
-
-
-
-
-
-
 // REFACTOR
 const [addedOas, setAddedOas] = useState([]);
 const addOa = () => {
@@ -155,14 +155,6 @@ const removeOa = (oa) => {
     setAddedOas(newOas)
 }
 // REFACTOR
-
-
-
-
-
-
-
-
 
 
 
@@ -231,21 +223,29 @@ const removeOa = (oa) => {
                     <div className="flex-auto mb-4">
                         <label htmlFor="content" className="font-bold block mb-2">Contenido</label>
                         <div className='p-inputgroup w-full'>
+                            
                             <MultiSelect
                                 inputId="content"
                                 name="content"
                                 value={formik.values.content}
                                 options={content}
                                 emptyMessage={'Debes seleccionar un nivel primero'}
-                                placeholder="Seleccionar contenido"
+                               
+                                 //JPS se agrega filtro en contenido.   
+                                //placeholder="Seleccionar contenido"
+
+                                filter placeholder="Seleccionar contenido"
                                 className={classNames({'p-invalid': isFormFieldInvalid('content')})}
                                 selectedItemsLabel={'{0} Contenidos seleccionados'}
                                 maxSelectedLabels={0}
+                                                                               
                                 onChange={(e) => {
                                     // setSelectAmbit(e.value)
                                     formik.setFieldValue('content', e.value);
+                                  
                                 }}
                             />
+                           
                         </div>
                     </div>
 
@@ -311,8 +311,10 @@ const removeOa = (oa) => {
                             style={{width: '100%'}}/>
                 </div>
                 <div className="flex-auto">
+                    {/* lista de evaluaciones existentes */}
                     <PreviewTel addedOas={addedOas} removeOa={removeOa}/>
                     <GetTel grade={grade}/>
+                    
                 </div>
             </div>
         </form>
