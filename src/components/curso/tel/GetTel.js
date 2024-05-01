@@ -6,6 +6,7 @@ import Loading from "@/components/commons/Loading/Loading";
 import {capitalize} from "@/utils/formats";
 import { Accordion, AccordionTab } from 'primereact/accordion';
 import {Button} from 'primereact/button';
+import {Column} from 'primereact/column';
 
 const GetTel = ({grade}) => {
     const [date, setDate] = useState(new Date());
@@ -42,6 +43,25 @@ const GetTel = ({grade}) => {
     if (registersLoading) {
         return <Loading/>
     }
+
+    // JPS Se reutiliza variable que trae solo el día para eliminar
+
+    const actionTemplate = (node) => {
+        const planningDate = new Date(node.date + " EDT");
+        const currentDate = new Date();
+        if (planningDate.getFullYear() === currentDate.getFullYear() &&
+            planningDate.getMonth() === currentDate.getMonth() &&
+            planningDate.getDate() === currentDate.getDate()) {
+            if (Object.hasOwn(node, 'id')) {
+                return <Button type='button' label='Eliminar' severity='danger' size='small' onClick={() => removePlanificacion(node.id)}/>
+            }
+            else return;
+        }
+        return;
+    };
+
+    // JPS termino de la varible.
+
 
     return (
         <div>
@@ -85,7 +105,9 @@ const GetTel = ({grade}) => {
                                 })
                                 }
                             </p><br/>
-                            <Button type='button' label='Eliminar' severity='danger' onClick={() => removeOa(lectionary)}/>
+
+                            <Column body={actionTemplate} headerClassName="w-10rem" />         
+                             {/* <Button type='button' label='Eliminar' severity='danger' onClick={() => removeOa(lectionary)}/> */} 
                         </Fieldset>
                     ) : (
                         <Fieldset key={index} className='mb-3' legend={date}>
