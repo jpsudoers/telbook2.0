@@ -142,8 +142,13 @@ const addOa = () => {
             },
         }
     })
-    formik.values.mode = ''
-    formik.values.studentsSpeech = []
+
+    // JPS se elimina opción de que limpie la modalidad y los alumnos or cada niveles seleccionados.
+
+   // formik.values.mode = ''
+  //  formik.values.studentsSpeech = []
+
+  // JPS el resto se resetear al asignar OA
     formik.values.content = []
     formik.values.ambit = ''
     setAddedOas(addedOas.concat(currentOas))
