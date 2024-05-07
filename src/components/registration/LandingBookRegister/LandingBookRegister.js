@@ -14,6 +14,9 @@ import {useRouter} from "next/router";
 import autoTable from "jspdf-autotable";
 import {orderByList} from "@/utils/sort";
 import swal from 'sweetalert';
+import { CSVLink, CSVDownload } from "react-csv";
+
+
 
 const LandingBookRegister = () => {
     const toast = useRef(null);
@@ -115,20 +118,31 @@ const LandingBookRegister = () => {
         });
     }
 
+    //JPS intentando hacer un export a CSV
+    const csvdata = studentsRaw;
+
+
+
+
     if (studentsLoading) {
         return <Loading/>
     }
 
-    return (<div className={style.landingBookRegister}>
+   return (<div className={style.landingBookRegister}>
         <Toast ref={toast}/>
         <ConfirmDialog/>
-        <Title title={'Libro de matrícula'}/>
-        <div className={style.buttonGroup}>
-            <Link href='/matricula'>
-                <Button label={'Matricular Alumno'} severity='success'/>
-            </Link>
+      <div className={style.buttonGroup}>
+        <Link href='/matricula'>
+          <Button label={'Matricular Alumno'} severity='success'/>
+    </Link>
 
-            <Button label={'Descargar Libro De Matrícula'} onClick={exportToPDF} severity='success'/>
+    
+    
+    <CSVLink data={csvdata} filename = 'libro_matriculas.csv'>Download me</CSVLink>
+
+
+    
+    <Button label={'Descargar Libro De Matrícula'} onClick={exportToPDF} severity='success'/>
         </div>
         <DataTableFilter
             size={'20%'}
@@ -139,7 +153,7 @@ const LandingBookRegister = () => {
             emptyMessage={emptyMessage}
             data={enhancedStudents}
         />
-    </div>);
+    </div>); 
 };
 
 export default LandingBookRegister;
