@@ -64,7 +64,7 @@ const LandingHome = () => {
         <h2>Mis accesos directos</h2>
         <div className={styles.quickAccess}>
             <QuickAccess path='/matricula' title='Matricular alumno' icon={faUserPlus}/>
-            <QuickAccess title='Descargar libro matricula' icon={faBook}/>
+            {/* <QuickAccess title='Descargar libro matricula' icon={faBook}/> */}
         </div>
         <h2>Mis cursos</h2>
         <div className={styles.gradesHome}>
