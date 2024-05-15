@@ -4,6 +4,7 @@ import {db} from '@/firebase_setup/firebase';
 import swal from 'sweetalert';
 
 
+
 export const getStudentsBySchoolQuery = async (school) => {
     const q = query(collection(db, 'alumnos'), where('curso', '>=', school), where('curso', '<', school + ''));
     const querySnapshot = await getDocs(q);
@@ -42,10 +43,25 @@ export const updateStudentQuery = async (id, student) => {
     });
 }
 
+// JPS Agregamos cusalRetiroEscuela, estadoAlumno y fechaRetiroEscuela
+const today = new Date();
+const month = (today.getMonth()+1).toString().padStart(2, '0');
+const year = (today.getFullYear()).toString();
+const date = (today. getDate()).toString();
+const currentDate = year  + month + date;
+//const currentDate = month + "/" + date + "/" + year;
+
+
+
 export const removeStudentQuery = async (id) => {
     const ref = doc(db, 'alumnos', id);
     await updateDoc(ref, {
-        codigoAlumno: '0'
+        codigoAlumno: '0',
+        causaRetiroEscuela: 'RETIRO ESCUELA',
+        estadoAlumno: 'RETIRADO',
+        fechaRetiroEscuela: currentDate
+    
+        
     });
 }
 
