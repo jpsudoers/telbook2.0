@@ -123,7 +123,6 @@ const LandingBookRegister = () => {
 
 
 
-
     if (studentsLoading) {
         return <Loading/>
     }
@@ -138,11 +137,21 @@ const LandingBookRegister = () => {
 
     
     
-    <CSVLink data={csvdata} filename = 'libro_matriculas.csv'>Download me</CSVLink>
+    {/* <CSVLink data={csvdata} filename = 'libro_matriculas.csv'>Download me</CSVLink> */}
+
+    <Button severity='success' >  <CSVLink data={csvdata} 
+                                          separator=";"
+                                         
+                                          wrapColumnChar="'"
+                                          style={{color: 'white', font: 'bold'}}
+
+                                          filename = 'libro_matriculas.csv'>Descarga Libro de Matriculas
+                                 </CSVLink>
+     </Button>
 
 
     
-    <Button label={'Descargar Libro De Matrícula'} onClick={exportToPDF} severity='success'/>
+    {/* <Button label={'Descargar Libro De Matrícula'} onClick={exportToPDF} severity='success'/> */}
         </div>
         <DataTableFilter
             size={'20%'}
