@@ -145,13 +145,13 @@ const LandingBookRegister = () => {
                                           wrapColumnChar="'"
                                           style={{color: 'white', font: 'bold'}}
 
-                                          filename = 'libro_matriculas.csv'>Descarga Libro de Matriculas
+                                          filename = 'libro_matriculas.csv'>Descarga Libro de Matriculas Completo
                                  </CSVLink>
      </Button>
 
 
     
-    {/* <Button label={'Descargar Libro De Matrícula'} onClick={exportToPDF} severity='success'/> */}
+    <Button label={'Descargar Libro De Matrícula Resumido'} onClick={exportToPDF} severity='success'/>
         </div>
         <DataTableFilter
             size={'20%'}
