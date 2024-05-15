@@ -64,6 +64,9 @@ const LandingHome = () => {
         <h2>Mis accesos directos</h2>
         <div className={styles.quickAccess}>
             <QuickAccess path='/matricula' title='Matricular alumno' icon={faUserPlus}/>
+           
+            {/* JPS // Se elimina el botón de Descarga Libro de Matriculas */}
+            
             {/* <QuickAccess title='Descargar libro matricula' icon={faBook}/> */}
         </div>
         <h2>Mis cursos</h2>
