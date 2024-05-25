@@ -106,9 +106,14 @@ export const updateAttendancesQuery = async (payload) => {
             where("curso", "==", curso)
         );
         const querySnapshot = await getDocs(q);
-        querySnapshot.forEach(async (doc) => {
-            await updateDoc(doc.ref, { alumnos });
-        });
+        if(querySnapshot.empty) { // si es que no existe la asistencia se crea
+            await setDoc(doc(db, "asistencias", asistencia.id), asistencia);
+        }
+        else { // si ya existe se actualiza
+            querySnapshot.forEach(async (doc) => {
+                await updateDoc(doc.ref, { alumnos });
+            });
+        }
     }
 }
     

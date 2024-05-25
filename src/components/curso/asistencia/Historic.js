@@ -30,7 +30,8 @@ const Historic = ({filteredStudents, grade}) => {
 
     const [tempAttendance, setTempAttendance] = useState({}); // va a contener las asistencias iniciales, las que se van modificando, y las que se van a guardar finalmente
     const [studentsInAttendances, setStudentsInAttendances] = useState([]); // va a contener los estudiantes del curso, y tambien estudiantes que no estan en el curso pero que tienen asistencia
-
+    const [daysWithAttendance, setDaysWithAttendance] = useState([]); // ["14","19","20","21",]
+    
     const router = useRouter();
 
     useEffect(() => {
@@ -62,9 +63,10 @@ const Historic = ({filteredStudents, grade}) => {
         );
         setTempAttendance(newAttendance); // actualizo el estado
         setStudentsInAttendances(studentsInCoursePlusAttendance); // actualizo el estado
-    }, [attendances]);
 
-    const daysWithAttendance = attendances.map(attendance => attendance.day) // ["14","19","20","21",]
+        // obtengo los días de asistencia del mes. despues se actualiza cada vez que cambia un dia
+        setDaysWithAttendance(attendances.map(item => item.day)); // actualizo el estado
+    }, [attendances]);
 
     const {
         user,
@@ -169,6 +171,11 @@ const Historic = ({filteredStudents, grade}) => {
                 }
             }
         })
+    
+        // si el dia no está en daysWithAttendance, lo agrego
+        if (!daysWithAttendance.includes(day))
+            setDaysWithAttendance([...daysWithAttendance, day])
+        
     }
 
     const saveAttendances = async () => {
@@ -178,12 +185,18 @@ const Historic = ({filteredStudents, grade}) => {
             for (const [day, presente] of Object.entries(data.asistencias)) { // por cada dia de asistencia del alumno
                 let dayData = attendancesAsFirebase.find(d => d.day === day);
                 if (!dayData) {
+                    const date = new Date();
+                    date.setHours(0, 0, 0, 0)
                     dayData = {
                         alumnos: [],
                         curso: grade.toUpperCase(),
+                        id: 'asis-' + grade + '-' + date.getTime(),
+                        run: user.run,
+                        updated: [],
+                        publishedAt: date,
                         day,
                         month: selectedMonth.code.toString().padStart(2, '0'),
-                        year: currentYear.toString()
+                        year: currentYear.toString(),
                     };
                     attendancesAsFirebase.push(dayData);
                 }
@@ -257,6 +270,7 @@ const Historic = ({filteredStudents, grade}) => {
                     {/* estudiantes */}
                     {studentsInAttendances.map(student => {
                         const formattedRun = student.run.replaceAll('.', '')
+
                         return (
                             <tr key={student.run}>
                                 {/* nombre estudiante */}
@@ -265,48 +279,60 @@ const Historic = ({filteredStudents, grade}) => {
                                 </td>
 
                                 {/* dias */}
-                                {getAllDaysInMonth(selectedMonth.code, selectedYear).map(day => { // for each day in the month
-                                    const dayNumber = day.getUTCDate().toString().padStart(2, '0') // the number of this day. e.g. 31
+                                {getAllDaysInMonth(selectedMonth.code, selectedYear)
+                                    .map(day => { // for each day in the month
+                                        const dayNumber = day.getUTCDate().toString().padStart(2, '0') // the number of this day. e.g. 31
 
-                                    if (daysWithAttendance.includes(String(dayNumber))) { // si es un dia que tiene asistencia en la DB
+                                        if (daysWithAttendance.includes(String(dayNumber))) { // si es un dia que tiene asistencia en la DB
 
-                                        if (tempAttendance[formattedRun]) {
-                                            const studentAttendanceDay = tempAttendance[formattedRun].asistencias[dayNumber] // attendance value for this student in this day (1 or 0)
+                                            if (tempAttendance[formattedRun]) {
+                                                const studentAttendanceDay = tempAttendance[formattedRun].asistencias[dayNumber] // attendance value for this student in this day (1 or 0)
+                                                return (
+                                                    <td key={day} style={{padding: 'unset', textAlign: 'center'}}>
+                                                        <MultiStateCheckbox id={{ run: formattedRun, day: dayNumber, name: student.name }}
+                                                                            value={studentAttendanceDay}
+                                                                            disabled={!editMode}
+                                                                            onChange={handleChange}
+                                                                            options={options}
+                                                                            optionValue="value"
+                                                        />
+                                                    </td>
+                                                )
+                                            }
+                                            
+                                            else {
+                                                return (
+                                                    <td key={day} style={{padding: 'unset', textAlign: 'center'}}>
+                                                        <MultiStateCheckbox id={{ run: formattedRun, day: dayNumber, name: student.name }}
+                                                                            value={null}
+                                                                            disabled={!editMode}
+                                                                            onChange={handleChange}
+                                                                            options={options}
+                                                                            optionValue="value"
+                                                        />
+                                                    </td>
+                                                )
+                                            }
+                                        }
+                                        
+                                        else { // si es un dia que no tiene asistencia en la DB
                                             return (
                                                 <td key={day} style={{padding: 'unset', textAlign: 'center'}}>
-                                                    <MultiStateCheckbox id={{ run: formattedRun, day: dayNumber }}
-                                                                        value={studentAttendanceDay}
-                                                                        disabled={!editMode}
-                                                                        onChange={handleChange}
-                                                                        options={options}
-                                                                        optionValue="value"
-                                                    />
-                                                </td>)
-                                        } else {
-                                            return (
-                                                <td key={day} style={{padding: 'unset', textAlign: 'center'}}>
-                                                    <MultiStateCheckbox id={{ run: formattedRun, day: dayNumber }}
+                                                    <MultiStateCheckbox id={{ run: formattedRun, day: dayNumber, name: student.name }}
                                                                         value={null}
                                                                         disabled={!editMode}
                                                                         onChange={handleChange}
                                                                         options={options}
                                                                         optionValue="value"
+                                                                        style={{backgroundColor: 'lightgray'}}
                                                     />
-                                                </td>)
+                                                </td>
+                                            )
                                         }
-
-                                    } else { // si es un dia que no tiene asistencia en la DB
-                                        return (
-                                            <td key={day} style={{padding: 'unset', textAlign: 'center'}}>
-                                                <MultiStateCheckbox id={`${formattedRun}-${day.getTime()}`}
-                                                                    disabled={true}
-                                                                    style={{backgroundColor: 'lightgray'}}
-                                                />
-                                            </td>)
-                                    }
-                                    
-                                })}
-                            </tr>)
+                                    })
+                                }
+                            </tr>
+                        )
                     })}
 
                     {/* resumen */}
