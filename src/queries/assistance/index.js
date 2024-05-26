@@ -111,7 +111,7 @@ export const updateAttendancesQuery = async (payload) => {
             // var data = asistencia
             const itemToAppend = {
                 user: asistencia?.run,
-                otp: '1111',
+                otp: asistencia?.otp,
                 date: `${year}-${month}-${day}`
             }
             // data.updated = [itemToAppend]
@@ -123,7 +123,7 @@ export const updateAttendancesQuery = async (payload) => {
                 await updateDoc(doc.ref, { alumnos });
                 const itemToAppend = {
                     user: asistencia?.run,
-                    otp: '1111',
+                    otp: asistencia?.otp,
                     date: `${year}-${month}-${day}`
                 }
                 await updateDoc(doc.ref, { updated: arrayUnion(itemToAppend) });

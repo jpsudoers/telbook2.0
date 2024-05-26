@@ -9,6 +9,7 @@ import {Button} from "primereact/button";
 import {jsPDF} from 'jspdf';
 import UserContext from "@/context/user/User.context";
 import {useRouter} from "next/router";
+import {InputText} from "primereact/inputtext";
 
 const options = [
     {
@@ -31,6 +32,7 @@ const Historic = ({filteredStudents, grade}) => {
     const [tempAttendance, setTempAttendance] = useState({}); // va a contener las asistencias iniciales, las que se van modificando, y las que se van a guardar finalmente
     const [studentsInAttendances, setStudentsInAttendances] = useState([]); // va a contener los estudiantes del curso, y tambien estudiantes que no estan en el curso pero que tienen asistencia
     const [daysWithAttendance, setDaysWithAttendance] = useState([]); // ["14","19","20","21",]
+    const [otp, setOtp] = useState('');
     
     const router = useRouter();
 
@@ -200,15 +202,17 @@ const Historic = ({filteredStudents, grade}) => {
                         day,
                         month: selectedMonth.code.toString().padStart(2, '0'),
                         year: currentYear.toString(),
+                        otp: otp
                     };
                     attendancesAsFirebase.push(dayData);
                 }
                 if (presente !== null) {
                     dayData.alumnos.push({ presente, run });
-                } 
+                }
             }
         }
         await updateAttendance(attendancesAsFirebase)
+        setOtp('')
     }
 
     const summary = {}
@@ -379,18 +383,36 @@ const Historic = ({filteredStudents, grade}) => {
             <Button label='Descargar asistencia' severity='success' onClick={getImage}/>
         </div>
 
-        {user.perfil === 'admin' && (editMode ?
-                <Button
-                    className='my-2'
-                    label='Guardar asistencia'
-                    severity={'success'}
-                    onClick={() => saveAttendances()}/> :
-                <Button
-                    className='my-2'
-                    label='Editar asistencia'
-                    severity={'info'}
-                    onClick={() => setEditMode(true)}/>
-        )}
+        <div className='my-2'>
+            {user.perfil === 'admin' && (editMode ?
+                    <Button
+                        className='my-2'
+                        label='Guardar asistencia'
+                        severity={'success'}
+                        disabled={otp.length !== 4}
+                        onClick={() => saveAttendances()}/> :
+                    <Button
+                        className='my-2'
+                        label='Editar asistencia'
+                        severity={'info'}
+                        onClick={() => setEditMode(true)}/>
+            )}
+        </div>
+
+        <div className='my-2'>
+            {editMode == true && (
+                <InputText
+                    id='otp'
+                    name='otp'
+                    type='password'
+                    keyfilter={/^\d{0,4}$/}
+                    placeholder='Ingresar Clave de GOB'
+                    value={otp}
+                    onChange={(e) => { setOtp(e.target.value) }}
+                />
+            )}
+        </div>
+
     </div>);
 };
 
