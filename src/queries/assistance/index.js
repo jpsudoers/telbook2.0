@@ -1,5 +1,5 @@
 import React from 'react';
-import {collection, doc, getDocs, query, setDoc, where, updateDoc} from 'firebase/firestore';
+import {collection, doc, getDocs, query, setDoc, where, updateDoc, arrayUnion} from 'firebase/firestore';
 import {db} from '@/firebase_setup/firebase';
 import {getAllDaysInMonth} from "@/utils/date";
 
@@ -106,12 +106,27 @@ export const updateAttendancesQuery = async (payload) => {
             where("curso", "==", curso)
         );
         const querySnapshot = await getDocs(q);
+
         if(querySnapshot.empty) { // si es que no existe la asistencia se crea
-            await setDoc(doc(db, "asistencias", asistencia.id), asistencia);
+            // var data = asistencia
+            const itemToAppend = {
+                user: asistencia?.run,
+                otp: '1111',
+                date: `${year}-${month}-${day}`
+            }
+            // data.updated = [itemToAppend]
+            await setDoc(doc(db, "asistencias", asistencia.id), { ...asistencia, updated: [itemToAppend] });
         }
+
         else { // si ya existe se actualiza
             querySnapshot.forEach(async (doc) => {
                 await updateDoc(doc.ref, { alumnos });
+                const itemToAppend = {
+                    user: asistencia?.run,
+                    otp: '1111',
+                    date: `${year}-${month}-${day}`
+                }
+                await updateDoc(doc.ref, { updated: arrayUnion(itemToAppend) });
             });
         }
     }

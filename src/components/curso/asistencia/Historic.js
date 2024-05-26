@@ -186,6 +186,9 @@ const Historic = ({filteredStudents, grade}) => {
                 let dayData = attendancesAsFirebase.find(d => d.day === day);
                 if (!dayData) {
                     const date = new Date();
+                    date.setDate(day)
+                    date.setMonth(selectedMonth.code.toString())
+                    date.setFullYear(selectedYear)
                     date.setHours(0, 0, 0, 0)
                     dayData = {
                         alumnos: [],
