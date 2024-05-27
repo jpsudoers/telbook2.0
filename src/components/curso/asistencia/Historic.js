@@ -10,6 +10,8 @@ import {jsPDF} from 'jspdf';
 import UserContext from "@/context/user/User.context";
 import {useRouter} from "next/router";
 import {InputText} from "primereact/inputtext";
+import { InputTextarea } from 'primereact/inputtextarea';
+import swal from 'sweetalert';
 
 const options = [
     {
@@ -33,6 +35,7 @@ const Historic = ({filteredStudents, grade}) => {
     const [studentsInAttendances, setStudentsInAttendances] = useState([]); // va a contener los estudiantes del curso, y tambien estudiantes que no estan en el curso pero que tienen asistencia
     const [daysWithAttendance, setDaysWithAttendance] = useState([]); // ["14","19","20","21",]
     const [otp, setOtp] = useState('');
+    const [comment, setComment] = useState('');
     
     const router = useRouter();
 
@@ -213,6 +216,7 @@ const Historic = ({filteredStudents, grade}) => {
         }
         await updateAttendance(attendancesAsFirebase)
         setOtp('')
+        setComment('')
     }
 
     const summary = {}
@@ -385,11 +389,12 @@ const Historic = ({filteredStudents, grade}) => {
 
         <div className='my-2'>
             {user.perfil === 'admin' && (editMode ?
+            
                     <Button
                         className='my-2'
                         label='Guardar asistencia'
                         severity={'success'}
-                        disabled={otp.length !== 4}
+                        disabled={otp.length !== 6}
                         onClick={() => saveAttendances()}/> :
                     <Button
                         className='my-2'
@@ -410,6 +415,22 @@ const Historic = ({filteredStudents, grade}) => {
                     value={otp}
                     onChange={(e) => { setOtp(e.target.value) }}
                 />
+               
+            )}
+        </div>
+        <div className='my-2'>
+            {editMode == true && (
+                
+                <InputTextarea
+                    id='comment'
+                    name='comment'
+                    //type='password'
+                    //keyfilter={/^\d{0,4}$/}
+                    placeholder='Ingrese el comentario. POR NORMATIVA; DEBE INGRESAR COMENTARIOS'
+                    value={comment}
+                    onChange={(e) => { setComment(e.target.value) }}
+                />
+               
             )}
         </div>
 

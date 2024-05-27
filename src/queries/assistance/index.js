@@ -112,7 +112,8 @@ export const updateAttendancesQuery = async (payload) => {
             const itemToAppend = {
                 user: asistencia?.run,
                 otp: asistencia?.otp,
-                date: `${year}-${month}-${day}`
+                date: `${year}-${month}-${day}`,
+                comment: asistencia?.comment
             }
             // data.updated = [itemToAppend]
             await setDoc(doc(db, "asistencias", asistencia.id), { ...asistencia, updated: [itemToAppend] });
