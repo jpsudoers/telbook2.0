@@ -205,7 +205,8 @@ const Historic = ({filteredStudents, grade}) => {
                         day,
                         month: selectedMonth.code.toString().padStart(2, '0'),
                         year: currentYear.toString(),
-                        otp: otp
+                        otp: otp,
+                        comment: comment
                     };
                     attendancesAsFirebase.push(dayData);
                 }
