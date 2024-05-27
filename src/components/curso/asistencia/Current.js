@@ -160,7 +160,7 @@ export default function Current({students, grade, user}) {
                                 id='otp'
                                 name='otp'
                                 type='password'
-                                keyfilter="int"
+                                keyfilter={/^\d{0,4}$/}
                                 className={classNames({'p-invalid': isFormFieldInvalid('otp')})}
                                 value={formik.values.otp}
                                 placeholder='Ingresar Clave de GOB'
@@ -170,7 +170,7 @@ export default function Current({students, grade, user}) {
                             {getFormErrorMessage('week')}
                         </td>
                         <td style={{textAlign: 'right'}}>
-                            <Button label="Firmar libro" style={{margin: '10px'}} severity='success' type="submit"
+                            <Button label="Firmar libro" style={{margin: '10px'}} disabled={formik.values.otp.length !== 6} severity='success' type="submit"
                                     icon="pi pi-check"/>
                         </td>
                     </tr>
