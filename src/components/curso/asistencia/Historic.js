@@ -424,6 +424,8 @@ const Historic = ({filteredStudents, grade}) => {
                 <InputTextarea
                     id='comment'
                     name='comment'
+                    rows={4}
+                    cols={40}
                     //type='password'
                     //keyfilter={/^\d{0,4}$/}
                     placeholder='Ingrese el comentario. POR NORMATIVA; DEBE INGRESAR COMENTARIOS'
