@@ -31,6 +31,7 @@ const LandingEvaluation = () => {
     const ref = useRef(null)
     const {grade} = router.query;
     const [selectedMonth, setSelectedMonth] = useState({code: 0, name: 'Enero'});
+    const [selectedProjectoEje, setSelectedProjectoEje] = useState('');
     const [state, setState] = useState({})
 
     const download = (image, {
@@ -76,7 +77,7 @@ const LandingEvaluation = () => {
             localStorage.setItem('evaoa', grade.toString())
         }
     }, [grade])
-    const plannings = filterPlanningByMonth(planningMediumsRaw, selectedMonth.code)
+    const plannings = planningMediumsRaw.filter(planificacion => planificacion.proyectoEje === selectedProjectoEje)
     const filterStudents = students.filter(student => student.grade === grade.toUpperCase())
 
     const filterStudents1 = filterStudents.slice(0, 8);
@@ -111,14 +112,17 @@ const LandingEvaluation = () => {
         return <Loading/>
     }
 
+    // lista de proyectos eje para poblar el dropdown
+    var projectosEje = planningMediumsRaw.map(planning => planning.proyectoEje)
+    projectosEje = [...new Set(projectosEje)];
+
     return (
         <div ref={ref}>
             <div className='flex-auto mb-4'>
-                <label htmlFor='grade' className='font-bold block mb-2'>Selecciona un mes</label>
+                <label htmlFor='grade' className='font-bold block mb-2'>Selecciona un proyecto</label>
                 <div className='flex gap-2'>
-                    <Dropdown value={selectedMonth} onChange={(e) => setSelectedMonth(e.value)} options={months}
-                              optionLabel='name'
-                              placeholder="Selecciona un mes" className="w-full md:w-14rem"/>
+                    <Dropdown value={selectedProjectoEje} onChange={(e) => setSelectedProjectoEje(e.value)} options={projectosEje}
+                              placeholder="Proyecto" className="w-full md:w-14rem"/>
                     <div>
                         <Button label='Descargar evaluaciones' severity='success' onClick={getImage}/>
                     </div>
