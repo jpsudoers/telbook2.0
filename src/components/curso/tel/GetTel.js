@@ -62,6 +62,16 @@ const GetTel = ({grade}) => {
 
     // JPS termino de la varible.
 
+    const planningIsFromCurrentDay = (item) => {
+        const lectionary = new Date(item.publishedAt.seconds * 1000); // Convert seconds to milliseconds
+        const currentDate = new Date();
+        if (lectionary.getFullYear() === currentDate.getFullYear() &&
+            lectionary.getMonth() === currentDate.getMonth() &&
+            lectionary.getDate() === currentDate.getDate()) {
+            return true;
+        }
+        return false;
+    }
 
     return (
         <div>
@@ -146,7 +156,14 @@ const GetTel = ({grade}) => {
                                 })
                             }
                             </Accordion>
-                            <Button type='button' label='Eliminar' severity='danger' onClick={() => removeOa(lectionary)}/>
+
+                            {planningIsFromCurrentDay(lectionary) &&
+                                <Button type='button'
+                                        label='Eliminar'
+                                        severity='danger'
+                                        onClick={() => removeOa(lectionary)}
+                                />
+                            }
                         </Fieldset>
                     );
                 })
