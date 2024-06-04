@@ -89,8 +89,9 @@ const GetTel = ({grade}) => {
                     const monthName = lectionary.publishedAt.toDate().toLocaleDateString('es-CL', {month: 'long'})
                     const date = dayName + " " + day + " de " + monthName + " de " + year;
 
-                    // Si es un leccionario antiguo
-                    // ó si es un leccionario nuevo (con multiples oas)
+                    // Si es un leccionario antiguo (caso if)
+                    // ó si es un leccionario nuevo (con multiples oas) (caso else)
+                    // esto debido a que el formato de los leccionarios antiguos es diferente al de los nuevos. los nuevos tienen multiples contenidos 
                     return !Object.hasOwn(lectionary, 'contenidosTel') ? (
                         <Fieldset key={index} className='mb-3' legend={date}>
                             <p className="m-0">
