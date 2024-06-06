@@ -15,6 +15,7 @@ import autoTable from "jspdf-autotable";
 import {orderByList} from "@/utils/sort";
 import swal from 'sweetalert';
 import { CSVLink, CSVDownload } from "react-csv";
+import { studentDecorator } from '@/context/students/Students.decorator';
 
 
 
@@ -119,10 +120,84 @@ const LandingBookRegister = () => {
     }
 
     //JPS intentando hacer un export a CSV
-    const csvdata = studentsRaw;
+   // const csvdata = studentsRaw;
 
+   const csvheaders = [
+                    {label: "Año", key: "anio"},
+                    {label: "RBD", key: "rbd"},
+                    {label: "Numero Matricula", key: "numeroMatricula"},
+                    {label: "Apellidos Alumno", key: "apellidosAlumno"},
+                    {label: "Nombres Alumno", key: "nombresAlumno"},
+                    {label: "Nombre Completo Alumno", key: "nombreCompleto"},
+                    {label: "Sexo", key: "sexo"},
+                    {label: "Fecha Nacimiento", key: "fechaNacimiento"},
+                    {label: "Rut", key: "run"},
+                    {label: "Curso", key: "curso"},
+                    {label: "Jornada", key: "jornada"},
+                    {label: "Domicilio", key: "domicilio"},
+                    {label: "Comuna", key: "comuna"},
+                    {label: "Procedencia", key: "procedencia"},
+                    {label: "Fecha Incorporación Escuela", key: "fechaIncorporacion"},
+                    {label: "Problemas de Aprendizaje", key: "problemaDeAprendizaje"},
+                    {label: "Tipo Tel", key: "tipeTel"},
+                    {label: "Fecha de Retiro", key: "fechaRetiroEscuela"},
+                    {label: "Causa Retiro Escuela", key: "causaRetiroEscuela"},
+                    {label: "Estado Alumno", key: "estadoAlumno"},
+                    {label: "Nombre Apoderado", key: "nombreApoderado"},
+                    {label: "Apoderado Tutor", key: "apoderadoTutor"},
+                    {label: "Parentesco Con Alumno", key: "parentezcoConAlumno"},
+                    {label: "Vive Con", key: "viveCon"},
+                    {label: "Nivel Educacional Madre", key: "nivelEducacionalMadre"},
+                    {label: "Nivel Educacional Padre", key: "nivelEducacionalPadre"},
+                    {label: "Email", key: "email"},
+                    {label: "Telefono", key: "telefono"},
+                    {label: "Situación Social", key: "situacionSocial"},
+                    {label: "Nacionalidad", key: "nacionalidadAlumno"},
+                    {label: "Alumno Pueblo Originario", key: "alumnoPuebloImaginario"},
+                    {label: "Region", key: "region"},
+                    {label: "Numero Lista", key: "numeroLista"},
+                    {label: "Codigo Alumno", key: "codigoAlumno"}
+                 ]
 
-
+    const csvdata = [
+                {
+                anio            : "2024",
+                rbd             : studentsRaw.rbd,
+                numeroMatricula : studentsRaw.numeroMatricula,
+                apellidosAlumno : studentsRaw.apellidosAlumno,
+                nombreAlumnos   : studentsRaw.nombreAlumnos,
+                nombreCompleto  : studentsRaw.nombreCompleto,
+                sexo            : studentsRaw.sexo,
+                fechaNacimiento : studentsRaw.fechaNacimiento,
+                run             : studentsRaw.run,
+                curso           : studentsRaw.curso,
+                jornada         : studentsRaw.jornada,
+                domicilio       : studentsRaw.domicilio,
+                comuna          : studentsRaw.comuna,
+                procedencia     : studentsRaw.procedencia,
+                fechaIncorporacion : studentsRaw.fechaIncorporacion,
+                problemaDeAprendizaje : studentsRaw.problemaDeAprendizaje,
+                tipoTel         : studentsRaw.tipoTel,
+                fechaRetiroEscuela : studentsRaw.fechaRetiroEscuela,
+                causaRetiroEscuela: studentsRaw.causaRetiroEscuela,
+                estadoAlumno    : studentsRaw.estadoAlumno,
+                nombreApoderado : studentsRaw.nombreApoderado,
+                apoderadoTutor  : studentsRaw.apoderadoTutor,
+                parentezcoConAlumno : studentsRaw.parentezcoConAlumno,
+                viveCon         : studentsRaw.viveCon,
+                nivelEducacionalMadre : studentsRaw.nivelEducacionalMadre,
+                nivelEducacionalPadre : studentsRaw.nivelEducacionalPadre,
+                email           : studentsRaw.email,
+                telefono        : studentsRaw.telefono,
+                situacionSocial : studentsRaw.situacionSocial,
+                nacionalidadAlumno : studentsRaw.nacionalidadAlumno,
+                alumnoPuebloImaginario : studentsRaw.alumnoPuebloImaginario,
+                region          : studentsRaw.region,
+                numeroLista     : studentsRaw.numeroLista,
+                codigoAlumno    : studentsRaw.codigoAlumno
+            }
+              ]
+console.log(csvdata)
     if (studentsLoading) {
         return <Loading/>
     }
@@ -139,7 +214,8 @@ const LandingBookRegister = () => {
     
     {/* <CSVLink data={csvdata} filename = 'libro_matriculas.csv'>Download me</CSVLink> */}
 
-    <Button severity='success' >  <CSVLink data={csvdata} 
+    <Button severity='success' >  <CSVLink data={studentsRaw} 
+                                           headers={csvheaders}
                                           separator=";"
                                          
                                           wrapColumnChar="'"
