@@ -10,6 +10,8 @@ import GetEvaluation from "@/components/curso/evaluacion/GetEvaluation";
 import {jsPDF} from "jspdf";
 import {useScreenshot} from "use-react-screenshot";
 import {Button} from "primereact/button";
+import { InputTextarea } from 'primereact/inputtextarea';
+import { InputText } from 'primereact/inputtext';
 
 const months = [
     {code: 0, name: 'Enero'},
@@ -28,6 +30,7 @@ const months = [
 
 const LandingEvaluation = () => {
     const router = useRouter();
+    const value = '';
     const ref = useRef(null)
     const {grade} = router.query;
     const [selectedMonth, setSelectedMonth] = useState({code: 0, name: 'Enero'});
@@ -102,7 +105,8 @@ const LandingEvaluation = () => {
             idOa: oa.id,
             curso: grade.toUpperCase(),
             id: 'evaoa-' + date.getTime(),
-            evaluaciones: state[key]
+            evaluaciones: state[key],
+            contenidoEvaluado: value
         }
         setEvaluationsByOa(newData)
         getEvaluationsByGrade(grade.toUpperCase())
@@ -144,6 +148,21 @@ const LandingEvaluation = () => {
                                     <div className='mb-3'>
                                         <strong>Objetivo de aprendizaje:</strong> {oa.oaSeleccionado}
                                     </div>
+                                    
+                                    
+                                    {/* JPS agrego div para poner un TextArea para ingresar contenidos */}
+                                    <div className='mb-1'>
+                                    <strong>Ingreso Contenidos:</strong> 
+                                    </div>
+                                    <div className='p-inputgroup w-full'>
+                                    <InputTextarea
+                                    id="resources"
+                                    name="resources"
+                                    //value={value}
+                                    placeholder="Ingrese contenidos evaluados"
+                                    />
+                                    </div>
+
                                     <GetEvaluation idx={idx} index={index} state={state} handlerState={handlerState}
                                                    students1={filterStudents1} students2={filterStudents2} oa={oa}
                                                    handlerEvaluation={handlerEvaluation} getDisabled={getDisabled}
