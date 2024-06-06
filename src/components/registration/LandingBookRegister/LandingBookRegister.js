@@ -197,7 +197,9 @@ const LandingBookRegister = () => {
                 codigoAlumno    : studentsRaw.codigoAlumno
             }
               ]
-console.log(csvdata)
+              let studentSortByCodMatricula = studentsRaw.sort((a,b) => a.numeroMatricula - b.numeroMatricula); 
+              
+
     if (studentsLoading) {
         return <Loading/>
     }
@@ -211,10 +213,9 @@ console.log(csvdata)
     </Link>
 
     
-    
     {/* <CSVLink data={csvdata} filename = 'libro_matriculas.csv'>Download me</CSVLink> */}
 
-    <Button severity='success' >  <CSVLink data={studentsRaw} 
+    <Button severity='success' >  <CSVLink data={studentSortByCodMatricula} 
                                            headers={csvheaders}
                                           separator=";"
                                          
