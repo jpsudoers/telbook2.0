@@ -1,6 +1,7 @@
 import React from 'react';
 import {Dropdown} from "primereact/dropdown";
 import {Button} from "primereact/button";
+import { InputTextarea } from 'primereact/inputtextarea';
 
 const GetEvaluation = ({
                            state,
@@ -117,11 +118,32 @@ const GetEvaluation = ({
                 />
             })}
         </div>
-        <div>
+        
+          {/* JPS agrego div para poner un TextArea para ingresar contenidos
+        <div className='mb-3' 
+       
+       >
+                                    <strong>Ingreso Contenidos:</strong> 
+                                    </div>
+                                    <div className='p-inputgroup w-full'>
+                                    <InputTextarea
+                                    id="resources"
+                                    name="resources"
+                                    //value={value}
+                                    placeholder="Ingrese contenidos evaluados"
+                                    />
+                                    </div> */}
+
+
+        <div className='mb-3' >
             <Button label='Confirmar' severity='success'
                     onClick={() => handlerEvaluation(index + '-' + idx, oa)}
                     disabled={getDisabled(index + '-' + idx)}/>
         </div>
+     
+       
+
+
     </div>
 };
 
