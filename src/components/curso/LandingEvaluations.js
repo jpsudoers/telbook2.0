@@ -99,14 +99,14 @@ const LandingEvaluation = () => {
         return Object.keys(state[key]).length !== filterStudents.length;
     }
 
-    const handlerEvaluation = (key, oa) => {
+    const handlerEvaluation = (key, oa, contenidosEvaluados) => {
         const date = new Date()
         const newData = {
             idOa: oa.id,
             curso: grade.toUpperCase(),
             id: 'evaoa-' + date.getTime(),
             evaluaciones: state[key],
-            contenidoEvaluado: value
+            contenidosEvaluados: contenidosEvaluados,
         }
         setEvaluationsByOa(newData)
         getEvaluationsByGrade(grade.toUpperCase())
@@ -168,7 +168,7 @@ const LandingEvaluation = () => {
                                                    handlerEvaluation={handlerEvaluation} getDisabled={getDisabled}
                                                    evaluationByOa={evaluationByOa}
                                     />
-
+                                    
                                 </div>
                             })}
                         </Fieldset>
