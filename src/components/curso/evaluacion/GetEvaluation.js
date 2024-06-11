@@ -144,7 +144,7 @@ const GetEvaluation = ({
             />
         </div>
 
-        <div>
+        <div style={{marginTop: 10}} >
             <Button label='Confirmar' severity='success'
                     onClick={() => handlerEvaluation(index + '-' + idx, oa, contenidosEvaluados)}
                     disabled={getDisabled(index + '-' + idx)}/>
