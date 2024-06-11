@@ -150,18 +150,7 @@ const LandingEvaluation = () => {
                                     </div>
                                     
                                     
-                                    {/* JPS agrego div para poner un TextArea para ingresar contenidos */}
-                                    <div className='mb-1'>
-                                    <strong>Ingreso Contenidos:</strong> 
-                                    </div>
-                                    <div className='p-inputgroup w-full'>
-                                    <InputTextarea
-                                    id="resources"
-                                    name="resources"
-                                    //value={value}
-                                    placeholder="Ingrese contenidos evaluados"
-                                    />
-                                    </div>
+                    
 
                                     <GetEvaluation idx={idx} index={index} state={state} handlerState={handlerState}
                                                    students1={filterStudents1} students2={filterStudents2} oa={oa}
