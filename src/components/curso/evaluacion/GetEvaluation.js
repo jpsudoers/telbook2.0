@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {Dropdown} from "primereact/dropdown";
 import {Button} from "primereact/button";
-import { InputTextarea } from 'primereact/inputtextarea';
+import {InputTextarea} from "primereact/inputtextarea";
 
 const GetEvaluation = ({
                            state,
@@ -16,6 +16,7 @@ const GetEvaluation = ({
                            evaluationByOa
                        }) => {
 
+    const [contenidosEvaluados, setContenidosEvaluados] = useState("")
     const isEvaluated = () => {
         const response = evaluationByOa.filter(oas => {
             return oa.id === oas.idOa
@@ -31,6 +32,11 @@ const GetEvaluation = ({
     }
 
     if (isEvaluated()) {
+
+        const value = evaluationByOa.filter(oas => {
+            return oas.idOa === oa.id
+        })
+
         return <div>
             <div className='flex text-xs'>
                 {students1 && students1.map((student, key) => {
@@ -76,6 +82,12 @@ const GetEvaluation = ({
                     />
                 })}
             </div>
+
+            {value[0].contenidosEvaluados && 
+                <div className='mb-1'>
+                    <strong>Contenidos evaluados:</strong> {value[0].contenidosEvaluados}
+                </div>
+            }
         </div>
     }
 
@@ -118,26 +130,23 @@ const GetEvaluation = ({
                 />
             })}
         </div>
+
+        <div className='mb-1'>
+            <strong>Ingreso Contenidos:</strong>
+        </div>
         
-          {/* JPS agrego div para poner un TextArea para ingresar contenidos
-        <div className='mb-3' 
-       
-       >
-                                    <strong>Ingreso Contenidos:</strong> 
-                                    </div>
-                                    <div className='p-inputgroup w-full'>
-                                    <InputTextarea
-                                    id="resources"
-                                    name="resources"
-                                    //value={value}
-                                    placeholder="Ingrese contenidos evaluados"
-                                    />
-                                    </div> */}
+        <div className='p-inputgroup w-full'>
+            <InputTextarea id="resources"
+                           name="resources"
+                           value={contenidosEvaluados}
+                           onChange={(e) => setContenidosEvaluados(e.target.value)}
+                           placeholder=""
+            />
+        </div>
 
-
-        <div className='mb-3' >
+        <div style={{marginTop: 10}} >
             <Button label='Confirmar' severity='success'
-                    onClick={() => handlerEvaluation(index + '-' + idx, oa)}
+                    onClick={() => handlerEvaluation(index + '-' + idx, oa, contenidosEvaluados)}
                     disabled={getDisabled(index + '-' + idx)}/>
         </div>
      
