@@ -1,9 +1,12 @@
-import React from 'react';
 import Link from 'next/link'
 import styles from './Nav.module.scss'
 
+import React, { useContext } from 'react';
+import UserContext from '@/context/user/User.context'; // Adjust the import path
 
 const Nav = () => {
+    const { user } = useContext(UserContext);
+
     return (
         <nav className={styles.nav}>
             <div className={styles.space}>
@@ -15,14 +18,11 @@ const Nav = () => {
             <div className={styles.space}>
                 <Link
                     className={styles.anchorNavHighlighted}
-                    href="http://localhost:5173"
+                    href={`https://eduti-prematricula-2024.netlify.app/?u=${user.id}`}
                 >
                     Pre-Matricula
                 </Link>
             </div>
-            {/*<div className={styles.space}>*/}
-            {/*    <Link className={styles.anchorNav} href="/libro-de-matricula">administración</Link>*/}
-            {/*</div>*/}
         </nav>
     );
 };
