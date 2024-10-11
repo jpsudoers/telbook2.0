@@ -204,7 +204,7 @@ const LandingPlanningMedium = () => {
                         </div>
                     </div>
                     <div className="flex-auto mb-4">
-                        <label htmlFor="week" className="font-bold block mb-2">Projecto eje de los aprendizajes</label>
+                        <label htmlFor="week" className="font-bold block mb-2">Proyecto eje de los aprendizajes</label>
                         <div className='p-inputgroup w-full'>
                             <InputText
                                 id="project"
@@ -213,7 +213,7 @@ const LandingPlanningMedium = () => {
                                 onChange={(e) => {
                                     formik.setFieldValue('project', e.target.value);
                                 }}
-                                placeholder="Projecto eje de los aprendizajes"
+                                placeholder="Proyecto eje de los aprendizajes"
                                 className={classNames({'p-invalid': isFormFieldInvalid('project')})}
                             />
                         </div>
