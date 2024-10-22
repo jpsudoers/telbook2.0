@@ -128,7 +128,7 @@ const LandingEvaluation = () => {
                     <Dropdown value={selectedProjectoEje} onChange={(e) => setSelectedProjectoEje(e.value)} options={projectosEje}
                               placeholder="Proyecto" className="w-full md:w-14rem"/>
                     <div>
-                        <Button label='Descargar evaluaciones' severity='success' onClick={getImage}/>
+                        {/* <Button label='Descargar evaluaciones' severity='success' onClick={getImage}/> */}
                     </div>
                 </div>
 
