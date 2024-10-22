@@ -149,6 +149,10 @@ const GetEvaluation = ({
                     onClick={() => handlerEvaluation(index + '-' + idx, oa, contenidosEvaluados)}
                     disabled={getDisabled(index + '-' + idx)}/>
         </div>
+     
+       
+
+
     </div>
 };
 
