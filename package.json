@@ -35,7 +35,8 @@
     "react-dom": "^18.2.0",
     "react-export-excel": "^0.5.3",
     "sweetalert": "^2.1.2",
-    "use-react-screenshot": "^4.0.0"
+    "use-react-screenshot": "^4.0.0",
+    "exceljs": "^4.3.0"
   },
   "devDependencies": {
     "sass": "^1.71.1"
