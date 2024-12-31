@@ -284,7 +284,7 @@ const Historic = ({filteredStudents, grade}) => {
         // Agregar títulos usando el nombre de la escuela del usuario
         worksheet.mergeCells('A1:AE1');
         worksheet.mergeCells('A2:AE2');
-        worksheet.getCell('A1').value = user.school?.toUpperCase() || 'ESCUELA NO ESPECIFICADA';
+        //worksheet.getCell('A1').value = user.school?.toUpperCase() || 'ESCUELA NO ESPECIFICADA';
         worksheet.getCell('A2').value = `ASISTENCIA ${grade.toUpperCase()} - ${selectedMonth.name} ${selectedYear}`;
         worksheet.getCell('A1').style = titleStyle;
         worksheet.getCell('A2').style = titleStyle;
