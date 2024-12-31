@@ -15,6 +15,7 @@ const Nav = () => {
             <div className={styles.space}>
                 <Link className={styles.anchorNav} href="/libro-de-matricula">matriculas</Link>
             </div>
+            {/* Comentar la sección de PRE-MATRICULA
             <div className={styles.space}>
                 <Link
                     className={styles.anchorNavHighlighted}
@@ -23,6 +24,7 @@ const Nav = () => {
                     Pre-Matricula
                 </Link>
             </div>
+            */}
         </nav>
     );
 };
