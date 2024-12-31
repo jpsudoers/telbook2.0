@@ -424,7 +424,7 @@ const LandingPlanningMedium = () => {
                             type='button' 
                             className='mt-4' 
                             onClick={handleDownloadExcel} 
-                            label='Descargar planificaciones' 
+                            label='Descargar planificaciones históricas' 
                             icon="pi pi-file-excel"
                             severity='success' 
                             style={{width: '100%'}}

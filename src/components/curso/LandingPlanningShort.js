@@ -475,22 +475,15 @@ const LandingPlanningShort = () => {
                     <PreviewOas addedOas={addedOas} removeOa={removeOa}/>
                     <br/>
 
-                    {/* Botones de descarga - siempre visibles si hay planificaciones */}
+                    {/* Botón de descarga - siempre visible si hay planificaciones */}
                     {planningShorts.length > 0 && (
-                        <div className="flex gap-2 mb-4">
-                            <Button 
-                                type="button" 
-                                onClick={exportToPDF}
-                                label="Descargar PDF" 
-                                severity="success" 
-                                className="flex-1"
-                            />
+                        <div className="mb-4">
                             <Button 
                                 type="button" 
                                 onClick={exportToExcel}
-                                label="Descargar Excel" 
+                                label="Descargar planificaciones históricas" 
                                 severity="info" 
-                                className="flex-1"
+                                className="w-full"
                             />
                         </div>
                     )}

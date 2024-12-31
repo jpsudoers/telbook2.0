@@ -108,7 +108,7 @@ const LandingPlanningLarge = () => {
 
         // Agregar título y encabezado
         worksheet.mergeCells('A1:C1');
-        worksheet.getCell('A1').value = `PLANIFICACIONES ${grade.toUpperCase()}`;
+        worksheet.getCell('A1').value = `PLANIFICACIONES DE LARGO PLAZO ${grade.toUpperCase()}`;
         worksheet.getCell('A1').font = { 
             bold: true, 
             size: 14,
@@ -139,7 +139,7 @@ const LandingPlanningLarge = () => {
         worksheet.columns = [
             { header: 'Fecha', key: 'date', width: 15 },
             { header: 'Curso', key: 'curso', width: 15 },
-            { header: 'Descripción', key: 'description', width: 85 }
+            { header: 'Planificaciones de Largo Plazo', key: 'description', width: 85 }
         ];
 
         // Estilo para el encabezado
@@ -266,7 +266,7 @@ const LandingPlanningLarge = () => {
             <Button 
                 className='mt-2' 
                 type='button' 
-                label='Descargar Planificaciones' 
+                label='Descargar planificaciones históricas' 
                 onClick={handleDownloadExcel} 
                 severity='success'
                 icon="pi pi-file-excel"
