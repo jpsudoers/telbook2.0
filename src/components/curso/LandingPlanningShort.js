@@ -18,6 +18,7 @@ import autoTable from "jspdf-autotable";
 import {getRandomKey} from "@/utils/evaluations";
 import {InputTextarea} from "primereact/inputtextarea";
 import PreviewOas from "@/components/curso/planningShort/PreviewOas";
+import ExcelJS from 'exceljs';
 
 const LandingPlanningShort = () => {
     const [selectAmbit, setSelectAmbit] = useState(null);
@@ -165,32 +166,142 @@ const LandingPlanningShort = () => {
         import('jspdf').then((jsPDF) => {
             import('jspdf-autotable').then(() => {
                 const doc = new jsPDF.default(0, 0);
-                const dataToPdf = filterPlannings
+                const dataToPdf = planningShorts.sort((a, b) => {
+                    const dateA = new Date(a.date);
+                    const dateB = new Date(b.date);
+                    return dateA - dateB;
+                });
                 let row = [];
                 dataToPdf.forEach(data => {
-                    row.push([data.data.name.toUpperCase()])
-                    row.push(['  Estrategias curriculares'])
+                    row.push([
+                        new Date(data.date).toLocaleDateString('es-ES'),
+                        data.data.name.toUpperCase()
+                    ])
+                    row.push(['', '  Estrategias curriculares'])
                     data.children.forEach(child => {
                         if (child.children) {
                             child.children.forEach(ch => {
-                                row.push(['      ' + ch.data?.title + ': ' + ch.data?.name])
+                                row.push(['', '      ' + ch.data?.title + ': ' + ch.data?.name])
                             })
-                            row.push(['    '])
+                            row.push(['', '    '])
                         } else {
-                            row.push(['  ' + child.data?.title + ': ' + child.data?.name])
+                            row.push(['', '  ' + child.data?.title + ': ' + child.data?.name])
                         }
                     })
-                    row.push(['  '])
+                    row.push(['', '  '])
                 })
                 autoTable(doc, {
-                    head: [['Planificaciones a corto plazo ' + grade.toUpperCase()]],
+                    head: [['Fecha', 'Planificaciones a corto plazo ' + grade.toUpperCase()]],
                     body: row,
                     startY: 25,
                 })
-                doc.save('Planificaciones a corto plazo ' + grade.toUpperCase() + '.pdf');
+                doc.save('Todas las planificaciones corto plazo ' + grade.toUpperCase() + '.pdf');
             });
         });
     }
+
+    const exportToExcel = async () => {
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('Planificaciones');
+        
+        // Configurar columnas
+        worksheet.columns = [
+            { header: 'Fecha', key: 'fecha', width: 15 },
+            { header: 'Planificación', key: 'planificacion', width: 30 },
+            { header: 'Tipo', key: 'tipo', width: 25 },
+            { header: 'Detalle', key: 'detalle', width: 50 }
+        ];
+
+        // Estilo para el encabezado
+        worksheet.getRow(1).font = { bold: true };
+        worksheet.getRow(1).fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FFE0E0E0' }
+        };
+
+        // Usar planningShorts en lugar de filterPlannings para obtener todas las planificaciones
+        const allPlannings = planningShorts.sort((a, b) => {
+            const dateA = new Date(a.date);
+            const dateB = new Date(b.date);
+            return dateA - dateB;
+        });
+
+        let rowNumber = 2;
+
+        allPlannings.forEach(data => {
+            // Título de la planificación
+            worksheet.addRow({
+                fecha: new Date(data.date).toLocaleDateString('es-ES'),
+                planificacion: data.data.name.toUpperCase(),
+                tipo: '',
+                detalle: ''
+            });
+            worksheet.getRow(rowNumber).font = { bold: true };
+            rowNumber++;
+
+            // Estrategias curriculares
+            worksheet.addRow({
+                fecha: '',
+                planificacion: '',
+                tipo: 'Estrategias curriculares',
+                detalle: ''
+            });
+            worksheet.getRow(rowNumber).font = { italic: true };
+            rowNumber++;
+
+            // Agregar detalles
+            data.children.forEach(child => {
+                if (child.children) {
+                    child.children.forEach(ch => {
+                        worksheet.addRow({
+                            fecha: '',
+                            planificacion: '',
+                            tipo: ch.data?.title,
+                            detalle: ch.data?.name
+                        });
+                        rowNumber++;
+                    });
+                } else {
+                    worksheet.addRow({
+                        fecha: '',
+                        planificacion: '',
+                        tipo: child.data?.title,
+                        detalle: child.data?.name
+                    });
+                    rowNumber++;
+                }
+            });
+
+            // Línea en blanco entre planificaciones
+            worksheet.addRow({});
+            rowNumber++;
+        });
+
+        // Agregar bordes a todas las celdas con contenido
+        worksheet.eachRow((row, rowNumber) => {
+            row.eachCell((cell) => {
+                if (cell.value) {
+                    cell.border = {
+                        top: { style: 'thin' },
+                        left: { style: 'thin' },
+                        bottom: { style: 'thin' },
+                        right: { style: 'thin' }
+                    };
+                }
+            });
+        });
+
+        // Generar y descargar el archivo
+        const buffer = await workbook.xlsx.writeBuffer();
+        const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        const url = window.URL.createObjectURL(blob);
+        const anchor = document.createElement('a');
+        anchor.href = url;
+        anchor.download = `Todas las planificaciones corto plazo ${grade.toUpperCase()}.xlsx`;
+        anchor.click();
+        window.URL.revokeObjectURL(url);
+    };
 
     const addOa = () => {
         const currentOas = formik.values.oa.map(o => {
@@ -364,20 +475,49 @@ const LandingPlanningShort = () => {
                     <PreviewOas addedOas={addedOas} removeOa={removeOa}/>
                     <br/>
 
-                    {/* lista de planificaciones corto plazo existentes */}
-                    {filterPlannings.length > 0 &&
-                        <div className="card text-xs">
-                            <TreeTable selectionMode="single" value={filterPlannings}
-                                        tableStyle={{minWidth: '50rem', fontSize: '12px'}}
-                                        loading={planningShortsLoading} header="Planificaciones corto plazo" >
-                                <Column field="name" header="Planificaciones corto plazo (activas de la semana)"
-                                        body={isCurrent} expander/>
-                                <Column body={actionTemplate} headerClassName="w-10rem" />
-                            </TreeTable>
-                            <Button type='button' onClick={exportToPDF} className='mt-4'
-                                    label='Descargar planificaciones' severity='success' style={{width: '100%'}}/>
+                    {/* Botones de descarga - siempre visibles si hay planificaciones */}
+                    {planningShorts.length > 0 && (
+                        <div className="flex gap-2 mb-4">
+                            <Button 
+                                type="button" 
+                                onClick={exportToPDF}
+                                label="Descargar PDF" 
+                                severity="success" 
+                                className="flex-1"
+                            />
+                            <Button 
+                                type="button" 
+                                onClick={exportToExcel}
+                                label="Descargar Excel" 
+                                severity="info" 
+                                className="flex-1"
+                            />
                         </div>
-                    }
+                    )}
+
+                    {/* lista de planificaciones corto plazo existentes */}
+                    {filterPlannings.length > 0 && (
+                        <div className="card text-xs">
+                            <TreeTable 
+                                selectionMode="single" 
+                                value={filterPlannings}
+                                tableStyle={{minWidth: '50rem', fontSize: '12px'}}
+                                loading={planningShortsLoading} 
+                                header="Planificaciones corto plazo"
+                            >
+                                <Column 
+                                    field="name" 
+                                    header="Planificaciones corto plazo (activas de la semana)"
+                                    body={isCurrent} 
+                                    expander
+                                />
+                                <Column 
+                                    body={actionTemplate} 
+                                    headerClassName="w-10rem" 
+                                />
+                            </TreeTable>
+                        </div>
+                    )}
                     {filterPlannings.length === 0 &&
                         <div className="field col">
                             No hay planificaciones de corto plazo para esta semana
