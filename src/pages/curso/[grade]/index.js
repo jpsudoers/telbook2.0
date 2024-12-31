@@ -35,7 +35,7 @@ const Grade = () => {
         '2nt': 'Kinder'
     }
 
-    const course = grade.split('-')[1].slice(-1)
+    const course = grade ? grade.split('-')[1].slice(-1) : '';
 
     const items = [
         {label: 'Alumnos', icon: 'pi pi-fw pi-users', command: () => setActiveIndex(0)},
@@ -114,6 +114,10 @@ const Grade = () => {
 
     if (Object.values(user).length === 0) {
         router.push('/cursos')
+    }
+
+    if (!grade) {
+        return <div>Cargando...</div>;
     }
 
     return (

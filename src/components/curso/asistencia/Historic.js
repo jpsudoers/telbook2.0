@@ -12,6 +12,7 @@ import {useRouter} from "next/router";
 import {InputText} from "primereact/inputtext";
 import { InputTextarea } from 'primereact/inputtextarea';
 import swal from 'sweetalert';
+import ExcelJS from 'exceljs';
 
 const options = [
     {
@@ -39,38 +40,62 @@ const Historic = ({filteredStudents, grade}) => {
     
     const router = useRouter();
 
+    // Función auxiliar para normalizar el valor de presente
+    const normalizePresenteValue = (value) => {
+        // Convertir a número si es string
+        const numValue = Number(value);
+        
+        // Si es NaN o undefined, retornar 0
+        if (isNaN(numValue) || value === undefined) {
+            return 0;
+        }
+        
+        // Si es 1 retornar 1, cualquier otro número retornar 0
+        return numValue === 1 ? 1 : 0;
+    };
+
     useEffect(() => {
-        // newAttendance es un objeto temporal que se va a usar para setear el estado de tempAttendance
-        // studentsInCoursePlusAttendance es el array temporal que se va a usar para setear el estado de studentsInAttendances
+        console.log('Datos crudos de Firebase:', attendances);
 
         let newAttendance = {};
         let studentsInCoursePlusAttendance = [...filteredStudents.map(item => ({ run: item.run.replaceAll('.',''), name: item.name || '' }))]
 
-        attendances.forEach(attendance => { // por cada asistencia...
-            attendance.alumnos.forEach(alumno => { // por cada alumno en la asistencia...
-                let student = students.find(item => item.run.replaceAll('.','') === alumno.run); // busco el alumno en la lista de alumnos...
-                const studentName = student?.name // ...para poder extraer su nombre
+        attendances.forEach(attendance => {
+            console.log('Procesando asistencia del día:', attendance.day);
+            console.log('Alumnos en esta asistencia:', attendance.alumnos);
 
-                // lo agrego a studentsInCoursePlusAttendance si es que no está
+            attendance.alumnos.forEach(alumno => {
+                console.log('Procesando alumno:', alumno.run);
+                console.log('Valor presente original:', alumno.presente);
+                console.log('Tipo de dato presente:', typeof alumno.presente);
+
+                let student = students.find(item => item.run.replaceAll('.','') === alumno.run);
+                const studentName = student?.name
+
                 if (!studentsInCoursePlusAttendance.find(item => item.run === alumno.run))
                     studentsInCoursePlusAttendance.push({run: alumno.run, name: studentName});
 
-                // si el alumno no está en newAttendance, lo agrego
-                if (!newAttendance[alumno.run]) // si no existe el alumno en newAttendance...
-                    newAttendance[alumno.run] = { asistencias: {}, name: studentName ? studentName : '' }; // ...creo el alumno y seteo el nombre o un string vacío
+                if (!newAttendance[alumno.run])
+                    newAttendance[alumno.run] = { asistencias: {}, name: studentName ? studentName : '' };
                 
-                newAttendance[alumno.run].asistencias[attendance.day] = alumno.presente; // finalmente agrego la asistencia al alumno en newAttendance
+                // Asegurarse de que el valor de presente sea explícitamente 1 o 0
+                const presenteValue = normalizePresenteValue(alumno.presente);
+                console.log('Valor presente procesado:', presenteValue);
+                
+                newAttendance[alumno.run].asistencias[attendance.day] = presenteValue;
             });
         });
-        studentsInCoursePlusAttendance.sort((a, b) => a.name?.localeCompare(b.name)); // ordeno los estudiantes por nombre
+
+        console.log('Objeto de asistencia procesado:', newAttendance);
+
+        studentsInCoursePlusAttendance.sort((a, b) => a.name?.localeCompare(b.name));
         studentsInCoursePlusAttendance = studentsInCoursePlusAttendance.filter((student, index, self) =>
             index === self.findIndex((s) => s.run === student.run)
         );
-        setTempAttendance(newAttendance); // actualizo el estado
-        setStudentsInAttendances(studentsInCoursePlusAttendance); // actualizo el estado
-
-        // obtengo los días de asistencia del mes. despues se actualiza cada vez que cambia un dia
-        setDaysWithAttendance(attendances.map(item => item.day)); // actualizo el estado
+        
+        setTempAttendance(newAttendance);
+        setStudentsInAttendances(studentsInCoursePlusAttendance);
+        setDaysWithAttendance(attendances.map(item => item.day));
     }, [attendances]);
 
     const {
@@ -161,9 +186,16 @@ const Historic = ({filteredStudents, grade}) => {
         const run = target.id.run
         const day = target.id.day
         const newValue = target.value
+
+        console.log('Cambiando asistencia:', {run, day, newValue});
+
         setTempAttendance(prevState => {
             const student = students.find(s => s.run.replaceAll('.', '') === run);
             const asistencias = prevState[run]?.asistencias || {};
+            
+            // Si el valor es null o undefined, lo tratamos como ausente (0)
+            const valueToStore = newValue === 1 ? 1 : 0;
+
             return {
                 ...prevState,
                 [run]: {
@@ -171,23 +203,22 @@ const Historic = ({filteredStudents, grade}) => {
                     name: student?.name,
                     asistencias: {
                         ...asistencias,
-                        [day]: newValue
+                        [day]: valueToStore
                     }
                 }
             }
-        })
-    
+        });
+
         // si el dia no está en daysWithAttendance, lo agrego
         if (!daysWithAttendance.includes(day))
-            setDaysWithAttendance([...daysWithAttendance, day])
-        
+            setDaysWithAttendance([...daysWithAttendance, day]);
     }
 
     const saveAttendances = async () => {
         setEditMode(false)
         const attendancesAsFirebase = [];
-        for (const [run, data] of Object.entries(tempAttendance)) { // por cada alumno
-            for (const [day, presente] of Object.entries(data.asistencias)) { // por cada dia de asistencia del alumno
+        for (const [run, data] of Object.entries(tempAttendance)) {
+            for (const [day, presente] of Object.entries(data.asistencias)) {
                 let dayData = attendancesAsFirebase.find(d => d.day === day);
                 if (!dayData) {
                     const date = new Date();
@@ -210,9 +241,9 @@ const Historic = ({filteredStudents, grade}) => {
                     };
                     attendancesAsFirebase.push(dayData);
                 }
-                if (presente !== null) {
-                    dayData.alumnos.push({ presente, run });
-                }
+                // Asegurar que el valor sea 1 o 0
+                const presenteValue = presente === 1 ? 1 : 0;
+                dayData.alumnos.push({ presente: presenteValue, run });
             }
         }
         await updateAttendance(attendancesAsFirebase)
@@ -229,6 +260,183 @@ const Historic = ({filteredStudents, grade}) => {
             summary[item.day].total++
         })
     })
+
+    const downloadExcel = async () => {
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('Asistencia');
+
+        // Configurar estilos
+        const titleStyle = {
+            font: { bold: true, size: 14 },
+            alignment: { horizontal: 'center' }
+        };
+        
+        const headerStyle = {
+            font: { bold: true },
+            alignment: { horizontal: 'center' },
+            fill: {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: 'FFE0E0E0' }
+            }
+        };
+
+        // Agregar títulos usando el nombre de la escuela del usuario
+        worksheet.mergeCells('A1:AE1');
+        worksheet.mergeCells('A2:AE2');
+        worksheet.getCell('A1').value = user.school?.toUpperCase() || 'ESCUELA NO ESPECIFICADA';
+        worksheet.getCell('A2').value = `ASISTENCIA ${grade.toUpperCase()} - ${selectedMonth.name} ${selectedYear}`;
+        worksheet.getCell('A1').style = titleStyle;
+        worksheet.getCell('A2').style = titleStyle;
+
+        // Agregar encabezados
+        const headers = ['Nombre'];
+        getAllDaysInMonth(selectedMonth.code, selectedYear).forEach((_, index) => {
+            headers.push(index + 1);
+        });
+        // Agregar headers adicionales
+        headers.push(
+            'DT',
+            'DA',
+            'DI',
+            '%A',
+            '%I'
+        );
+        worksheet.addRow(headers);
+
+        // Aplicar estilo a los encabezados
+        worksheet.getRow(3).eachCell((cell) => {
+            cell.style = headerStyle;
+        });
+
+        // Agregar datos de estudiantes con estadísticas
+        studentsInAttendances.forEach(student => {
+            const formattedRun = student.run.replaceAll('.', '');
+            const rowData = [student.name?.toUpperCase() || `Nombre no encontrado (${student.run})`];
+            
+            getAllDaysInMonth(selectedMonth.code, selectedYear).forEach((day) => {
+                const dayNumber = day.getUTCDate().toString().padStart(2, '0');
+                if (tempAttendance[formattedRun]?.asistencias[dayNumber] === 1) {
+                    rowData.push(1);
+                } else if (tempAttendance[formattedRun]?.asistencias[dayNumber] === 0) {
+                    rowData.push(0);
+                } else {
+                    rowData.push('-');
+                }
+            });
+
+            // Agregar estadísticas
+            const stats = calculateStudentStats(formattedRun);
+            rowData.push(
+                stats.diasTrabajados,
+                stats.diasAsistidos,
+                stats.diasSinAsistencia,
+                `${stats.porcentajeAsistencia}%`,
+                `${stats.porcentajeInasistencia}%`
+            );
+            
+            worksheet.addRow(rowData);
+        });
+
+        // Agregar resumen
+        worksheet.addRow([]); // Línea en blanco
+        worksheet.addRow(['Leyenda:']);
+        worksheet.addRow(['DT: Días Trabajados']);
+        worksheet.addRow(['DA: Días Asistidos']);
+        worksheet.addRow(['DI: Días Inasistidos']);
+        worksheet.addRow(['%A: Porcentaje de Asistencia']);
+        worksheet.addRow(['%I: Porcentaje de Inasistencia']);
+
+        // Aplicar estilo a la leyenda
+        const leyendaStyle = {
+            font: { size: 11 },
+            fill: {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: 'FFF8F9FA' }
+            }
+        };
+
+        worksheet.getRow(worksheet.rowCount-5).eachCell(cell => cell.style = { ...leyendaStyle, font: { bold: true } });
+        worksheet.getRow(worksheet.rowCount-4).eachCell(cell => cell.style = leyendaStyle);
+        worksheet.getRow(worksheet.rowCount-3).eachCell(cell => cell.style = leyendaStyle);
+        worksheet.getRow(worksheet.rowCount-2).eachCell(cell => cell.style = leyendaStyle);
+        worksheet.getRow(worksheet.rowCount-1).eachCell(cell => cell.style = leyendaStyle);
+        worksheet.getRow(worksheet.rowCount).eachCell(cell => cell.style = leyendaStyle);
+
+        // Agregar totales con estilo
+        const summaryStyle = {
+            font: { bold: true },
+            fill: {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: 'FFFFFF00' }
+            }
+        };
+
+        const addSummaryRow = (label, type) => {
+            const rowData = [label];
+            getAllDaysInMonth(selectedMonth.code, selectedYear).forEach((_, idx) => {
+                const dayNumber = (idx + 1).toString().padStart(2, '0');
+                rowData.push(summary[dayNumber]?.[type] || 0);
+            });
+            const row = worksheet.addRow(rowData);
+            row.eachCell(cell => {
+                cell.style = summaryStyle;
+            });
+        };
+
+        addSummaryRow('PRESENTE', 'presente');
+        addSummaryRow('AUSENTE', 'ausente');
+        addSummaryRow('TOTAL', 'total');
+
+        // Ajustar ancho de columnas
+        worksheet.getColumn(1).width = 30;
+        worksheet.columns.forEach((column, index) => {
+            if (index > 0) column.width = 10;
+        });
+
+        // Generar y descargar el archivo
+        const buffer = await workbook.xlsx.writeBuffer();
+        const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Asistencia-${grade}-${selectedMonth.name}-${selectedYear}.xlsx`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+    };
+
+    // Función para calcular estadísticas de asistencia por estudiante
+    const calculateStudentStats = (run) => {
+        if (!tempAttendance[run]?.asistencias) return {
+            diasTrabajados: 0,
+            diasAsistidos: 0,
+            diasSinAsistencia: 0,
+            porcentajeAsistencia: 0,
+            porcentajeInasistencia: 0
+        };
+
+        // Obtener solo los días que tienen valor 1 o 0 (ignorar los días sin asistencia marcada)
+        const asistencias = Object.values(tempAttendance[run].asistencias).filter(a => a === 1 || a === 0);
+        
+        // Calcular estadísticas solo con días válidos
+        const diasTrabajados = asistencias.length;
+        const diasAsistidos = asistencias.filter(a => a === 1).length;
+        const diasSinAsistencia = asistencias.filter(a => a === 0).length;
+        
+        // Calcular porcentajes solo si hay días trabajados
+        const porcentajeAsistencia = diasTrabajados ? ((diasAsistidos / diasTrabajados) * 100).toFixed(1) : 0;
+        const porcentajeInasistencia = diasTrabajados ? ((diasSinAsistencia / diasTrabajados) * 100).toFixed(1) : 0;
+
+        return {
+            diasTrabajados,
+            diasAsistidos,
+            diasSinAsistencia,
+            porcentajeAsistencia,
+            porcentajeInasistencia
+        };
+    };
 
     if (attendancesLoading) {
         return <Loading/>
@@ -270,9 +478,14 @@ const Historic = ({filteredStudents, grade}) => {
                                 padding: '1rem 0',
                                 textAlign: index === 0 ? 'left' : 'center',
                                 color: index === currentDay && currentMonth === selectedMonth.code - 1 ? '#6466f1' : 'gray'
-                            }}>{header.header}
-                            </th>
+                            }}>{header.header}</th>
                         })}
+                        {/* Encabezados modificados */}
+                        <th style={{padding: '1rem 0', textAlign: 'center', color: 'gray'}}>DT</th>
+                        <th style={{padding: '1rem 0', textAlign: 'center', color: 'gray'}}>DA</th>
+                        <th style={{padding: '1rem 0', textAlign: 'center', color: 'gray'}}>DI</th>
+                        <th style={{padding: '1rem 0', textAlign: 'center', color: 'gray'}}>%A</th>
+                        <th style={{padding: '1rem 0', textAlign: 'center', color: 'gray'}}>%I</th>
                     </tr>
                 </thead>
 
@@ -282,6 +495,7 @@ const Historic = ({filteredStudents, grade}) => {
                     {/* estudiantes */}
                     {studentsInAttendances.map(student => {
                         const formattedRun = student.run.replaceAll('.', '')
+                        const stats = calculateStudentStats(formattedRun);
 
                         return (
                             <tr key={student.run}>
@@ -296,53 +510,85 @@ const Historic = ({filteredStudents, grade}) => {
                                         const dayNumber = day.getUTCDate().toString().padStart(2, '0') // the number of this day. e.g. 31
 
                                         if (daysWithAttendance.includes(String(dayNumber))) { // si es un dia que tiene asistencia en la DB
-
                                             if (tempAttendance[formattedRun]) {
                                                 const studentAttendanceDay = tempAttendance[formattedRun].asistencias[dayNumber] // attendance value for this student in this day (1 or 0)
                                                 return (
                                                     <td key={day} style={{padding: 'unset', textAlign: 'center'}}>
-                                                        <MultiStateCheckbox id={{ run: formattedRun, day: dayNumber, name: student.name }}
-                                                                            value={studentAttendanceDay}
-                                                                            disabled={!editMode}
-                                                                            onChange={handleChange}
-                                                                            options={options}
-                                                                            optionValue="value"
+                                                        <MultiStateCheckbox 
+                                                            id={{ run: formattedRun, day: dayNumber, name: student.name }}
+                                                            value={tempAttendance[formattedRun]?.asistencias[dayNumber] ?? null}
+                                                            disabled={!editMode}
+                                                            onChange={handleChange}
+                                                            options={[
+                                                                {
+                                                                    value: 1,
+                                                                    icon: 'pi pi-check',
+                                                                    style: {backgroundColor: 'green', borderColor: 'green'}
+                                                                },
+                                                                {
+                                                                    value: 0,
+                                                                    icon: 'pi pi-times',
+                                                                    style: {backgroundColor: 'red', borderColor: 'red'}
+                                                                }
+                                                            ]}
+                                                            optionValue="value"
+                                                            style={tempAttendance[formattedRun]?.asistencias[dayNumber] === 1 ? 
+                                                                {backgroundColor: 'green', borderColor: 'green'} : 
+                                                                tempAttendance[formattedRun]?.asistencias[dayNumber] === 0 ? 
+                                                                {backgroundColor: 'red', borderColor: 'red'} : 
+                                                                {backgroundColor: 'lightgray'}}
                                                         />
                                                     </td>
                                                 )
-                                            }
-                                            
-                                            else {
+                                            } else {
                                                 return (
                                                     <td key={day} style={{padding: 'unset', textAlign: 'center'}}>
-                                                        <MultiStateCheckbox id={{ run: formattedRun, day: dayNumber, name: student.name }}
-                                                                            value={null}
-                                                                            disabled={!editMode}
-                                                                            onChange={handleChange}
-                                                                            options={options}
-                                                                            optionValue="value"
+                                                        <MultiStateCheckbox 
+                                                            id={{ run: formattedRun, day: dayNumber, name: student.name }}
+                                                            value={null}
+                                                            disabled={!editMode}
+                                                            onChange={handleChange}
+                                                            options={options}
+                                                            optionValue="value"
+                                                            style={{backgroundColor: 'lightgray'}}
                                                         />
                                                     </td>
                                                 )
                                             }
-                                        }
-                                        
-                                        else { // si es un dia que no tiene asistencia en la DB
+                                        } else { // si es un dia que no tiene asistencia en la DB
                                             return (
                                                 <td key={day} style={{padding: 'unset', textAlign: 'center'}}>
-                                                    <MultiStateCheckbox id={{ run: formattedRun, day: dayNumber, name: student.name }}
-                                                                        value={null}
-                                                                        disabled={!editMode}
-                                                                        onChange={handleChange}
-                                                                        options={options}
-                                                                        optionValue="value"
-                                                                        style={{backgroundColor: 'lightgray'}}
+                                                    <MultiStateCheckbox 
+                                                        id={{ run: formattedRun, day: dayNumber, name: student.name }}
+                                                        value={null}
+                                                        disabled={!editMode}
+                                                        onChange={handleChange}
+                                                        options={options}
+                                                        optionValue="value"
+                                                        style={{backgroundColor: 'lightgray'}}
                                                     />
                                                 </td>
                                             )
                                         }
                                     })
                                 }
+
+                                {/* Nuevas columnas de estadísticas */}
+                                <td style={{padding: '10px', fontSize: '12px', textAlign: 'center'}}>
+                                    {stats.diasTrabajados}
+                                </td>
+                                <td style={{padding: '10px', fontSize: '12px', textAlign: 'center'}}>
+                                    {stats.diasAsistidos}
+                                </td>
+                                <td style={{padding: '10px', fontSize: '12px', textAlign: 'center'}}>
+                                    {stats.diasSinAsistencia}
+                                </td>
+                                <td style={{padding: '10px', fontSize: '12px', textAlign: 'center'}}>
+                                    {stats.porcentajeAsistencia}%
+                                </td>
+                                <td style={{padding: '10px', fontSize: '12px', textAlign: 'center'}}>
+                                    {stats.porcentajeInasistencia}%
+                                </td>
                             </tr>
                         )
                     })}
@@ -385,7 +631,8 @@ const Historic = ({filteredStudents, grade}) => {
             </table>
         </div>
         <div className='my-2'>
-            <Button label='Descargar asistencia' severity='success' onClick={getImage}/>
+            <Button label='Descargar PDF' severity='success' onClick={getImage} className="mr-2"/>
+            <Button label='Descargar Excel' severity='success' onClick={downloadExcel}/>
         </div>
 
         <div className='my-2'>
@@ -435,6 +682,23 @@ const Historic = ({filteredStudents, grade}) => {
                 />
                
             )}
+        </div>
+
+        <div style={{
+            marginTop: '20px',
+            padding: '15px',
+            backgroundColor: '#f8f9fa',
+            borderRadius: '5px',
+            fontSize: '12px'
+        }}>
+            <strong>Leyenda:</strong>
+            <div style={{display: 'flex', gap: '20px', marginTop: '10px'}}>
+                <div>DT: Días Trabajados</div>
+                <div>DA: Días Asistidos</div>
+                <div>DI: Días Inasistidos</div>
+                <div>%A: Porcentaje de Asistencia</div>
+                <div>%I: Porcentaje de Inasistencia</div>
+            </div>
         </div>
 
     </div>);

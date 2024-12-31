@@ -19,6 +19,7 @@ import {getRandomKey} from "@/utils/evaluations";
 import autoTable from "jspdf-autotable";
 import {InputTextarea} from "primereact/inputtextarea";
 import PreviewOas from "@/components/curso/planningMedium/PreviewOas";
+import ExcelJS from 'exceljs';
 
 const LandingPlanningMedium = () => {
     const [selectAmbit, setSelectAmbit] = useState(null);
@@ -174,6 +175,116 @@ const LandingPlanningMedium = () => {
         formik.values.core = ''
         formik.values.oa = []
     }
+
+    const handleDownloadExcel = async () => {
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('Planificaciones');
+
+        // Título y encabezado
+        worksheet.mergeCells('A1:B1');
+        worksheet.getCell('A1').value = `PLANIFICACIONES MEDIANO PLAZO ${grade.toUpperCase()}`;
+        worksheet.getCell('A1').font = { bold: true, size: 14 };
+        worksheet.getCell('A1').alignment = { horizontal: 'center' };
+
+        // Fecha
+        worksheet.mergeCells('A2:B2');
+        worksheet.getCell('A2').value = `Fecha: ${new Date().toLocaleDateString('es-CL')}`;
+        worksheet.getCell('A2').alignment = { horizontal: 'center' };
+
+        // Espacio
+        worksheet.addRow([]);
+
+        // Ordenar planificaciones
+        const sortedPlannings = [...planningMediums].sort((a, b) => {
+            if (a.data.vigencia === b.data.vigencia) return 0;
+            return a.data.vigencia ? -1 : 1;
+        });
+
+        // Por cada planificación
+        sortedPlannings.forEach((planning, index) => {
+            const planNumber = index + 1;
+            
+            // Título de la planificación
+            const planTitle = worksheet.addRow([`Planificación ${planNumber} - ${planning.data.vigencia ? 'Vigente' : 'No vigente'}`]);
+            planTitle.font = { bold: true };
+            planTitle.getCell(1).fill = {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: 'FFE0E0E0' }
+            };
+
+            // Datos básicos
+            worksheet.addRow(['Duración:', `${planning.data.tiempo || 0} semanas`]);
+            worksheet.addRow(['Proyecto Eje:', planning.data.name || 'No especificado']);
+            
+            // Objetivos y estrategias
+            const objetivos = planning.children[2]?.data?.name || 'No especificado';
+            const estrategias = planning.children[3]?.data?.name || 'No especificado';
+            const cierre = planning.children[4]?.data?.name || 'No especificado';
+
+            worksheet.addRow(['Objetivos Generales:', objetivos]);
+            worksheet.addRow(['Estrategias:', estrategias]);
+            worksheet.addRow(['Cierre:', cierre]);
+
+            // Objetivos de Aprendizaje
+            worksheet.addRow(['Objetivos de Aprendizaje:']);
+            
+            // Verificar si hay OAs
+            if (planning.children[0]?.children?.length > 0) {
+                const oasByAmbit = {};
+                
+                planning.children[0].children.forEach(oa => {
+                    if (oa.data?.name && oa.data?.ambitoSeleccionado && oa.data?.nucleoSeleccionado) {
+                        const key = `${oa.data.ambitoSeleccionado} / ${oa.data.nucleoSeleccionado}`;
+                        if (!oasByAmbit[key]) {
+                            oasByAmbit[key] = [];
+                        }
+                        oasByAmbit[key].push(oa.data.oaSeleccionado || oa.data.name);
+                    }
+                });
+
+                Object.entries(oasByAmbit).forEach(([ambitoNucleo, oas]) => {
+                    worksheet.addRow([ambitoNucleo]);
+                    oas.forEach(oa => {
+                        if (oa) {
+                            worksheet.addRow(['•', oa]);
+                        }
+                    });
+                });
+            } else {
+                worksheet.addRow(['', 'No hay objetivos de aprendizaje especificados']);
+            }
+
+            // Espacio entre planificaciones
+            worksheet.addRow([]);
+        });
+
+        // Ajustar ancho de columnas
+        worksheet.getColumn(1).width = 25;
+        worksheet.getColumn(2).width = 75;
+
+        // Aplicar estilos
+        worksheet.eachRow((row) => {
+            row.eachCell((cell) => {
+                cell.alignment = { 
+                    vertical: 'middle',
+                    wrapText: true
+                };
+            });
+        });
+
+        // Generar y descargar
+        const buffer = await workbook.xlsx.writeBuffer();
+        const blob = new Blob([buffer], { 
+            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+        });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Planificaciones_${grade}_${new Date().toLocaleDateString('es-CL').replace(/\//g, '-')}.xlsx`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+    };
 
     if (planningMediumsLoading || basesLoading) {
         return <Loading/>
@@ -338,8 +449,15 @@ const LandingPlanningMedium = () => {
                             <Column style={{display: 'flex', alignItems: 'center', width: '100%'}} field="name"
                                     header="Planificaciones mediano plazo" body={IsCurrent} expander/>
                         </TreeTable>
-                        <Button type='button' className='mt-4' onClick={exportToPDF} label='Descargar planificaciones'
-                                severity='success' style={{width: '100%'}}/>
+                        <Button 
+                            type='button' 
+                            className='mt-4' 
+                            onClick={handleDownloadExcel} 
+                            label='Descargar planificaciones' 
+                            icon="pi pi-file-excel"
+                            severity='success' 
+                            style={{width: '100%'}}
+                        />
                     </div>
                 </div>
             </div>

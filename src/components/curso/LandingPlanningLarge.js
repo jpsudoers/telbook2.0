@@ -13,6 +13,7 @@ import {useRouter} from "next/router";
 import Loading from "@/components/commons/Loading/Loading";
 import autoTable from 'jspdf-autotable'
 import {exportToPDF} from "@/utils/formats";
+import ExcelJS from 'exceljs';
 
 const LandingPlanningLarge = () => {
     const router = useRouter();
@@ -101,13 +102,101 @@ const LandingPlanningLarge = () => {
         return <Loading/>
     }
 
-    const downloadList = (e) => {
-        e.preventDefault();
-        const title = "Planificaciones a largo plazo " + grade.toUpperCase();
-        const head = ['Fecha', 'Planificación a largo plazo']
-        const attr = ['date', 'description']
-        exportToPDF(planningLarges, title, head, attr)
-    }
+    const handleDownloadExcel = async () => {
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('Planificaciones');
+
+        // Agregar título y encabezado
+        worksheet.mergeCells('A1:C1');
+        worksheet.getCell('A1').value = `PLANIFICACIONES ${grade.toUpperCase()}`;
+        worksheet.getCell('A1').font = { 
+            bold: true, 
+            size: 14,
+            color: { argb: '000000' }  // Negro
+        };
+        worksheet.getCell('A1').alignment = { 
+            horizontal: 'center',
+            vertical: 'middle'
+        };
+        worksheet.getRow(1).height = 30; // Altura para el título
+
+        // Agregar fecha actual
+        worksheet.mergeCells('A2:C2');
+        worksheet.getCell('A2').value = `Fecha de generación: ${new Date().toLocaleDateString('es-CL')}`;
+        worksheet.getCell('A2').alignment = { 
+            horizontal: 'center',
+            vertical: 'middle'
+        };
+        worksheet.getCell('A2').font = {
+            size: 11,
+            italic: true
+        };
+
+        // Espacio en blanco
+        worksheet.addRow([]);
+
+        // Definir las columnas con mejor formato
+        worksheet.columns = [
+            { header: 'Fecha', key: 'date', width: 15 },
+            { header: 'Curso', key: 'curso', width: 15 },
+            { header: 'Descripción', key: 'description', width: 85 }
+        ];
+
+        // Estilo para el encabezado
+        worksheet.getRow(4).font = { bold: true };
+        worksheet.getRow(4).fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FFE0E0E0' }
+        };
+
+        // Ordenar planificaciones por fecha
+        const sortedPlannings = [...planningLarges].sort((a, b) => {
+            const dateA = new Date(a.date);
+            const dateB = new Date(b.date);
+            return dateA - dateB;
+        });
+
+        // Agregar datos
+        sortedPlannings.forEach(plan => {
+            worksheet.addRow({
+                date: plan.date,
+                curso: plan.curso || grade.toUpperCase(), // Usar el curso del plan o el grade actual
+                description: plan.description
+            });
+        });
+
+        // Ajustar el contenido y bordes
+        worksheet.eachRow((row, rowNumber) => {
+            if (rowNumber > 3) { // No aplicar a las filas de título
+                row.eachCell((cell) => {
+                    cell.border = {
+                        top: { style: 'thin' },
+                        left: { style: 'thin' },
+                        bottom: { style: 'thin' },
+                        right: { style: 'thin' }
+                    };
+                    cell.alignment = { 
+                        vertical: 'middle', 
+                        wrapText: true,
+                        horizontal: cell.col === 1 || cell.col === 2 ? 'center' : 'left'
+                    };
+                });
+            }
+        });
+
+        // Generar y descargar el archivo
+        const buffer = await workbook.xlsx.writeBuffer();
+        const blob = new Blob([buffer], { 
+            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+        });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Planificaciones_${grade}_${new Date().toLocaleDateString('es-CL').replace(/\//g, '-')}.xlsx`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+    };
 
     planningLarges.sort((a, b) => (a.date > b.date) ? 1 : ((b.date > a.date) ? -1 : 0))
 
@@ -159,13 +248,29 @@ const LandingPlanningLarge = () => {
                     <ScrollPanel style={{width: '100%', height: '500px'}}>
                         <DataTable value={planningLarges} tableStyle={{minWidth: '50rem'}}>
                             <Column field='date' header='Fecha'/>
-                            <Column field='description' header='Descripción de la planificación'/>
+                            <Column 
+                                header='Descripción de la planificación' 
+                                body={(rowData) => (
+                                    <div>
+                                        <strong>Curso: {rowData.curso}</strong>
+                                        <br/>
+                                        {rowData.description}
+                                    </div>
+                                )}
+                            />
                             <Column body={actionBodyTemplate} header='Acción'/>
                         </DataTable>
                     </ScrollPanel>
                 </SplitterPanel>
             </Splitter>
-            <Button className='mt-2' type='button' label='Descargar lista de planificaciones' onClick={downloadList} severity='success'/>
+            <Button 
+                className='mt-2' 
+                type='button' 
+                label='Descargar Planificaciones' 
+                onClick={handleDownloadExcel} 
+                severity='success'
+                icon="pi pi-file-excel"
+            />
         </>
     )
 };
