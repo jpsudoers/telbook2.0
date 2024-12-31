@@ -226,35 +226,6 @@ const LandingPlanningMedium = () => {
             worksheet.addRow(['Estrategias:', estrategias]);
             worksheet.addRow(['Cierre:', cierre]);
 
-            // Objetivos de Aprendizaje
-            worksheet.addRow(['Objetivos de Aprendizaje:']);
-            
-            // Verificar si hay OAs
-            if (planning.children[0]?.children?.length > 0) {
-                const oasByAmbit = {};
-                
-                planning.children[0].children.forEach(oa => {
-                    if (oa.data?.name && oa.data?.ambitoSeleccionado && oa.data?.nucleoSeleccionado) {
-                        const key = `${oa.data.ambitoSeleccionado} / ${oa.data.nucleoSeleccionado}`;
-                        if (!oasByAmbit[key]) {
-                            oasByAmbit[key] = [];
-                        }
-                        oasByAmbit[key].push(oa.data.oaSeleccionado || oa.data.name);
-                    }
-                });
-
-                Object.entries(oasByAmbit).forEach(([ambitoNucleo, oas]) => {
-                    worksheet.addRow([ambitoNucleo]);
-                    oas.forEach(oa => {
-                        if (oa) {
-                            worksheet.addRow(['•', oa]);
-                        }
-                    });
-                });
-            } else {
-                worksheet.addRow(['', 'No hay objetivos de aprendizaje especificados']);
-            }
-
             // Espacio entre planificaciones
             worksheet.addRow([]);
         });
