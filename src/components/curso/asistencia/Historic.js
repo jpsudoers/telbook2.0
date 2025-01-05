@@ -265,12 +265,12 @@ const Historic = ({filteredStudents, grade}) => {
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet('Asistencia');
 
+        // Agregar el título del curso
+        const titleRow = worksheet.addRow([`CURSO: ${grade.toUpperCase()}`]);
+        titleRow.font = { bold: true, size: 14 };
+        worksheet.addRow([]); // Fila en blanco después del título
+
         // Configurar estilos
-        const titleStyle = {
-            font: { bold: true, size: 14 },
-            alignment: { horizontal: 'center' }
-        };
-        
         const headerStyle = {
             font: { bold: true },
             alignment: { horizontal: 'center' },
@@ -281,35 +281,19 @@ const Historic = ({filteredStudents, grade}) => {
             }
         };
 
-        // Agregar títulos usando el nombre de la escuela del usuario
-        worksheet.mergeCells('A1:AE1');
-        worksheet.mergeCells('A2:AE2');
-        //worksheet.getCell('A1').value = user.school?.toUpperCase() || 'ESCUELA NO ESPECIFICADA';
-        worksheet.getCell('A2').value = `ASISTENCIA ${grade.toUpperCase()} - ${selectedMonth.name} ${selectedYear}`;
-        worksheet.getCell('A1').style = titleStyle;
-        worksheet.getCell('A2').style = titleStyle;
-
         // Agregar encabezados
         const headers = ['Nombre'];
         getAllDaysInMonth(selectedMonth.code, selectedYear).forEach((_, index) => {
             headers.push(index + 1);
         });
-        // Agregar headers adicionales
-        headers.push(
-            'DT',
-            'DA',
-            'DI',
-            '%A',
-            '%I'
-        );
         worksheet.addRow(headers);
 
         // Aplicar estilo a los encabezados
-        worksheet.getRow(3).eachCell((cell) => {
+        worksheet.getRow(3).eachCell((cell) => { // Cambiado a fila 3 porque ahora el título está en la fila 1
             cell.style = headerStyle;
         });
 
-        // Agregar datos de estudiantes con estadísticas
+        // Agregar datos de estudiantes
         studentsInAttendances.forEach(student => {
             const formattedRun = student.run.replaceAll('.', '');
             const rowData = [student.name?.toUpperCase() || `Nombre no encontrado (${student.run})`];
@@ -324,61 +308,29 @@ const Historic = ({filteredStudents, grade}) => {
                     rowData.push('-');
                 }
             });
-
-            // Agregar estadísticas
-            const stats = calculateStudentStats(formattedRun);
-            rowData.push(
-                stats.diasTrabajados,
-                stats.diasAsistidos,
-                stats.diasSinAsistencia,
-                `${stats.porcentajeAsistencia}%`,
-                `${stats.porcentajeInasistencia}%`
-            );
             
             worksheet.addRow(rowData);
         });
 
-        // Agregar resumen
-        worksheet.addRow([]); // Línea en blanco
-        worksheet.addRow(['Leyenda:']);
-        worksheet.addRow(['DT: Días Trabajados']);
-        worksheet.addRow(['DA: Días Asistidos']);
-        worksheet.addRow(['DI: Días Inasistidos']);
-        worksheet.addRow(['%A: Porcentaje de Asistencia']);
-        worksheet.addRow(['%I: Porcentaje de Inasistencia']);
-
-        // Aplicar estilo a la leyenda
-        const leyendaStyle = {
-            font: { size: 11 },
-            fill: {
-                type: 'pattern',
-                pattern: 'solid',
-                fgColor: { argb: 'FFF8F9FA' }
-            }
-        };
-
-        worksheet.getRow(worksheet.rowCount-5).eachCell(cell => cell.style = { ...leyendaStyle, font: { bold: true } });
-        worksheet.getRow(worksheet.rowCount-4).eachCell(cell => cell.style = leyendaStyle);
-        worksheet.getRow(worksheet.rowCount-3).eachCell(cell => cell.style = leyendaStyle);
-        worksheet.getRow(worksheet.rowCount-2).eachCell(cell => cell.style = leyendaStyle);
-        worksheet.getRow(worksheet.rowCount-1).eachCell(cell => cell.style = leyendaStyle);
-        worksheet.getRow(worksheet.rowCount).eachCell(cell => cell.style = leyendaStyle);
-
-        // Agregar totales con estilo
+        // Agregar totales con estilo amarillo
         const summaryStyle = {
             font: { bold: true },
             fill: {
                 type: 'pattern',
                 pattern: 'solid',
-                fgColor: { argb: 'FFFFFF00' }
+                fgColor: { argb: 'FFFFFF00' } // Amarillo
             }
         };
 
-        const addSummaryRow = (label, type) => {
+        // Agregar una fila en blanco antes de los totales
+        worksheet.addRow([]);
+
+        // Agregar PRESENTE, AUSENTE y TOTAL
+        const addSummaryRow = (label, values) => {
             const rowData = [label];
             getAllDaysInMonth(selectedMonth.code, selectedYear).forEach((_, idx) => {
                 const dayNumber = (idx + 1).toString().padStart(2, '0');
-                rowData.push(summary[dayNumber]?.[type] || 0);
+                rowData.push(summary[dayNumber]?.[values] || 0);
             });
             const row = worksheet.addRow(rowData);
             row.eachCell(cell => {
@@ -389,6 +341,26 @@ const Historic = ({filteredStudents, grade}) => {
         addSummaryRow('PRESENTE', 'presente');
         addSummaryRow('AUSENTE', 'ausente');
         addSummaryRow('TOTAL', 'total');
+
+        // Agregar una fila en blanco antes de la leyenda
+        worksheet.addRow([]);
+
+        // Agregar la leyenda
+        const leyendaStyle = {
+            font: { size: 11 },
+            fill: {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: 'FFF8F9FA' }
+            }
+        };
+
+        worksheet.addRow(['Leyenda:']).eachCell(cell => cell.style = { ...leyendaStyle, font: { bold: true } });
+        worksheet.addRow(['DT: Días Trabajados']).eachCell(cell => cell.style = leyendaStyle);
+        worksheet.addRow(['DA: Días Asistidos']).eachCell(cell => cell.style = leyendaStyle);
+        worksheet.addRow(['DI: Días Inasistidos']).eachCell(cell => cell.style = leyendaStyle);
+        worksheet.addRow(['%A: Porcentaje de Asistencia']).eachCell(cell => cell.style = leyendaStyle);
+        worksheet.addRow(['%I: Porcentaje de Inasistencia']).eachCell(cell => cell.style = leyendaStyle);
 
         // Ajustar ancho de columnas
         worksheet.getColumn(1).width = 30;
