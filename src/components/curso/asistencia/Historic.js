@@ -281,33 +281,62 @@ const Historic = ({filteredStudents, grade}) => {
             }
         };
 
-        // Agregar encabezados
+        // Agregar encabezados con las nuevas columnas
         const headers = ['Nombre'];
         getAllDaysInMonth(selectedMonth.code, selectedYear).forEach((_, index) => {
             headers.push(index + 1);
         });
+        // Agregar encabezados de las columnas de estadísticas
+        headers.push('DT', 'DA', 'DI', '%A', '%I');
         worksheet.addRow(headers);
 
         // Aplicar estilo a los encabezados
-        worksheet.getRow(3).eachCell((cell) => { // Cambiado a fila 3 porque ahora el título está en la fila 1
+        worksheet.getRow(3).eachCell((cell) => {
             cell.style = headerStyle;
         });
 
-        // Agregar datos de estudiantes
+        // Agregar datos de estudiantes con sus estadísticas
         studentsInAttendances.forEach(student => {
             const formattedRun = student.run.replaceAll('.', '');
             const rowData = [student.name?.toUpperCase() || `Nombre no encontrado (${student.run})`];
             
+            // Contadores para las estadísticas
+            let diasTrabajados = 0;
+            let diasAsistidos = 0;
+            let diasInasistidos = 0;
+
+            // Agregar los datos de asistencia por día
             getAllDaysInMonth(selectedMonth.code, selectedYear).forEach((day) => {
                 const dayNumber = day.getUTCDate().toString().padStart(2, '0');
-                if (tempAttendance[formattedRun]?.asistencias[dayNumber] === 1) {
-                    rowData.push(1);
-                } else if (tempAttendance[formattedRun]?.asistencias[dayNumber] === 0) {
-                    rowData.push(0);
-                } else {
-                    rowData.push('-');
+                const asistencia = tempAttendance[formattedRun]?.asistencias[dayNumber];
+                
+                // Solo contar días donde hay registro (1 o 0)
+                if (daysWithAttendance.includes(dayNumber)) {
+                    diasTrabajados++;
+                    if (asistencia === 1) {
+                        diasAsistidos++;
+                    } else {
+                        diasInasistidos++;
+                    }
                 }
+                
+                rowData.push(asistencia === 1 ? 1 : asistencia === 0 ? 0 : '-');
             });
+
+            // Calcular porcentajes
+            const porcentajeAsistencia = diasTrabajados > 0 ? 
+                ((diasAsistidos / diasTrabajados) * 100).toFixed(1) : '0.0';
+            const porcentajeInasistencia = diasTrabajados > 0 ? 
+                ((diasInasistidos / diasTrabajados) * 100).toFixed(1) : '0.0';
+
+            // Agregar las estadísticas al final de la fila
+            rowData.push(
+                diasTrabajados,
+                diasAsistidos,
+                diasInasistidos,
+                porcentajeAsistencia,
+                porcentajeInasistencia
+            );
             
             worksheet.addRow(rowData);
         });
@@ -318,20 +347,21 @@ const Historic = ({filteredStudents, grade}) => {
             fill: {
                 type: 'pattern',
                 pattern: 'solid',
-                fgColor: { argb: 'FFFFFF00' } // Amarillo
+                fgColor: { argb: 'FFFFFF00' }
             }
         };
 
-        // Agregar una fila en blanco antes de los totales
-        worksheet.addRow([]);
+        worksheet.addRow([]); // Fila en blanco antes de los totales
 
-        // Agregar PRESENTE, AUSENTE y TOTAL
+        // Agregar PRESENTE, AUSENTE y TOTAL con las columnas adicionales vacías
         const addSummaryRow = (label, values) => {
             const rowData = [label];
             getAllDaysInMonth(selectedMonth.code, selectedYear).forEach((_, idx) => {
                 const dayNumber = (idx + 1).toString().padStart(2, '0');
                 rowData.push(summary[dayNumber]?.[values] || 0);
             });
+            // Agregar 5 celdas vacías para las columnas de estadísticas
+            rowData.push('', '', '', '', '');
             const row = worksheet.addRow(rowData);
             row.eachCell(cell => {
                 cell.style = summaryStyle;
@@ -348,14 +378,9 @@ const Historic = ({filteredStudents, grade}) => {
         // Agregar la leyenda
         const leyendaStyle = {
             font: { size: 11 },
-            fill: {
-                type: 'pattern',
-                pattern: 'solid',
-                fgColor: { argb: 'FFF8F9FA' }
-            }
+            alignment: { vertical: 'middle', horizontal: 'left' }
         };
 
-        worksheet.addRow(['Leyenda:']).eachCell(cell => cell.style = { ...leyendaStyle, font: { bold: true } });
         worksheet.addRow(['DT: Días Trabajados']).eachCell(cell => cell.style = leyendaStyle);
         worksheet.addRow(['DA: Días Asistidos']).eachCell(cell => cell.style = leyendaStyle);
         worksheet.addRow(['DI: Días Inasistidos']).eachCell(cell => cell.style = leyendaStyle);
